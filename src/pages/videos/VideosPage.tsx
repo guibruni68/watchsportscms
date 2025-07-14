@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Plus, Search, Edit, Eye, Calendar, Tag } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Plus, Search, Edit, Trash2, Eye, Calendar, Play, Filter } from "lucide-react"
 import { VideoForm } from "@/components/forms/VideoForm"
-import { ListControls, ListPagination } from "@/components/ui/list-controls"
 
 interface Video {
   id: string
@@ -52,23 +53,219 @@ const mockVideos: Video[] = [
     views: 5672,
     duracao: "08:15",
     status: "rascunho"
+  },
+  {
+    id: "4",
+    titulo: "Coletiva de imprensa pré-jogo",
+    descricao: "Técnico e capitão falam sobre a próxima partida",
+    categoria: "Coletivas",
+    tags: ["coletiva", "imprensa", "pré-jogo"],
+    dataPublicacao: "2024-01-08T11:00:00",
+    views: 3245,
+    duracao: "15:42",
+    status: "publicado"
+  },
+  {
+    id: "5",
+    titulo: "Análise tática da derrota",
+    descricao: "Entenda os pontos que precisam ser melhorados",
+    categoria: "Análises",
+    tags: ["análise", "tática", "derrota"],
+    dataPublicacao: "2024-01-06T19:30:00",
+    views: 12850,
+    duracao: "18:22",
+    status: "publicado"
+  },
+  {
+    id: "6",
+    titulo: "Treino de finalizações",
+    descricao: "Atacantes trabalham a pontaria no CT",
+    categoria: "Treinos",
+    tags: ["treino", "finalizações", "atacantes"],
+    dataPublicacao: "2024-01-05T09:15:00",
+    views: 7423,
+    duracao: "06:45",
+    status: "publicado"
+  },
+  {
+    id: "7",
+    titulo: "Apresentação do novo uniforme",
+    descricao: "Conheça os detalhes da nova camisa para 2024",
+    categoria: "Institucional",
+    tags: ["uniforme", "camisa", "2024"],
+    dataPublicacao: "2024-01-04T16:20:00",
+    views: 21340,
+    duracao: "04:18",
+    status: "publicado"
+  },
+  {
+    id: "8",
+    titulo: "Gols mais bonitos da temporada",
+    descricao: "Relembre os melhores gols marcados pelo time",
+    categoria: "Gols e Melhores Momentos",
+    tags: ["gols", "temporada", "melhores"],
+    dataPublicacao: "2024-01-03T20:00:00",
+    views: 18765,
+    duracao: "09:33",
+    status: "publicado"
+  },
+  {
+    id: "9",
+    titulo: "Entrevista com técnico sobre renovação",
+    descricao: "Comandante fala sobre a renovação de contrato",
+    categoria: "Entrevistas",
+    tags: ["entrevista", "técnico", "renovação"],
+    dataPublicacao: "2024-01-02T14:30:00",
+    views: 9876,
+    duracao: "08:52",
+    status: "rascunho"
+  },
+  {
+    id: "10",
+    titulo: "Bastidores da viagem para São Paulo",
+    descricao: "Acompanhe a delegação na viagem para o jogo fora",
+    categoria: "Bastidores",
+    tags: ["bastidores", "viagem", "são paulo"],
+    dataPublicacao: "2024-01-01T07:45:00",
+    views: 6543,
+    duracao: "11:27",
+    status: "publicado"
+  },
+  {
+    id: "11",
+    titulo: "Defesas incríveis do goleiro",
+    descricao: "As melhores defesas do arqueiro da temporada",
+    categoria: "Gols e Melhores Momentos",
+    tags: ["defesas", "goleiro", "incríveis"],
+    dataPublicacao: "2023-12-30T18:15:00",
+    views: 13245,
+    duracao: "07:20",
+    status: "publicado"
+  },
+  {
+    id: "12",
+    titulo: "Treino físico intenso",
+    descricao: "Preparação física para a sequência de jogos",
+    categoria: "Treinos",
+    tags: ["treino", "físico", "intenso"],
+    dataPublicacao: "2023-12-29T08:30:00",
+    views: 4567,
+    duracao: "12:08",
+    status: "publicado"
+  },
+  {
+    id: "13",
+    titulo: "Homenagem aos veteranos",
+    descricao: "Clube presta homenagem aos jogadores mais experientes",
+    categoria: "Institucional",
+    tags: ["homenagem", "veteranos", "clube"],
+    dataPublicacao: "2023-12-28T17:00:00",
+    views: 8901,
+    duracao: "14:35",
+    status: "publicado"
+  },
+  {
+    id: "14",
+    titulo: "Análise do sistema defensivo",
+    descricao: "Como a defesa tem se comportado nas últimas partidas",
+    categoria: "Análises",
+    tags: ["análise", "defesa", "sistema"],
+    dataPublicacao: "2023-12-27T15:45:00",
+    views: 6789,
+    duracao: "16:12",
+    status: "rascunho"
+  },
+  {
+    id: "15",
+    titulo: "Concentração antes do clássico",
+    descricao: "Ambiente no hotel antes do grande jogo",
+    categoria: "Bastidores",
+    tags: ["concentração", "clássico", "hotel"],
+    dataPublicacao: "2023-12-26T19:30:00",
+    views: 15432,
+    duracao: "09:47",
+    status: "publicado"
+  },
+  {
+    id: "16",
+    titulo: "Entrevista com jovem promessa",
+    descricao: "Conversamos com o jovem que vem se destacando",
+    categoria: "Entrevistas",
+    tags: ["entrevista", "jovem", "promessa"],
+    dataPublicacao: "2023-12-25T13:20:00",
+    views: 7654,
+    duracao: "10:33",
+    status: "publicado"
+  },
+  {
+    id: "17",
+    titulo: "Dribles e jogadas especiais",
+    descricao: "Os melhores dribles e jogadas da temporada",
+    categoria: "Gols e Melhores Momentos",
+    tags: ["dribles", "jogadas", "especiais"],
+    dataPublicacao: "2023-12-24T16:00:00",
+    views: 19876,
+    duracao: "08:24",
+    status: "publicado"
+  },
+  {
+    id: "18",
+    titulo: "Treino tático para o próximo jogo",
+    descricao: "Preparação específica para enfrentar o adversário",
+    categoria: "Treinos",
+    tags: ["treino", "tático", "próximo"],
+    dataPublicacao: "2023-12-23T10:15:00",
+    views: 5432,
+    duracao: "13:56",
+    status: "rascunho"
+  },
+  {
+    id: "19",
+    titulo: "Coletiva pós-vitória épica",
+    descricao: "Reações após a vitória no último minuto",
+    categoria: "Coletivas",
+    tags: ["coletiva", "vitória", "épica"],
+    dataPublicacao: "2023-12-22T22:45:00",
+    views: 11234,
+    duracao: "12:47",
+    status: "publicado"
+  },
+  {
+    id: "20",
+    titulo: "Projeto social do clube",
+    descricao: "Conheca as ações sociais desenvolvidas pelo clube",
+    categoria: "Institucional",
+    tags: ["projeto", "social", "clube"],
+    dataPublicacao: "2023-12-21T14:30:00",
+    views: 6789,
+    duracao: "17:22",
+    status: "publicado"
   }
 ]
 
 export default function VideosPage() {
   const [videos, setVideos] = useState<Video[]>(mockVideos)
   const [searchTerm, setSearchTerm] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState<string>("all")
+  const [statusFilter, setStatusFilter] = useState<string>("all")
   const [showForm, setShowForm] = useState(false)
   const [editingVideo, setEditingVideo] = useState<Video | null>(null)
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list")
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(12)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
-  const filteredVideos = videos.filter(video =>
-    video.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    video.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    video.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
+  const categories = Array.from(new Set(videos.map(v => v.categoria)))
+  const statuses = Array.from(new Set(videos.map(v => v.status)))
+
+  const filteredVideos = videos.filter(video => {
+    const matchesSearch = video.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      video.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      video.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    
+    const matchesCategory = categoryFilter === "all" || video.categoria === categoryFilter
+    const matchesStatus = statusFilter === "all" || video.status === statusFilter
+    
+    return matchesSearch && matchesCategory && matchesStatus
+  })
 
   const totalPages = Math.ceil(filteredVideos.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -77,6 +274,10 @@ export default function VideosPage() {
   const handleEdit = (video: Video) => {
     setEditingVideo(video)
     setShowForm(true)
+  }
+
+  const handleDelete = (id: string) => {
+    setVideos(videos.filter(video => video.id !== id))
   }
 
   const handleNewVideo = () => {
@@ -112,93 +313,176 @@ export default function VideosPage() {
         </Button>
       </div>
 
-      <div className="flex gap-4 items-center">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar vídeos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+      {/* Filtros */}
+      <Card className="p-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar vídeos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as categorias</SelectItem>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>{category}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                {statuses.map(status => (
+                  <SelectItem key={status} value={status}>
+                    {status === "publicado" ? "Publicado" : "Rascunho"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </Card>
+
+      {/* Tabela */}
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-20">Thumb</TableHead>
+              <TableHead>Título</TableHead>
+              <TableHead>Categoria</TableHead>
+              <TableHead className="w-32">Data</TableHead>
+              <TableHead className="w-24">Duração</TableHead>
+              <TableHead className="w-24">Status</TableHead>
+              <TableHead className="w-32">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedVideos.map((video) => (
+              <TableRow key={video.id}>
+                <TableCell>
+                  <div className="w-16 h-12 bg-muted rounded-md flex items-center justify-center">
+                    <Play className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="max-w-xs">
+                    <div className="font-medium truncate">{video.titulo}</div>
+                    <div className="text-sm text-muted-foreground truncate">{video.descricao}</div>
+                    <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                      <Eye className="h-3 w-3" />
+                      {video.views.toLocaleString()} views
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="secondary">{video.categoria}</Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    {new Date(video.dataPublicacao).toLocaleDateString("pt-BR")}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm font-mono">{video.duracao}</div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={video.status === "publicado" ? "default" : "outline"}>
+                    {video.status === "publicado" ? "Publicado" : "Rascunho"}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(video)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(video.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+
+      {/* Paginação */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, filteredVideos.length)} de {filteredVideos.length} vídeos
+        </div>
+        <div className="flex items-center gap-2">
+          <Select value={itemsPerPage.toString()} onValueChange={(value) => {
+            setItemsPerPage(parseInt(value))
+            setCurrentPage(1)
+          }}>
+            <SelectTrigger className="w-24">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+            >
+              Anterior
+            </Button>
+            <div className="flex items-center gap-1">
+              <span className="text-sm">
+                Página {currentPage} de {totalPages}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Próxima
+            </Button>
+          </div>
         </div>
       </div>
 
-      <ListControls
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={(items) => {
-          setItemsPerPage(items)
-          setCurrentPage(1)
-        }}
-        totalItems={filteredVideos.length}
-      />
-
-      <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" : "grid gap-4"}>
-        {paginatedVideos.map((video) => (
-          <Card key={video.id} className="transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-lg line-clamp-2 break-words">{video.titulo}</h3>
-                      <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{video.descricao}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(video)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(video.dataPublicacao).toLocaleDateString("pt-BR")}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      {video.views.toLocaleString()} visualizações
-                    </div>
-                    <div>
-                      Duração: {video.duracao}
-                    </div>
-                    <div>
-                      Categoria: {video.categoria}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <ListPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={(items) => {
-          setItemsPerPage(items)
-          setCurrentPage(1)
-        }}
-        totalItems={filteredVideos.length}
-      />
-
-      {paginatedVideos.length === 0 && filteredVideos.length === 0 && (
+      {filteredVideos.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">
-              {searchTerm ? "Nenhum vídeo encontrado com este termo." : "Nenhum vídeo cadastrado ainda."}
+              {searchTerm || categoryFilter !== "all" || statusFilter !== "all" 
+                ? "Nenhum vídeo encontrado com os filtros aplicados." 
+                : "Nenhum vídeo cadastrado ainda."}
             </div>
-            {!searchTerm && (
+            {!searchTerm && categoryFilter === "all" && statusFilter === "all" && (
               <Button onClick={handleNewVideo} className="mt-4">
                 Criar Primeiro Vídeo
               </Button>
