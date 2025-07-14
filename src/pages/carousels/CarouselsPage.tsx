@@ -20,23 +20,30 @@ interface Carousel {
   id: string;
   title: string;
   type: "horizontal" | "grid" | "slider";
-  contentSource: "player" | "genre" | "recommendations";
+  contentSource: "agent" | "genre" | "recommendations" | "manual";
   order: number;
   status: "active" | "inactive";
   showMoreButton: boolean;
   createdAt: string;
+  agentType?: string;
+  agentId?: string;
+  genreType?: string;
+  algorithmType?: string;
+  manualContent?: string[];
 }
 
 const mockCarousels: Carousel[] = [
   {
     id: "1",
-    title: "Melhores Momentos - Jogador Estrela",
+    title: "Melhores Momentos - João Silva",
     type: "horizontal",
-    contentSource: "player",
+    contentSource: "agent",
     order: 1,
     status: "active",
     showMoreButton: true,
     createdAt: "2024-01-15",
+    agentType: "player",
+    agentId: "agent1",
   },
   {
     id: "2", 
@@ -47,6 +54,7 @@ const mockCarousels: Carousel[] = [
     status: "active",
     showMoreButton: false,
     createdAt: "2024-01-10",
+    genreType: "goals",
   },
   {
     id: "3",
@@ -57,6 +65,18 @@ const mockCarousels: Carousel[] = [
     status: "inactive",
     showMoreButton: true,
     createdAt: "2024-01-05",
+    algorithmType: "personalized",
+  },
+  {
+    id: "4",
+    title: "Seleção Manual - Final do Campeonato",
+    type: "horizontal",
+    contentSource: "manual",
+    order: 4,
+    status: "active",
+    showMoreButton: false,
+    createdAt: "2024-01-20",
+    manualContent: ["content1", "content2", "content3"],
   },
 ];
 
@@ -71,9 +91,10 @@ const getTypeLabel = (type: string) => {
 
 const getContentSourceLabel = (source: string) => {
   const labels = {
-    player: "Conteúdos de Jogador",
-    genre: "Gênero/Categoria",
-    recommendations: "Recomendações"
+    agent: "Agente",
+    genre: "Gênero",
+    recommendations: "Recomendação Personalizada",
+    manual: "Manual"
   };
   return labels[source as keyof typeof labels];
 };
@@ -85,6 +106,7 @@ export default function CarouselsPage() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [viewingCarousel, setViewingCarousel] = useState<Carousel | null>(null);
   const { toast } = useToast();
 
   const handleCreateCarousel = (data: any) => {
@@ -212,7 +234,6 @@ export default function CarouselsPage() {
                     <TableHead>Título</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Fonte de Conteúdo</TableHead>
-                    <TableHead>Layout</TableHead>
                     <TableHead>Ordem</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
@@ -224,11 +245,6 @@ export default function CarouselsPage() {
                       <TableCell className="font-medium">{carousel.title}</TableCell>
                       <TableCell>{getTypeLabel(carousel.type)}</TableCell>
                       <TableCell>{getContentSourceLabel(carousel.contentSource)}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">
-                          {carousel.showMoreButton ? "Com botão 'Ver mais'" : "Sem botão 'Ver mais'"}
-                        </Badge>
-                      </TableCell>
                       <TableCell>{carousel.order}</TableCell>
                       <TableCell>
                         <Badge variant={carousel.status === "active" ? "default" : "secondary"}>
@@ -240,7 +256,7 @@ export default function CarouselsPage() {
                           <Button variant="ghost" size="sm" onClick={() => openEditForm(carousel)}>
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" onClick={() => setViewingCarousel(carousel)}>
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button 
@@ -291,7 +307,7 @@ export default function CarouselsPage() {
                       <Button variant="ghost" size="sm" onClick={() => openEditForm(carousel)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => setViewingCarousel(carousel)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button 
@@ -310,6 +326,106 @@ export default function CarouselsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal de Visualização do Carrossel */}
+      <Dialog open={!!viewingCarousel} onOpenChange={() => setViewingCarousel(null)}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Visualizar Carrossel</DialogTitle>
+          </DialogHeader>
+          {viewingCarousel && (
+            <div className="space-y-6">
+              {/* Informações do Carrossel */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-semibold mb-2">Informações Básicas</h3>
+                  <div className="space-y-2 text-sm">
+                    <div><span className="font-medium">Título:</span> {viewingCarousel.title}</div>
+                    <div><span className="font-medium">Tipo:</span> {getTypeLabel(viewingCarousel.type)}</div>
+                    <div><span className="font-medium">Fonte:</span> {getContentSourceLabel(viewingCarousel.contentSource)}</div>
+                    <div><span className="font-medium">Ordem:</span> {viewingCarousel.order}</div>
+                    <div><span className="font-medium">Status:</span> 
+                      <Badge variant={viewingCarousel.status === "active" ? "default" : "secondary"} className="ml-2">
+                        {viewingCarousel.status === "active" ? "Ativo" : "Inativo"}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">Configurações</h3>
+                  <div className="space-y-2 text-sm">
+                    {viewingCarousel.contentSource === "agent" && (
+                      <>
+                        <div><span className="font-medium">Tipo de Agente:</span> {viewingCarousel.agentType}</div>
+                        <div><span className="font-medium">Agente:</span> {viewingCarousel.agentId}</div>
+                      </>
+                    )}
+                    {viewingCarousel.contentSource === "genre" && (
+                      <div><span className="font-medium">Gênero:</span> {viewingCarousel.genreType}</div>
+                    )}
+                    {viewingCarousel.contentSource === "recommendations" && (
+                      <div><span className="font-medium">Algoritmo:</span> {viewingCarousel.algorithmType}</div>
+                    )}
+                    <div><span className="font-medium">Botão "Ver mais":</span> {viewingCarousel.showMoreButton ? "Sim" : "Não"}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Lista de Conteúdos */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold">Conteúdos do Carrossel</h3>
+                  <Badge variant="outline">
+                    {viewingCarousel.contentSource === "manual" 
+                      ? `${viewingCarousel.manualContent?.length || 0} conteúdos`
+                      : "12 conteúdos"
+                    } total
+                  </Badge>
+                </div>
+                
+                <div className="border rounded-md">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Título</TableHead>
+                        <TableHead>Tipo</TableHead>
+                        <TableHead>Duração</TableHead>
+                        <TableHead>Data</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {/* Mock data para demonstração */}
+                      {[1, 2, 3, 4, 5].map((item) => (
+                        <TableRow key={item}>
+                          <TableCell className="font-medium">
+                            {viewingCarousel.contentSource === "manual" 
+                              ? `Conteúdo Manual ${item}`
+                              : `Conteúdo Automático ${item}`
+                            }
+                          </TableCell>
+                          <TableCell>Vídeo</TableCell>
+                          <TableCell>02:30</TableCell>
+                          <TableCell>15/01/2024</TableCell>
+                          <TableCell className="text-right">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

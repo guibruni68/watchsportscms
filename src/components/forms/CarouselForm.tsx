@@ -23,11 +23,17 @@ import { Switch } from "@/components/ui/switch";
 
 const formSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(100, "Título deve ter no máximo 100 caracteres"),
-  contentSource: z.enum(["player", "genre", "recommendations"]),
+  contentSource: z.enum(["agent", "genre", "recommendations", "manual"]),
   type: z.enum(["horizontal", "grid", "slider"]),
   order: z.number().min(1, "Ordem deve ser maior que 0").max(100, "Ordem deve ser menor que 100"),
   status: z.boolean(),
   showMoreButton: z.boolean(),
+  // Campos condicionais
+  agentType: z.string().optional(),
+  agentId: z.string().optional(),
+  genreType: z.string().optional(),
+  algorithmType: z.string().optional(),
+  manualContent: z.array(z.string()).optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -43,13 +49,20 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: initialData?.title || "",
-      contentSource: initialData?.contentSource || "player",
+      contentSource: initialData?.contentSource || "agent",
       type: initialData?.type || "horizontal", 
       order: initialData?.order || 1,
       status: initialData?.status === "active" || !initialData,
       showMoreButton: initialData?.showMoreButton || false,
+      agentType: initialData?.agentType || "",
+      agentId: initialData?.agentId || "",
+      genreType: initialData?.genreType || "",
+      algorithmType: initialData?.algorithmType || "",
+      manualContent: initialData?.manualContent || [],
     },
   });
+
+  const contentSource = form.watch("contentSource");
 
   const handleSubmit = (data: FormData) => {
     onSubmit(data);
@@ -92,9 +105,10 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="player">Conteúdos relacionados a um jogador</SelectItem>
-                    <SelectItem value="genre">Conteúdos de um gênero/categoria</SelectItem>
-                    <SelectItem value="recommendations">Conteúdos de recomendação</SelectItem>
+                    <SelectItem value="agent">Agente (Jogador, Técnico, Time, etc.)</SelectItem>
+                    <SelectItem value="genre">Gênero/Categoria</SelectItem>
+                    <SelectItem value="recommendations">Recomendação Personalizada</SelectItem>
+                    <SelectItem value="manual">Carrossel Manual</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormDescription>
@@ -131,6 +145,143 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
             )}
           />
         </div>
+
+        {/* Campos condicionais baseados na fonte de conteúdo */}
+        {contentSource === "agent" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="agentType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Agente</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o tipo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="player">Jogador</SelectItem>
+                      <SelectItem value="coach">Técnico</SelectItem>
+                      <SelectItem value="team">Time</SelectItem>
+                      <SelectItem value="staff">Comissão Técnica</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="agentId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Selecionar Agente</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o agente" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="agent1">João Silva (Jogador)</SelectItem>
+                      <SelectItem value="agent2">Carlos Santos (Técnico)</SelectItem>
+                      <SelectItem value="agent3">Flamengo (Time)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
+
+        {contentSource === "genre" && (
+          <FormField
+            control={form.control}
+            name="genreType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tipo de Conteúdo</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o tipo de conteúdo" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="goals">Gols</SelectItem>
+                    <SelectItem value="highlights">Melhores Momentos</SelectItem>
+                    <SelectItem value="interviews">Entrevistas</SelectItem>
+                    <SelectItem value="training">Treinos</SelectItem>
+                    <SelectItem value="behind-scenes">Bastidores</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Tipo de conteúdo que será exibido no carrossel
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {contentSource === "recommendations" && (
+          <FormField
+            control={form.control}
+            name="algorithmType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Algoritmo de Recomendação</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o algoritmo" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="trending">Mais Populares</SelectItem>
+                    <SelectItem value="personalized">Personalizado por Usuário</SelectItem>
+                    <SelectItem value="similar">Conteúdos Similares</SelectItem>
+                    <SelectItem value="recent">Mais Recentes</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Algoritmo usado para gerar as recomendações
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {contentSource === "manual" && (
+          <FormField
+            control={form.control}
+            name="manualContent"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Conteúdos Selecionados</FormLabel>
+                <FormControl>
+                  <div className="space-y-2">
+                    <div className="text-sm text-muted-foreground">
+                      {field.value?.length || 0} conteúdos selecionados
+                    </div>
+                    <Button type="button" variant="outline" className="w-full">
+                      + Adicionar Conteúdos
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  Selecione manualmente os conteúdos que aparecerão no carrossel
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
