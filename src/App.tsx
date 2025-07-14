@@ -21,25 +21,27 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <DashboardLayout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/videos" element={<VideosPage />} />
-            <Route path="/lives" element={<LivesPage />} />
-            <Route path="/teams" element={<TeamsPage />} />
-            <Route path="/schedule" element={<SchedulePage />} />
-            <Route path="/news" element={<NewsPage />} />
-            <Route path="/customization" element={<CustomizationPage />} />
-            <Route path="/ads" element={<AdsPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </DashboardLayout>
-      </BrowserRouter>
+      <div className="dark">
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <DashboardLayout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/videos" element={<VideosPage />} />
+              <Route path="/lives" element={<LivesPage />} />
+              <Route path="/teams" element={<TeamsPage />} />
+              <Route path="/schedule" element={<SchedulePage />} />
+              <Route path="/news" element={<NewsPage />} />
+              <Route path="/customization" element={<CustomizationPage />} />
+              <Route path="/ads" element={<AdsPage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </DashboardLayout>
+        </BrowserRouter>
+      </div>
     </TooltipProvider>
   </QueryClientProvider>
 );
