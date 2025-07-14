@@ -168,8 +168,7 @@ export default function AuthPage() {
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <CardHeader className="px-0 pb-2">
-                    <CardTitle className="flex items-center gap-2">
-                      <LogIn className="h-5 w-5" />
+                    <CardTitle className="text-lg">
                       Fazer Login
                     </CardTitle>
                     <CardDescription>
