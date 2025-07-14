@@ -67,9 +67,9 @@ export function AppSidebar() {
   return <Sidebar className={state === "collapsed" ? "w-16" : "w-64"} collapsible="icon">
       <SidebarContent className="bg-gradient-to-b from-card to-muted/20">
         {/* Logo Section */}
-        <div className="p-6 border-b border-border/50 flex justify-center">
+        <div className="px-6 pt-6 pb-3 border-b border-border/50 flex justify-center">
           <div className="flex items-center justify-center overflow-hidden">
-            <img src={teamLogo} alt="Logo do Clube" className="w-28 h-28 object-scale-down" />
+            <img src={teamLogo} alt="Logo do Clube" className="w-32 h-32 object-scale-down" />
           </div>
         </div>
 
