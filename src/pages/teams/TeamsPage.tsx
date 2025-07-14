@@ -106,6 +106,81 @@ export default function TeamsPage() {
       wins: 12,
       draws: 2,
       losses: 2
+    },
+    {
+      id: 6,
+      name: "Thunderbhowl",
+      category: "Profissional",
+      players: 25,
+      coach: "Miguel Santos",
+      founded: "2008",
+      division: "Segunda Divisão",
+      position: 4,
+      points: 48,
+      matches: 24,
+      wins: 15,
+      draws: 3,
+      losses: 6
+    },
+    {
+      id: 7,
+      name: "Basement Bridge",
+      category: "Profissional",
+      players: 23,
+      coach: "João Silva",
+      founded: "2012",
+      division: "Segunda Divisão",
+      position: 7,
+      points: 32,
+      matches: 24,
+      wins: 9,
+      draws: 5,
+      losses: 10
+    },
+    {
+      id: 8,
+      name: "Red Rock Comets",
+      category: "Profissional",
+      players: 27,
+      coach: "Maria Oliveira",
+      founded: "1998",
+      division: "Primeira Divisão",
+      position: 6,
+      points: 44,
+      matches: 25,
+      wins: 13,
+      draws: 5,
+      losses: 7
+    },
+    {
+      id: 9,
+      name: "IronHill Cyclones",
+      category: "Profissional",
+      players: 24,
+      coach: "Ricardo Costa",
+      founded: "2003",
+      division: "Segunda Divisão",
+      position: 3,
+      points: 51,
+      matches: 24,
+      wins: 16,
+      draws: 3,
+      losses: 5
+    },
+    {
+      id: 10,
+      name: "Pinevale",
+      category: "Sub-20",
+      players: 19,
+      coach: "Paulo Mendes",
+      founded: "2018",
+      division: "Juvenil B",
+      position: 5,
+      points: 28,
+      matches: 18,
+      wins: 8,
+      draws: 4,
+      losses: 6
     }
   ]
 
@@ -339,22 +414,22 @@ export default function TeamsPage() {
             totalItems={teams.length}
           />
           
-          <div className={teamsViewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "grid gap-4"}>
+          <div className={teamsViewMode === "grid" ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" : "grid gap-4"}>
             {teams.slice((teamsCurrentPage - 1) * teamsItemsPerPage, teamsCurrentPage * teamsItemsPerPage).map((team) => (
               <Link key={team.id} to={`/teams/${team.id}`} className="block">
-                <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer h-32">
-                  <CardHeader className="pb-2 p-4">
+                <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer h-28">
+                  <CardHeader className="pb-1 p-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-card border border-border rounded-lg flex items-center justify-center flex-shrink-0">
-                        <img src="/placeholder.svg" alt={`Logo ${team.name}`} className="w-8 h-8 object-scale-down" />
+                      <div className="w-8 h-8 bg-card border border-border rounded-lg flex items-center justify-center flex-shrink-0">
+                        <img src="/placeholder.svg" alt={`Logo ${team.name}`} className="w-6 h-6 object-scale-down" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <CardTitle className="text-base truncate">{team.name}</CardTitle>
-                        <CardDescription className="text-sm">{team.category}</CardDescription>
+                        <CardTitle className="text-sm truncate">{team.name}</CardTitle>
+                        <CardDescription className="text-xs">{team.category}</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-4 pt-0">
+                  <CardContent className="p-3 pt-0">
                     <div className="flex justify-center">
                       <Badge variant="outline" className="text-xs">
                         {team.division}
