@@ -359,53 +359,11 @@ export default function TeamsPage() {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">Jogadores</p>
-                        <p className="font-semibold">{team.players}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Posição</p>
-                        <p className="font-semibold">{team.position}º lugar</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Pontos</p>
-                        <p className="font-semibold">{team.points} pts</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Partidas</p>
-                        <p className="font-semibold">{team.matches}</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 text-xs text-center">
-                      <div className="bg-secondary/20 rounded p-2">
-                        <p className="text-secondary font-semibold">{team.wins}</p>
-                        <p className="text-muted-foreground">Vitórias</p>
-                      </div>
-                      <div className="bg-muted/50 rounded p-2">
-                        <p className="font-semibold">{team.draws}</p>
-                        <p className="text-muted-foreground">Empates</p>
-                      </div>
-                      <div className="bg-destructive/20 rounded p-2">
-                        <p className="text-destructive font-semibold">{team.losses}</p>
-                        <p className="text-muted-foreground">Derrotas</p>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2">
+                  <CardContent className="p-6">
+                    <div className="flex justify-center">
                       <Badge className="bg-primary text-primary-foreground">
                         {team.position}º Colocado
                       </Badge>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={(e) => e.preventDefault()}>
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={(e) => e.preventDefault()}>
-                          <Users className="h-3 w-3" />
-                        </Button>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>

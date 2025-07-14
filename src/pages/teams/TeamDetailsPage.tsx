@@ -110,69 +110,62 @@ export default function TeamDetailsPage() {
       </div>
 
       {/* Team Header */}
-      <div className="relative">
-        <div className="h-48 bg-gradient-primary rounded-lg mb-6"></div>
-        <Card className="absolute -bottom-4 left-6 right-6 bg-gradient-card border-border/50">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex-shrink-0">
-                <div className="w-24 h-24 bg-card border-2 border-primary rounded-lg flex items-center justify-center">
-                  <img src={team.logo} alt={team.name} className="w-20 h-20 object-scale-down" />
-                </div>
-              </div>
-              <div className="flex-1 space-y-2">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div>
-                    <h1 className="text-3xl font-bold text-foreground">{team.name}</h1>
-                    <p className="text-muted-foreground">{team.description}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <Heart className="h-4 w-4 mr-2" />
-                      Seguir
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Share2 className="h-4 w-4 mr-2" />
-                      Compartilhar
-                    </Button>
-                    <Button size="sm" className="bg-gradient-primary">
-                      <Edit className="h-4 w-4 mr-2" />
-                      Editar
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">{team.category}</Badge>
-                  <Badge className="bg-primary text-primary-foreground">{team.position}º Colocado</Badge>
-                  <Badge className="bg-secondary text-secondary-foreground">{team.division}</Badge>
-                </div>
+      <Card className="bg-gradient-card border-border/50">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex-shrink-0">
+              <div className="w-24 h-24 bg-card border-2 border-primary rounded-lg flex items-center justify-center">
+                <img src={team.logo} alt={team.name} className="w-20 h-20 object-scale-down" />
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="flex-1 space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground">{team.name}</h1>
+                  <p className="text-muted-foreground">{team.description}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Compartilhar
+                  </Button>
+                  <Button size="sm" className="bg-gradient-primary">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Editar
+                  </Button>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline">{team.category}</Badge>
+                <Badge className="bg-primary text-primary-foreground">{team.position}º Colocado</Badge>
+                <Badge className="bg-secondary text-secondary-foreground">{team.division}</Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-        <Card className="bg-gradient-card border-border/50">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="bg-gradient-card border-border/50 h-24">
           <CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-primary">{team.wins}</div>
             <div className="text-sm text-muted-foreground">Vitórias</div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-card border-border/50">
+        <Card className="bg-gradient-card border-border/50 h-24">
           <CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-warning">{team.draws}</div>
             <div className="text-sm text-muted-foreground">Empates</div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-card border-border/50">
+        <Card className="bg-gradient-card border-border/50 h-24">
           <CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-destructive">{team.losses}</div>
             <div className="text-sm text-muted-foreground">Derrotas</div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-card border-border/50">
+        <Card className="bg-gradient-card border-border/50 h-24">
           <CardContent className="p-4 text-center">
             <div className="text-2xl font-bold text-foreground">{team.points}</div>
             <div className="text-sm text-muted-foreground">Pontos</div>
