@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Plus, Search, Edit, Calendar, Star } from "lucide-react"
 import { NewsForm } from "@/components/forms/NewsForm"
-import { ListControls } from "@/components/ui/list-controls"
+import { ListControls, ListPagination } from "@/components/ui/list-controls"
 
 interface News {
   id: string
@@ -114,9 +114,6 @@ export default function NewsPage() {
       <ListControls
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={(items) => {
           setItemsPerPage(items)
@@ -177,6 +174,14 @@ export default function NewsPage() {
           </Card>
         ))}
       </div>
+
+      <ListPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        itemsPerPage={itemsPerPage}
+        totalItems={filteredNews.length}
+      />
 
       {paginatedNews.length === 0 && filteredNews.length === 0 && (
         <Card>

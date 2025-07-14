@@ -10,14 +10,25 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
-interface ListControlsProps {
+interface BaseListControlsProps {
   viewMode: "list" | "grid"
   onViewModeChange: (mode: "list" | "grid") => void
+  itemsPerPage: number
+  onItemsPerPageChange: (items: number) => void
+  totalItems: number
+}
+
+interface ListControlsProps extends BaseListControlsProps {
+  currentPage?: number
+  totalPages?: number
+  onPageChange?: (page: number) => void
+}
+
+interface ListPaginationProps {
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
   itemsPerPage: number
-  onItemsPerPageChange: (items: number) => void
   totalItems: number
 }
 
@@ -31,10 +42,11 @@ export function ListControls({
   onItemsPerPageChange,
   totalItems
 }: ListControlsProps) {
-  const startItem = (currentPage - 1) * itemsPerPage + 1
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems)
+  const startItem = currentPage ? (currentPage - 1) * itemsPerPage + 1 : 1
+  const endItem = currentPage ? Math.min(currentPage * itemsPerPage, totalItems) : totalItems
 
   const generatePageNumbers = () => {
+    if (!totalPages) return []
     const pages = []
     const maxVisible = 5
     
@@ -43,7 +55,7 @@ export function ListControls({
         pages.push(i)
       }
     } else {
-      const start = Math.max(1, currentPage - 2)
+      const start = Math.max(1, (currentPage || 1) - 2)
       const end = Math.min(totalPages, start + maxVisible - 1)
       
       for (let i = start; i <= end; i++) {
@@ -97,46 +109,123 @@ export function ListControls({
         </div>
       </div>
 
-      {/* Bottom controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4">
-        {/* Results info */}
-        <span className="text-sm text-muted-foreground">
-          Mostrando {startItem}-{endItem} de {totalItems} itens
-        </span>
+      {/* Bottom controls - only show if pagination props are provided */}
+      {currentPage && totalPages && onPageChange && (
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4">
+          {/* Results info */}
+          <span className="text-sm text-muted-foreground">
+            Mostrando {startItem}-{endItem} de {totalItems} itens
+          </span>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious 
-                  onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
-              </PaginationItem>
-              
-              {generatePageNumbers().map((page) => (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                    onClick={() => onPageChange(page)}
-                    isActive={currentPage === page}
-                    className="cursor-pointer"
-                  >
-                    {page}
-                  </PaginationLink>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
                 </PaginationItem>
-              ))}
-              
-              <PaginationItem>
-                <PaginationNext 
-                  onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
+                
+                {generatePageNumbers().map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => onPageChange(page)}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function ListPagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+  itemsPerPage,
+  totalItems
+}: ListPaginationProps) {
+  const startItem = (currentPage - 1) * itemsPerPage + 1
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems)
+
+  const generatePageNumbers = () => {
+    const pages = []
+    const maxVisible = 5
+    
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i)
+      }
+    } else {
+      const start = Math.max(1, currentPage - 2)
+      const end = Math.min(totalPages, start + maxVisible - 1)
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i)
+      }
+    }
+    
+    return pages
+  }
+
+  if (totalItems === 0) return null
+
+  return (
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4">
+      {/* Results info */}
+      <span className="text-sm text-muted-foreground">
+        Mostrando {startItem}-{endItem} de {totalItems} itens
+      </span>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+              />
+            </PaginationItem>
+            
+            {generatePageNumbers().map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  onClick={() => onPageChange(page)}
+                  isActive={currentPage === page}
+                  className="cursor-pointer"
+                >
+                  {page}
+                </PaginationLink>
               </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
-      </div>
+            ))}
+            
+            <PaginationItem>
+              <PaginationNext 
+                onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   )
 }
