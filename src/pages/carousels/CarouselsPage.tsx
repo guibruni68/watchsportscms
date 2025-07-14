@@ -15,6 +15,7 @@ import { Plus, Edit, Eye, Trash2, Grid3X3, List } from "lucide-react";
 import { CarouselForm } from "@/components/forms/CarouselForm";
 import { ListControls } from "@/components/ui/list-controls";
 import { useToast } from "@/hooks/use-toast";
+import { getAgentsByType } from "@/data/mockData";
 
 interface Carousel {
   id: string;
@@ -26,7 +27,7 @@ interface Carousel {
   showMoreButton: boolean;
   createdAt: string;
   agentType?: string;
-  agentId?: string;
+  agentIds?: string[];
   genreType?: string;
   algorithmType?: string;
   manualContent?: string[];
@@ -35,7 +36,7 @@ interface Carousel {
 const mockCarousels: Carousel[] = [
   {
     id: "1",
-    title: "Melhores Momentos - João Silva",
+    title: "Melhores Momentos - Marcus Johnson",
     type: "horizontal",
     contentSource: "agent",
     order: 1,
@@ -43,7 +44,7 @@ const mockCarousels: Carousel[] = [
     showMoreButton: true,
     createdAt: "2024-01-15",
     agentType: "player",
-    agentId: "agent1",
+    agentIds: ["player1"],
   },
   {
     id: "2", 
@@ -97,6 +98,13 @@ const getContentSourceLabel = (source: string) => {
     manual: "Manual"
   };
   return labels[source as keyof typeof labels];
+};
+
+const getAgentNames = (carousel: Carousel) => {
+  if (!carousel.agentType || !carousel.agentIds?.length) return "Nenhum agente selecionado";
+  const agents = getAgentsByType(carousel.agentType);
+  const selectedAgents = agents.filter(agent => carousel.agentIds!.includes(agent.id));
+  return selectedAgents.map(agent => agent.name).join(", ");
 };
 
 export default function CarouselsPage() {
@@ -357,7 +365,7 @@ export default function CarouselsPage() {
                     {viewingCarousel.contentSource === "agent" && (
                       <>
                         <div><span className="font-medium">Tipo de Agente:</span> {viewingCarousel.agentType}</div>
-                        <div><span className="font-medium">Agente:</span> {viewingCarousel.agentId}</div>
+                        <div><span className="font-medium">Agentes:</span> {getAgentNames(viewingCarousel)}</div>
                       </>
                     )}
                     {viewingCarousel.contentSource === "genre" && (

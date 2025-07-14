@@ -20,6 +20,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { X, Search } from "lucide-react";
+import { getAgentsByType } from "@/data/mockData";
+import { useState } from "react";
 
 const formSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(100, "Título deve ter no máximo 100 caracteres"),
@@ -30,7 +35,7 @@ const formSchema = z.object({
   showMoreButton: z.boolean(),
   // Campos condicionais
   agentType: z.string().optional(),
-  agentId: z.string().optional(),
+  agentIds: z.array(z.string()).optional(),
   genreType: z.string().optional(),
   algorithmType: z.string().optional(),
   manualContent: z.array(z.string()).optional(),
@@ -45,6 +50,8 @@ interface CarouselFormProps {
 }
 
 export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormProps) {
+  const [agentSearch, setAgentSearch] = useState("");
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,7 +62,7 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
       status: initialData?.status === "active" || !initialData,
       showMoreButton: initialData?.showMoreButton || false,
       agentType: initialData?.agentType || "",
-      agentId: initialData?.agentId || "",
+      agentIds: initialData?.agentIds || [],
       genreType: initialData?.genreType || "",
       algorithmType: initialData?.algorithmType || "",
       manualContent: initialData?.manualContent || [],
@@ -63,6 +70,14 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
   });
 
   const contentSource = form.watch("contentSource");
+  const agentType = form.watch("agentType");
+  const selectedAgentIds = form.watch("agentIds") || [];
+
+  // Buscar agentes baseado no tipo selecionado
+  const availableAgents = agentType ? getAgentsByType(agentType) : [];
+  const filteredAgents = availableAgents.filter(agent =>
+    agent.name.toLowerCase().includes(agentSearch.toLowerCase())
+  );
 
   const handleSubmit = (data: FormData) => {
     onSubmit(data);
@@ -148,14 +163,18 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
 
         {/* Campos condicionais baseados na fonte de conteúdo */}
         {contentSource === "agent" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-4">
             <FormField
               control={form.control}
               name="agentType"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tipo de Agente</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={(value) => {
+                    field.onChange(value);
+                    form.setValue("agentIds", []);
+                    setAgentSearch("");
+                  }} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione o tipo" />
@@ -173,28 +192,94 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="agentId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Selecionar Agente</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+            {agentType && (
+              <FormField
+                control={form.control}
+                name="agentIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Selecionar Agentes</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o agente" />
-                      </SelectTrigger>
+                      <div className="space-y-3">
+                        {/* Campo de busca */}
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder={`Buscar ${agentType === 'player' ? 'jogadores' : agentType === 'coach' ? 'técnicos' : agentType === 'team' ? 'times' : 'membros da comissão'}...`}
+                            value={agentSearch}
+                            onChange={(e) => setAgentSearch(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+
+                        {/* Agentes selecionados */}
+                        {selectedAgentIds.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {selectedAgentIds.map(agentId => {
+                              const agent = availableAgents.find(a => a.id === agentId);
+                              if (!agent) return null;
+                              return (
+                                <Badge key={agentId} variant="secondary" className="flex items-center gap-1">
+                                  {agent.name}
+                                  <X 
+                                    className="h-3 w-3 cursor-pointer" 
+                                    onClick={() => {
+                                      const newIds = selectedAgentIds.filter(id => id !== agentId);
+                                      field.onChange(newIds);
+                                    }}
+                                  />
+                                </Badge>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {/* Lista de agentes disponíveis */}
+                        <div className="border rounded-md max-h-40 overflow-y-auto">
+                          {filteredAgents.length > 0 ? (
+                            filteredAgents.map(agent => (
+                              <div
+                                key={agent.id}
+                                className="flex items-center space-x-2 p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                                onClick={() => {
+                                  const newIds = selectedAgentIds.includes(agent.id)
+                                    ? selectedAgentIds.filter(id => id !== agent.id)
+                                    : [...selectedAgentIds, agent.id];
+                                  field.onChange(newIds);
+                                }}
+                              >
+                                <Checkbox 
+                                  checked={selectedAgentIds.includes(agent.id)}
+                                  onChange={() => {}}
+                                />
+                                <div className="flex-1">
+                                  <p className="font-medium">{agent.name}</p>
+                                  {'team' in agent && (
+                                    <p className="text-sm text-muted-foreground">{agent.team}</p>
+                                  )}
+                                  {'category' in agent && (
+                                    <p className="text-sm text-muted-foreground">{agent.category}</p>
+                                  )}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="p-3 text-center text-muted-foreground">
+                              Nenhum {agentType === 'player' ? 'jogador' : agentType === 'coach' ? 'técnico' : agentType === 'team' ? 'time' : 'membro'} encontrado
+                            </div>
+                          )}
+                        </div>
+
+                        <p className="text-sm text-muted-foreground">
+                          {selectedAgentIds.length} {agentType === 'player' ? 'jogador(es)' : agentType === 'coach' ? 'técnico(s)' : agentType === 'team' ? 'time(s)' : 'membro(s)'} selecionado(s)
+                        </p>
+                      </div>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="agent1">João Silva (Jogador)</SelectItem>
-                      <SelectItem value="agent2">Carlos Santos (Técnico)</SelectItem>
-                      <SelectItem value="agent3">Flamengo (Time)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
         )}
 

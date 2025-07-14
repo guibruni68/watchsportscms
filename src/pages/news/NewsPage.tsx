@@ -20,8 +20,8 @@ interface News {
 const mockNews: News[] = [
   {
     id: "1",
-    titulo: "Clube anuncia contratação de novo atacante para 2024",
-    conteudo: "O clube confirmou hoje a contratação do atacante João Silva, de 24 anos, que vem do clube rival. O jogador assinou contrato por três temporadas e já está liberado para jogar.",
+    titulo: "Nova City Sparks anuncia contratação de novo armador para 2024",
+    conteudo: "O clube confirmou hoje a contratação do armador Marcus Johnson, de 28 anos, que vem da liga americana. O jogador assinou contrato por três temporadas e já está liberado para jogar.",
     destaque: true,
     dataPublicacao: "2024-01-18T14:30:00",
     views: 3421
