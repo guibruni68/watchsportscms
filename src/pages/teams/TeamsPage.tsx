@@ -21,7 +21,7 @@ import {
   Loader2
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ListControls } from "@/components/ui/list-controls"
+import { ListControls, ListPagination } from "@/components/ui/list-controls"
 import { useToast } from "@/hooks/use-toast"
 import { getTeams, getPlayers, getChampionships, initializeSampleData, type Team, type Player, type Championship } from "@/lib/supabase-helpers"
 
@@ -199,9 +199,6 @@ export default function TeamsPage() {
           <ListControls
             viewMode={teamsViewMode}
             onViewModeChange={setTeamsViewMode}
-            currentPage={teamsCurrentPage}
-            totalPages={Math.ceil(teams.length / teamsItemsPerPage)}
-            onPageChange={setTeamsCurrentPage}
             itemsPerPage={teamsItemsPerPage}
             onItemsPerPageChange={(items) => {
               setTeamsItemsPerPage(items)
@@ -219,23 +216,33 @@ export default function TeamsPage() {
                       <div className="w-16 h-16 bg-card border border-border rounded-lg flex items-center justify-center flex-shrink-0">
                         <img src="/placeholder.svg" alt={`Logo ${team.name}`} className="w-12 h-12 object-scale-down" />
                       </div>
-                      <div className="text-center">
-                        <CardTitle className="text-base truncate">{team.name}</CardTitle>
-                        <CardDescription className="text-sm">{team.category}</CardDescription>
-                      </div>
+                    <div className="text-center">
+                      <CardTitle className="text-base truncate">{team.name}</CardTitle>
+                      <CardDescription className="text-sm">{team.category}</CardDescription>
                     </div>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <div className="flex justify-center">
-                      <Badge variant="outline" className="text-sm">
-                        {team.division}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <div className="flex justify-center text-sm text-muted-foreground">
+                    {team.division}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+        
+        <ListPagination
+          currentPage={teamsCurrentPage}
+          totalPages={Math.ceil(teams.length / teamsItemsPerPage)}
+          onPageChange={setTeamsCurrentPage}
+          itemsPerPage={teamsItemsPerPage}
+          onItemsPerPageChange={(items) => {
+            setTeamsItemsPerPage(items)
+            setTeamsCurrentPage(1)
+          }}
+          totalItems={teams.length}
+        />
         </TabsContent>
 
         {/* Players Tab */}
@@ -277,9 +284,6 @@ export default function TeamsPage() {
           <ListControls
             viewMode={playersViewMode}
             onViewModeChange={setPlayersViewMode}
-            currentPage={playersCurrentPage}
-            totalPages={Math.ceil(players.length / playersItemsPerPage)}
-            onPageChange={setPlayersCurrentPage}
             itemsPerPage={playersItemsPerPage}
             onItemsPerPageChange={(items) => {
               setPlayersItemsPerPage(items)
@@ -306,11 +310,9 @@ export default function TeamsPage() {
                           <p className="text-sm text-muted-foreground">{player.position}</p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-sm">
-                          {player.number}
-                        </div>
-                      </div>
+                      <Button variant="ghost" size="sm">
+                        <Edit className="h-4 w-4" />
+                      </Button>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
@@ -333,30 +335,31 @@ export default function TeamsPage() {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      {getStatusBadge(player.status)}
                       <span className="text-xs text-muted-foreground">
                         {player.market_value || 'N/A'}
                       </span>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2 border-t border-border/50">
                       <span className="text-xs text-muted-foreground">
                         {player.matches} jogos
                       </span>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <UserCheck className="h-3 w-3" />
-                        </Button>
-                      </div>
                     </div>
+
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
+          
+          <ListPagination
+            currentPage={playersCurrentPage}
+            totalPages={Math.ceil(players.length / playersItemsPerPage)}
+            onPageChange={setPlayersCurrentPage}
+            itemsPerPage={playersItemsPerPage}
+            onItemsPerPageChange={(items) => {
+              setPlayersItemsPerPage(items)
+              setPlayersCurrentPage(1)
+            }}
+            totalItems={players.length}
+          />
         </TabsContent>
 
         {/* Championships Tab */}

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Plus, Search, Edit, Eye, Calendar, Tag } from "lucide-react"
 import { VideoForm } from "@/components/forms/VideoForm"
-import { ListControls } from "@/components/ui/list-controls"
+import { ListControls, ListPagination } from "@/components/ui/list-controls"
 
 interface Video {
   id: string
@@ -127,9 +127,6 @@ export default function VideosPage() {
       <ListControls
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={(items) => {
           setItemsPerPage(items)
@@ -146,13 +143,17 @@ export default function VideosPage() {
                 <div className="flex-1 space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-semibold text-lg">{video.titulo}</h3>
-                      <p className="text-muted-foreground text-sm mt-1">{video.descricao}</p>
+                      <h3 className="font-semibold text-lg line-clamp-2 break-words">{video.titulo}</h3>
+                      <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{video.descricao}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Badge variant={video.status === "publicado" ? "default" : "secondary"}>
-                        {video.status === "publicado" ? "Publicado" : "Rascunho"}
-                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(video)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                   
@@ -172,33 +173,24 @@ export default function VideosPage() {
                       Categoria: {video.categoria}
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex gap-1 flex-wrap">
-                      {video.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(video)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      <ListPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={(items) => {
+          setItemsPerPage(items)
+          setCurrentPage(1)
+        }}
+        totalItems={filteredVideos.length}
+      />
 
       {paginatedVideos.length === 0 && filteredVideos.length === 0 && (
         <Card>

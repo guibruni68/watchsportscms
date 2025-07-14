@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Plus, Search, Edit, Calendar, Clock, Users } from "lucide-react"
 import { LiveForm } from "@/components/forms/LiveForm"
-import { ListControls } from "@/components/ui/list-controls"
+import { ListControls, ListPagination } from "@/components/ui/list-controls"
 
 interface Live {
   id: string
@@ -121,9 +121,6 @@ export default function LivesPage() {
       <ListControls
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={(items) => {
           setItemsPerPage(items)
@@ -140,18 +137,17 @@ export default function LivesPage() {
                 <div className="flex-1 space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-semibold text-lg">{live.nomeEvento}</h3>
-                      <p className="text-muted-foreground text-sm mt-1">{live.descricao}</p>
+                      <h3 className="font-semibold text-lg line-clamp-2 break-words">{live.nomeEvento}</h3>
+                      <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{live.descricao}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Badge 
-                        variant={
-                          live.status === "ao_vivo" ? "destructive" : 
-                          live.status === "em_breve" ? "default" : "secondary"
-                        }
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(live)}
                       >
-                        {statusLabels[live.status]}
-                      </Badge>
+                        <Edit className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                   
@@ -175,21 +171,23 @@ export default function LivesPage() {
                     )}
                   </div>
                 </div>
-                
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(live)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      <ListPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={(items) => {
+          setItemsPerPage(items)
+          setCurrentPage(1)
+        }}
+        totalItems={filteredLives.length}
+      />
 
       {paginatedLives.length === 0 && filteredLives.length === 0 && (
         <Card>

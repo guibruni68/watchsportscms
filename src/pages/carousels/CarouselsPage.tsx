@@ -13,7 +13,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Edit, Eye, Trash2, Grid3X3, List } from "lucide-react";
 import { CarouselForm } from "@/components/forms/CarouselForm";
-import { ListControls } from "@/components/ui/list-controls";
+import { ListControls, ListPagination } from "@/components/ui/list-controls";
 import { useToast } from "@/hooks/use-toast";
 import { getAgentsByType } from "@/data/mockData";
 
@@ -214,24 +214,20 @@ export default function CarouselsPage() {
         </Dialog>
       </div>
 
+      <ListControls
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={setItemsPerPage}
+        totalItems={carousels.length}
+      />
+
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="flex items-center gap-2">
-              {viewMode === "list" ? <List className="h-5 w-5" /> : <Grid3X3 className="h-5 w-5" />}
-              Carrosséis Cadastrados
-            </CardTitle>
-            <ListControls
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              itemsPerPage={itemsPerPage}
-              onItemsPerPageChange={setItemsPerPage}
-              totalItems={carousels.length}
-            />
-          </div>
+          <CardTitle className="flex items-center gap-2">
+            {viewMode === "list" ? <List className="h-5 w-5" /> : <Grid3X3 className="h-5 w-5" />}
+            Carrosséis Cadastrados
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {viewMode === "list" ? (
@@ -289,9 +285,9 @@ export default function CarouselsPage() {
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg line-clamp-2">{carousel.title}</CardTitle>
-                      <Badge variant={carousel.status === "active" ? "default" : "secondary"}>
-                        {carousel.status === "active" ? "Ativo" : "Inativo"}
-                      </Badge>
+                      <Button variant="ghost" size="sm" onClick={() => openEditForm(carousel)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -305,27 +301,6 @@ export default function CarouselsPage() {
                       <div>
                         <span className="font-medium">Ordem:</span> {carousel.order}
                       </div>
-                      <div>
-                        <Badge variant="outline" className="text-xs">
-                          {carousel.showMoreButton ? "Com botão 'Ver mais'" : "Sem botão 'Ver mais'"}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2 pt-2">
-                      <Button variant="ghost" size="sm" onClick={() => openEditForm(carousel)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => setViewingCarousel(carousel)}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleDeleteCarousel(carousel.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -334,6 +309,15 @@ export default function CarouselsPage() {
           )}
         </CardContent>
       </Card>
+
+      <ListPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={setItemsPerPage}
+        totalItems={carousels.length}
+      />
 
       {/* Modal de Visualização do Carrossel */}
       <Dialog open={!!viewingCarousel} onOpenChange={() => setViewingCarousel(null)}>
