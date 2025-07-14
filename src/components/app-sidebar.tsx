@@ -1,5 +1,5 @@
 import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout } from "lucide-react";
-import teamLogo from "/lovable-uploads/3e4f7302-40a3-4b04-95b2-f925cfb43250.png";
+import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
 import { NavLink, useLocation } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 const mainNavItems = [{
@@ -69,7 +69,7 @@ export function AppSidebar() {
         {/* Logo Section */}
         <div className="p-6 border-b border-border/50 flex justify-center">
           <div className="flex items-center justify-center overflow-hidden">
-            <img src={teamLogo} alt="Logo do Clube" className="w-24 h-24 object-scale-down" />
+            <img src={teamLogo} alt="Logo do Clube" className="w-28 h-28 object-scale-down" />
           </div>
         </div>
 
