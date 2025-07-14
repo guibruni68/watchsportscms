@@ -414,24 +414,24 @@ export default function TeamsPage() {
             totalItems={teams.length}
           />
           
-          <div className={teamsViewMode === "grid" ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" : "grid gap-4"}>
+          <div className={teamsViewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "grid gap-4"}>
             {teams.slice((teamsCurrentPage - 1) * teamsItemsPerPage, teamsCurrentPage * teamsItemsPerPage).map((team) => (
               <Link key={team.id} to={`/teams/${team.id}`} className="block">
-                <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer h-28">
-                  <CardHeader className="pb-1 p-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-card border border-border rounded-lg flex items-center justify-center flex-shrink-0">
-                        <img src="/placeholder.svg" alt={`Logo ${team.name}`} className="w-6 h-6 object-scale-down" />
+                <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer">
+                  <CardHeader className="pb-2 p-4">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-16 h-16 bg-card border border-border rounded-lg flex items-center justify-center flex-shrink-0">
+                        <img src="/placeholder.svg" alt={`Logo ${team.name}`} className="w-12 h-12 object-scale-down" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-sm truncate">{team.name}</CardTitle>
-                        <CardDescription className="text-xs">{team.category}</CardDescription>
+                      <div className="text-center">
+                        <CardTitle className="text-base truncate">{team.name}</CardTitle>
+                        <CardDescription className="text-sm">{team.category}</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-3 pt-0">
+                  <CardContent className="p-4 pt-0">
                     <div className="flex justify-center">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-sm">
                         {team.division}
                       </Badge>
                     </div>

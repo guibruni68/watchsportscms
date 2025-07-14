@@ -14,7 +14,194 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      championships: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          matches_count: number | null
+          name: string
+          phase: string | null
+          start_date: string
+          status: string | null
+          teams_count: number | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          matches_count?: number | null
+          name: string
+          phase?: string | null
+          start_date: string
+          status?: string | null
+          teams_count?: number | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          matches_count?: number | null
+          name?: string
+          phase?: string | null
+          start_date?: string
+          status?: string | null
+          teams_count?: number | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      players: {
+        Row: {
+          age: number | null
+          assists: number | null
+          avatar_url: string | null
+          created_at: string
+          goals: number | null
+          id: string
+          market_value: string | null
+          matches: number | null
+          name: string
+          nationality: string | null
+          number: number | null
+          position: string
+          status: string | null
+          team_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          age?: number | null
+          assists?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          goals?: number | null
+          id?: string
+          market_value?: string | null
+          matches?: number | null
+          name: string
+          nationality?: string | null
+          number?: number | null
+          position: string
+          status?: string | null
+          team_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          age?: number | null
+          assists?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          goals?: number | null
+          id?: string
+          market_value?: string | null
+          matches?: number | null
+          name?: string
+          nationality?: string | null
+          number?: number | null
+          position?: string
+          status?: string | null
+          team_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      teams: {
+        Row: {
+          category: string
+          coach: string | null
+          created_at: string
+          division: string
+          draws: number | null
+          founded: string | null
+          id: string
+          logo_url: string | null
+          losses: number | null
+          matches: number | null
+          name: string
+          players_count: number | null
+          points: number | null
+          updated_at: string
+          wins: number | null
+        }
+        Insert: {
+          category: string
+          coach?: string | null
+          created_at?: string
+          division: string
+          draws?: number | null
+          founded?: string | null
+          id?: string
+          logo_url?: string | null
+          losses?: number | null
+          matches?: number | null
+          name: string
+          players_count?: number | null
+          points?: number | null
+          updated_at?: string
+          wins?: number | null
+        }
+        Update: {
+          category?: string
+          coach?: string | null
+          created_at?: string
+          division?: string
+          draws?: number | null
+          founded?: string | null
+          id?: string
+          logo_url?: string | null
+          losses?: number | null
+          matches?: number | null
+          name?: string
+          players_count?: number | null
+          points?: number | null
+          updated_at?: string
+          wins?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
