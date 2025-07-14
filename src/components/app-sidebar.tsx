@@ -69,7 +69,7 @@ export function AppSidebar() {
         {/* Logo Section */}
         <div className="px-6 pt-6 pb-3 border-b border-border/50 flex justify-center">
           <div className="flex items-center justify-center overflow-hidden">
-            <img src={teamLogo} alt="Logo do Clube" className="w-36 h-36 object-scale-down" />
+            <img src={teamLogo} alt="Logo do Clube" className="w-40 h-40 object-scale-down" />
           </div>
         </div>
 
