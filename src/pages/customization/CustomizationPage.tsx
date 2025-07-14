@@ -61,7 +61,7 @@ export default function CustomizationPage() {
             <Eye className="h-4 w-4 mr-2" />
             Visualizar
           </Button>
-          <Button className="bg-gradient-primary shadow-glow hover:shadow-lg transition-all" onClick={handleSave}>
+          <Button className="bg-gradient-primary transition-all" onClick={handleSave}>
             <Save className="h-4 w-4 mr-2" />
             Salvar Alterações
           </Button>

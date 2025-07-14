@@ -33,7 +33,7 @@ const Index = () => {
           {!user ? (
             <div className="flex justify-center gap-4">
               <Link to="/auth">
-                <Button className="bg-gradient-primary shadow-glow hover:shadow-lg transition-all">
+                <Button className="bg-gradient-primary transition-all">
                   <LogIn className="h-4 w-4 mr-2" />
                   Entrar / Cadastrar
                 </Button>
@@ -54,7 +54,7 @@ const Index = () => {
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <Link to="/teams">
-            <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer">
+            <Card className="bg-gradient-card border-border/50 transition-all duration-300 cursor-pointer">
               <CardContent className="p-6 text-center">
                 <Users className="h-12 w-12 text-primary mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Times & Elencos</h3>
@@ -64,7 +64,7 @@ const Index = () => {
           </Link>
 
           <Link to="/videos">
-            <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer">
+            <Card className="bg-gradient-card border-border/50 transition-all duration-300 cursor-pointer">
               <CardContent className="p-6 text-center">
                 <Video className="h-12 w-12 text-secondary mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Vídeos</h3>
@@ -74,7 +74,7 @@ const Index = () => {
           </Link>
 
           <Link to="/schedule">
-            <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer">
+            <Card className="bg-gradient-card border-border/50 transition-all duration-300 cursor-pointer">
               <CardContent className="p-6 text-center">
                 <Calendar className="h-12 w-12 text-warning mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Agenda</h3>
@@ -84,7 +84,7 @@ const Index = () => {
           </Link>
 
           <Link to="/championships">
-            <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer">
+            <Card className="bg-gradient-card border-border/50 transition-all duration-300 cursor-pointer">
               <CardContent className="p-6 text-center">
                 <Trophy className="h-12 w-12 text-primary mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Campeonatos</h3>

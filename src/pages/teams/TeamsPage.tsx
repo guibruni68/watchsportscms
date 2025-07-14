@@ -131,7 +131,7 @@ export default function TeamsPage() {
             <Plus className="h-4 w-4 mr-2" />
             Novo Jogador
           </Button>
-          <Button className="bg-gradient-primary shadow-glow hover:shadow-lg transition-all">
+          <Button className="bg-gradient-primary transition-all">
             <Plus className="h-4 w-4 mr-2" />
             Novo Time
           </Button>
@@ -210,7 +210,7 @@ export default function TeamsPage() {
           <div className={teamsViewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "grid gap-4"}>
             {teams.slice((teamsCurrentPage - 1) * teamsItemsPerPage, teamsCurrentPage * teamsItemsPerPage).map((team) => (
               <Link key={team.id} to={`/teams/${team.id}`} className="block">
-                <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer">
+                <Card className="bg-gradient-card border-border/50 transition-all duration-300 cursor-pointer">
                   <CardHeader className="pb-2 p-4">
                     <div className="flex flex-col items-center gap-3">
                       <div className="w-16 h-16 bg-card border border-border rounded-lg flex items-center justify-center flex-shrink-0">
@@ -294,7 +294,7 @@ export default function TeamsPage() {
 
           <div className={playersViewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "grid gap-4"}>
             {players.slice((playersCurrentPage - 1) * playersItemsPerPage, playersCurrentPage * playersItemsPerPage).map((player) => (
-              <Card key={player.id} className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300">
+              <Card key={player.id} className="bg-gradient-card border-border/50 transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="flex items-start justify-between">
@@ -366,7 +366,7 @@ export default function TeamsPage() {
         <TabsContent value="championships" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {championships.map((championship) => (
-              <Card key={championship.id} className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300">
+              <Card key={championship.id} className="bg-gradient-card border-border/50 transition-all duration-300">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div>

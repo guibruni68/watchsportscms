@@ -131,7 +131,7 @@ export default function LivesPage() {
 
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" : "grid gap-4"}>
         {paginatedLives.map((live) => (
-          <Card key={live.id} className="hover:shadow-md transition-shadow">
+          <Card key={live.id} className="transition-shadow">
             <CardContent className="p-6">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1 space-y-3">

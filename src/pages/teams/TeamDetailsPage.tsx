@@ -285,7 +285,7 @@ export default function TeamDetailsPage() {
         <TabsContent value="content" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {recentContent.map((content) => (
-              <Card key={content.id} className="bg-gradient-card border-border/50 hover:shadow-md transition-all">
+              <Card key={content.id} className="bg-gradient-card border-border/50 transition-all">
                 <CardContent className="p-0">
                   <div className="relative">
                     <img 

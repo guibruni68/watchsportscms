@@ -113,7 +113,7 @@ export default function DashboardIndex() {
           <p className="text-muted-foreground">Bem-vindo ao painel de controle da FNB</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-gradient-primary shadow-glow hover:shadow-lg transition-all">
+          <Button className="bg-gradient-primary transition-all">
             <Plus className="h-4 w-4 mr-2" />
             Novo Conteúdo
           </Button>
@@ -123,7 +123,7 @@ export default function DashboardIndex() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
-          <Card key={index} className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300">
+          <Card key={index} className="bg-gradient-card border-border/50 transition-all duration-300">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>

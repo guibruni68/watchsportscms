@@ -163,7 +163,7 @@ export default function AdsPage() {
           <h1 className="text-3xl font-bold text-foreground">Gestão de Anúncios</h1>
           <p className="text-muted-foreground">Monitore e gerencie campanhas publicitárias</p>
         </div>
-        <Button className="bg-gradient-primary shadow-glow hover:shadow-lg transition-all">
+        <Button className="bg-gradient-primary transition-all">
           <Plus className="h-4 w-4 mr-2" />
           Nova Campanha
         </Button>
@@ -260,7 +260,7 @@ export default function AdsPage() {
           {/* Campaigns */}
           <div className="space-y-4">
             {filteredCampaigns.map((campaign) => (
-              <Card key={campaign.id} className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300">
+              <Card key={campaign.id} className="bg-gradient-card border-border/50 transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="flex items-start justify-between">

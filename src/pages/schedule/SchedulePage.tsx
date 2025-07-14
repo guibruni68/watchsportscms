@@ -159,7 +159,7 @@ export default function SchedulePage() {
           <h1 className="text-3xl font-bold text-foreground">Agenda Esportiva</h1>
           <p className="text-muted-foreground">Gerencie jogos, treinos e eventos do clube</p>
         </div>
-        <Button className="bg-gradient-primary shadow-glow hover:shadow-lg transition-all">
+        <Button className="bg-gradient-primary transition-all">
           <Plus className="h-4 w-4 mr-2" />
           Novo Evento
         </Button>
