@@ -58,7 +58,7 @@ export function AppSidebar() {
 
   const getNavClassName = (path: string) => {
     return isActive(path) 
-      ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" 
+      ? "bg-primary text-white font-medium" 
       : "hover:bg-muted/60 transition-colors"
   }
 
@@ -66,33 +66,25 @@ export function AppSidebar() {
     <Sidebar className={state === "collapsed" ? "w-16" : "w-64"} collapsible="icon">
       <SidebarContent className="bg-gradient-to-b from-card to-muted/20">
         {/* Logo Section */}
-        <div className="p-6 border-b border-border/50">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden bg-background">
-              <img src={teamLogo} alt="Logo do Clube" className="w-8 h-8 object-contain" />
-            </div>
-            {state !== "collapsed" && (
-              <div>
-                <h2 className="font-bold text-lg text-foreground">Sports CMS</h2>
-                <p className="text-xs text-muted-foreground">Clube Fictício FC</p>
-              </div>
-            )}
+        <div className="p-6 border-b border-border/50 flex justify-center">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden bg-background">
+            <img src={teamLogo} alt="Logo do Clube" className="w-10 h-10 object-contain" />
           </div>
         </div>
 
         {/* Main Navigation */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        <SidebarGroup className="py-4">
+          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             Conteúdo
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-2">
               {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={getNavClassName(item.url)}>
+                  <SidebarMenuButton asChild className={`h-11 px-4 ${getNavClassName(item.url)}`}>
                     <NavLink to={item.url} end={item.url === "/"}>
-                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-primary' : 'text-muted-foreground'}`} />
-                      {state !== "collapsed" && <span>{item.title}</span>}
+                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : 'text-muted-foreground'}`} />
+                      {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -102,18 +94,18 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Business Navigation */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        <SidebarGroup className="py-4">
+          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             Monetização
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-2">
               {businessNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={getNavClassName(item.url)}>
+                  <SidebarMenuButton asChild className={`h-11 px-4 ${getNavClassName(item.url)}`}>
                     <NavLink to={item.url}>
-                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-primary' : 'text-muted-foreground'}`} />
-                      {state !== "collapsed" && <span>{item.title}</span>}
+                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : 'text-muted-foreground'}`} />
+                      {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -123,18 +115,18 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Settings Navigation */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        <SidebarGroup className="py-4">
+          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             Sistema
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-2">
               {settingsNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={getNavClassName(item.url)}>
+                  <SidebarMenuButton asChild className={`h-11 px-4 ${getNavClassName(item.url)}`}>
                     <NavLink to={item.url}>
-                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-primary' : 'text-muted-foreground'}`} />
-                      {state !== "collapsed" && <span>{item.title}</span>}
+                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : 'text-muted-foreground'}`} />
+                      {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
