@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/dashboard/Index";
 import VideosPage from "./pages/videos/VideosPage";
 import LivesPage from "./pages/lives/LivesPage";
@@ -29,25 +29,75 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <DashboardLayout>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/videos" element={<VideosPage />} />
-              <Route path="/lives" element={<LivesPage />} />
-              <Route path="/teams" element={<TeamsPage />} />
-              <Route path="/teams/:id" element={<TeamDetailsPage />} />
-              <Route path="/championships/:id" element={<ChampionshipDetailsPage />} />
-              <Route path="/schedule" element={<SchedulePage />} />
-              <Route path="/news" element={<NewsPage />} />
-              <Route path="/carousels" element={<CarouselsPage />} />
-              <Route path="/customization" element={<CustomizationPage />} />
-              <Route path="/ads" element={<AdsPage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </DashboardLayout>
+          <Routes>
+            {/* Public route for authentication */}
+            <Route path="/auth" element={<AuthPage />} />
+            
+            {/* Protected routes */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            <Route path="/videos" element={
+              <ProtectedRoute>
+                <VideosPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/lives" element={
+              <ProtectedRoute>
+                <LivesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/teams" element={
+              <ProtectedRoute>
+                <TeamsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/teams/:id" element={
+              <ProtectedRoute>
+                <TeamDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/championships/:id" element={
+              <ProtectedRoute>
+                <ChampionshipDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/schedule" element={
+              <ProtectedRoute>
+                <SchedulePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/news" element={
+              <ProtectedRoute>
+                <NewsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/carousels" element={
+              <ProtectedRoute>
+                <CarouselsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/customization" element={
+              <ProtectedRoute>
+                <CustomizationPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/ads" element={
+              <ProtectedRoute>
+                <AdsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <AnalyticsPage />
+              </ProtectedRoute>
+            } />
+            
+            {/* Catch-all route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </div>
     </TooltipProvider>

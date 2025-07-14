@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
-import { Eye, EyeOff, LogIn, UserPlus, ArrowLeft } from "lucide-react"
+import { useGuestMode } from "@/hooks/useGuestMode"
+import { Eye, EyeOff, LogIn, UserPlus, Users } from "lucide-react"
 
 export default function AuthPage() {
   const [email, setEmail] = useState("")
@@ -15,6 +16,7 @@ export default function AuthPage() {
   const [fullName, setFullName] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { enableGuestMode } = useGuestMode()
   const navigate = useNavigate()
   const { toast } = useToast()
 
@@ -132,21 +134,33 @@ export default function AuthPage() {
     }
   }
 
+  const handleGuestAccess = () => {
+    enableGuestMode()
+    navigate("/")
+    toast({
+      title: "Modo visitante ativado",
+      description: "Você está navegando como visitante.",
+    })
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/50 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <Link 
-            to="/" 
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar ao início
-          </Link>
           <h1 className="text-3xl font-bold text-foreground">Watch Sports CMS</h1>
           <p className="text-muted-foreground">Sistema de gestão esportiva</p>
         </div>
+
+        {/* Guest Access Button */}
+        <Button 
+          onClick={handleGuestAccess}
+          variant="outline" 
+          className="w-full border-primary/20 hover:bg-primary/10 transition-all"
+        >
+          <Users className="h-4 w-4 mr-2" />
+          Entrar como Visitante
+        </Button>
 
         {/* Auth Card */}
         <Card className="bg-gradient-card border-border/50 shadow-lg">

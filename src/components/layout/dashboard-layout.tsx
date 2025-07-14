@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Bell, User, Search, Menu, LogOut } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/hooks/useAuth"
+import { useGuestMode } from "@/hooks/useGuestMode"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -15,24 +16,33 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, signOut, loading } = useAuth()
+  const { isGuest, disableGuestMode } = useGuestMode()
   const navigate = useNavigate()
   const { toast } = useToast()
 
   // All hooks must be called before any conditional returns
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !isGuest) {
       navigate("/auth")
     }
-  }, [user, loading, navigate])
+  }, [user, loading, isGuest, navigate])
 
   const handleSignOut = async () => {
     try {
-      await signOut()
-      toast({
-        title: "Logout realizado",
-        description: "Você foi desconectado com sucesso.",
-      })
-      navigate("/")
+      if (user) {
+        await signOut()
+        toast({
+          title: "Logout realizado",
+          description: "Você foi desconectado com sucesso.",
+        })
+      } else if (isGuest) {
+        disableGuestMode()
+        toast({
+          title: "Modo visitante finalizado",
+          description: "Você saiu do modo visitante.",
+        })
+      }
+      navigate("/auth")
     } catch (error) {
       toast({
         title: "Erro",
@@ -54,7 +64,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     )
   }
 
-  if (!user && !loading) {
+  if (!user && !isGuest && !loading) {
     return null
   }
   return (
@@ -101,14 +111,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       <User className="h-4 w-4 text-primary-foreground" />
                     </div>
                     <span className="hidden sm:inline text-sm font-medium">
-                      {user?.email?.split('@')[0] || 'Usuário'}
+                      {user?.email?.split('@')[0] || (isGuest ? 'Visitante' : 'Usuário')}
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="h-4 w-4 mr-2" />
-                    Sair
+                    {isGuest ? 'Sair do Modo Visitante' : 'Sair'}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
