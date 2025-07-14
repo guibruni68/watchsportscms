@@ -146,24 +146,17 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/50 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-foreground">Watch Sports CMS</h1>
-          <p className="text-muted-foreground">Sistema de gestão esportiva</p>
+        {/* Header with Logo */}
+        <div className="text-center space-y-4">
+          <img 
+            src="/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png" 
+            alt="Logo" 
+            className="h-16 mx-auto"
+          />
         </div>
 
-        {/* Guest Access Button */}
-        <Button 
-          onClick={handleGuestAccess}
-          variant="outline" 
-          className="w-full border-primary/20 hover:bg-primary/10 transition-all"
-        >
-          <Users className="h-4 w-4 mr-2" />
-          Entrar como Visitante
-        </Button>
-
         {/* Auth Card */}
-        <Card className="bg-gradient-card border-border/50 shadow-lg">
+        <Card className="bg-gradient-card border-border/50">
           <CardContent className="p-6">
             <Tabs defaultValue="signin" className="space-y-4">
               <TabsList className="grid w-full grid-cols-2">
@@ -225,7 +218,7 @@ export default function AuthPage() {
 
                     <Button 
                       type="submit" 
-                      className="w-full bg-gradient-primary shadow-glow hover:shadow-lg transition-all"
+                      className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
                       disabled={loading}
                     >
                       {loading ? "Entrando..." : "Entrar"}
@@ -302,7 +295,7 @@ export default function AuthPage() {
 
                     <Button 
                       type="submit" 
-                      className="w-full bg-gradient-primary shadow-glow hover:shadow-lg transition-all"
+                      className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
                       disabled={loading}
                     >
                       {loading ? "Cadastrando..." : "Criar Conta"}
@@ -314,10 +307,15 @@ export default function AuthPage() {
           </CardContent>
         </Card>
 
-        {/* Footer */}
-        <div className="text-center text-sm text-muted-foreground">
-          <p>© 2024 Watch Sports CMS. Todos os direitos reservados.</p>
-        </div>
+        {/* Guest Access Button */}
+        <Button 
+          onClick={handleGuestAccess}
+          variant="outline" 
+          className="w-full border-primary/20 hover:bg-primary/10 transition-all"
+        >
+          <Users className="h-4 w-4 mr-2" />
+          Entrar como Visitante
+        </Button>
       </div>
     </div>
   )
