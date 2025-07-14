@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Plus, Search, Edit, Eye, Calendar, Tag } from "lucide-react"
 import { VideoForm } from "@/components/forms/VideoForm"
+import { ListControls } from "@/components/ui/list-controls"
 
 interface Video {
   id: string
@@ -59,12 +60,19 @@ export default function VideosPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [editingVideo, setEditingVideo] = useState<Video | null>(null)
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(12)
 
   const filteredVideos = videos.filter(video =>
     video.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
     video.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
     video.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
   )
+
+  const totalPages = Math.ceil(filteredVideos.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedVideos = filteredVideos.slice(startIndex, startIndex + itemsPerPage)
 
   const handleEdit = (video: Video) => {
     setEditingVideo(video)
@@ -116,8 +124,22 @@ export default function VideosPage() {
         </div>
       </div>
 
-      <div className="grid gap-4">
-        {filteredVideos.map((video) => (
+      <ListControls
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={(items) => {
+          setItemsPerPage(items)
+          setCurrentPage(1)
+        }}
+        totalItems={filteredVideos.length}
+      />
+
+      <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" : "grid gap-4"}>
+        {paginatedVideos.map((video) => (
           <Card key={video.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex justify-between items-start gap-4">
@@ -178,7 +200,7 @@ export default function VideosPage() {
         ))}
       </div>
 
-      {filteredVideos.length === 0 && (
+      {paginatedVideos.length === 0 && filteredVideos.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Plus, Search, Edit, Calendar, Star } from "lucide-react"
 import { NewsForm } from "@/components/forms/NewsForm"
+import { ListControls } from "@/components/ui/list-controls"
 
 interface News {
   id: string
@@ -48,11 +49,18 @@ export default function NewsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [editingNews, setEditingNews] = useState<News | null>(null)
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(12)
 
   const filteredNews = news.filter(item =>
     item.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.conteudo.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const totalPages = Math.ceil(filteredNews.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedNews = filteredNews.slice(startIndex, startIndex + itemsPerPage)
 
   const handleEdit = (newsItem: News) => {
     setEditingNews(newsItem)
@@ -103,8 +111,22 @@ export default function NewsPage() {
         </div>
       </div>
 
-      <div className="grid gap-4">
-        {filteredNews.map((item) => (
+      <ListControls
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={(items) => {
+          setItemsPerPage(items)
+          setCurrentPage(1)
+        }}
+        totalItems={filteredNews.length}
+      />
+
+      <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" : "grid gap-4"}>
+        {paginatedNews.map((item) => (
           <Card key={item.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex justify-between items-start gap-4">
@@ -156,7 +178,7 @@ export default function NewsPage() {
         ))}
       </div>
 
-      {filteredNews.length === 0 && (
+      {paginatedNews.length === 0 && filteredNews.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">

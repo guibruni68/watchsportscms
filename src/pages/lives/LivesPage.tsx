@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Plus, Search, Edit, Calendar, Clock, Users } from "lucide-react"
 import { LiveForm } from "@/components/forms/LiveForm"
+import { ListControls } from "@/components/ui/list-controls"
 
 interface Live {
   id: string
@@ -54,11 +55,18 @@ export default function LivesPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [editingLive, setEditingLive] = useState<Live | null>(null)
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(12)
 
   const filteredLives = lives.filter(live =>
     live.nomeEvento.toLowerCase().includes(searchTerm.toLowerCase()) ||
     live.descricao.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const totalPages = Math.ceil(filteredLives.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedLives = filteredLives.slice(startIndex, startIndex + itemsPerPage)
 
   const handleEdit = (live: Live) => {
     setEditingLive(live)
@@ -110,8 +118,22 @@ export default function LivesPage() {
         </div>
       </div>
 
-      <div className="grid gap-4">
-        {filteredLives.map((live) => (
+      <ListControls
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={(items) => {
+          setItemsPerPage(items)
+          setCurrentPage(1)
+        }}
+        totalItems={filteredLives.length}
+      />
+
+      <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" : "grid gap-4"}>
+        {paginatedLives.map((live) => (
           <Card key={live.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex justify-between items-start gap-4">
@@ -169,7 +191,7 @@ export default function LivesPage() {
         ))}
       </div>
 
-      {filteredLives.length === 0 && (
+      {paginatedLives.length === 0 && filteredLives.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">

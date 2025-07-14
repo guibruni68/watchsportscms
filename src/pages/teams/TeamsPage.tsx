@@ -19,9 +19,16 @@ import {
   UserCheck
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ListControls } from "@/components/ui/list-controls"
 
 export default function TeamsPage() {
   const [activeTab, setActiveTab] = useState("teams")
+  const [teamsViewMode, setTeamsViewMode] = useState<"list" | "grid">("grid")
+  const [playersViewMode, setPlayersViewMode] = useState<"list" | "grid">("grid")
+  const [teamsCurrentPage, setTeamsCurrentPage] = useState(1)
+  const [playersCurrentPage, setPlayersCurrentPage] = useState(1)
+  const [teamsItemsPerPage, setTeamsItemsPerPage] = useState(6)
+  const [playersItemsPerPage, setPlayersItemsPerPage] = useState(12)
 
   const teams = [
     {
@@ -302,8 +309,22 @@ export default function TeamsPage() {
 
         {/* Teams Tab */}
         <TabsContent value="teams" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {teams.map((team) => (
+          <ListControls
+            viewMode={teamsViewMode}
+            onViewModeChange={setTeamsViewMode}
+            currentPage={teamsCurrentPage}
+            totalPages={Math.ceil(teams.length / teamsItemsPerPage)}
+            onPageChange={setTeamsCurrentPage}
+            itemsPerPage={teamsItemsPerPage}
+            onItemsPerPageChange={(items) => {
+              setTeamsItemsPerPage(items)
+              setTeamsCurrentPage(1)
+            }}
+            totalItems={teams.length}
+          />
+          
+          <div className={teamsViewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "grid gap-4"}>
+            {teams.slice((teamsCurrentPage - 1) * teamsItemsPerPage, teamsCurrentPage * teamsItemsPerPage).map((team) => (
               <Card key={team.id} className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
@@ -406,8 +427,22 @@ export default function TeamsPage() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {players.map((player) => (
+          <ListControls
+            viewMode={playersViewMode}
+            onViewModeChange={setPlayersViewMode}
+            currentPage={playersCurrentPage}
+            totalPages={Math.ceil(players.length / playersItemsPerPage)}
+            onPageChange={setPlayersCurrentPage}
+            itemsPerPage={playersItemsPerPage}
+            onItemsPerPageChange={(items) => {
+              setPlayersItemsPerPage(items)
+              setPlayersCurrentPage(1)
+            }}
+            totalItems={players.length}
+          />
+
+          <div className={playersViewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "grid gap-4"}>
+            {players.slice((playersCurrentPage - 1) * playersItemsPerPage, playersCurrentPage * playersItemsPerPage).map((player) => (
               <Card key={player.id} className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="space-y-4">
