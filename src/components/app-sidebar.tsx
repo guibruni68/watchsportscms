@@ -8,7 +8,8 @@ import {
   Newspaper, 
   DollarSign, 
   BarChart3,
-  Settings
+  Settings,
+  Layout
 } from "lucide-react"
 import teamLogo from "/lovable-uploads/3e4f7302-40a3-4b04-95b2-f925cfb43250.png"
 import { NavLink, useLocation } from "react-router-dom"
@@ -32,6 +33,7 @@ const mainNavItems = [
   { title: "Times & Elencos", url: "/teams", icon: Users },
   { title: "Agenda", url: "/schedule", icon: Calendar },
   { title: "Notícias", url: "/news", icon: Newspaper },
+  { title: "Carrosséis", url: "/carousels", icon: Layout },
 ]
 
 const businessNavItems = [

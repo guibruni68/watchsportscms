@@ -11,6 +11,7 @@ import LivesPage from "./pages/lives/LivesPage";
 import TeamsPage from "./pages/teams/TeamsPage";
 import SchedulePage from "./pages/schedule/SchedulePage";
 import NewsPage from "./pages/news/NewsPage";
+import CarouselsPage from "./pages/carousels/CarouselsPage";
 import CustomizationPage from "./pages/customization/CustomizationPage";
 import AdsPage from "./pages/ads/AdsPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/teams" element={<TeamsPage />} />
               <Route path="/schedule" element={<SchedulePage />} />
               <Route path="/news" element={<NewsPage />} />
+              <Route path="/carousels" element={<CarouselsPage />} />
               <Route path="/customization" element={<CustomizationPage />} />
               <Route path="/ads" element={<AdsPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
