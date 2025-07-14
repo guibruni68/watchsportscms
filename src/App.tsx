@@ -17,7 +17,6 @@ import CarouselsPage from "./pages/carousels/CarouselsPage";
 import CustomizationPage from "./pages/customization/CustomizationPage";
 import AdsPage from "./pages/ads/AdsPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
-import CampaignsPage from "./pages/campaigns/CampaignsPage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -93,11 +92,6 @@ const App = () => (
             <Route path="/analytics" element={
               <ProtectedRoute>
                 <AnalyticsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/campaigns" element={
-              <ProtectedRoute>
-                <CampaignsPage />
               </ProtectedRoute>
             } />
             

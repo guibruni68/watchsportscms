@@ -30,10 +30,6 @@ const mainNavItems = [{
   title: "Carrosséis",
   url: "/carousels",
   icon: Layout
-}, {
-  title: "Campanhas",
-  url: "/campaigns",
-  icon: Megaphone
 }];
 const businessNavItems = [{
   title: "Anúncios",
