@@ -134,7 +134,7 @@ export default function NewsPage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-lg">{item.titulo}</h3>
+                        <h3 className="font-semibold text-lg line-clamp-2 break-words">{item.titulo}</h3>
                         {item.destaque && (
                           <Star className="h-4 w-4 text-yellow-500 fill-current" />
                         )}
