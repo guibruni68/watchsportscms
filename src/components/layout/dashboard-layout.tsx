@@ -18,6 +18,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
 
+  // All hooks must be called before any conditional returns
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth")
+    }
+  }, [user, loading, navigate])
+
   const handleSignOut = async () => {
     try {
       await signOut()
@@ -46,13 +53,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
     )
   }
-
-  // Redirect to auth if not authenticated (use useEffect to avoid render phase warning)
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/auth")
-    }
-  }, [user, loading, navigate])
 
   if (!user && !loading) {
     return null
