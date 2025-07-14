@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -17,10 +17,13 @@ import {
   Edit,
   Trash2,
   Star,
-  UserCheck
+  UserCheck,
+  Loader2
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ListControls } from "@/components/ui/list-controls"
+import { useToast } from "@/hooks/use-toast"
+import { getTeams, getPlayers, getChampionships, initializeSampleData, type Team, type Player, type Championship } from "@/lib/supabase-helpers"
 
 export default function TeamsPage() {
   const [activeTab, setActiveTab] = useState("teams")
@@ -30,271 +33,60 @@ export default function TeamsPage() {
   const [playersCurrentPage, setPlayersCurrentPage] = useState(1)
   const [teamsItemsPerPage, setTeamsItemsPerPage] = useState(6)
   const [playersItemsPerPage, setPlayersItemsPerPage] = useState(12)
+  
+  // Data states
+  const [teams, setTeams] = useState<Team[]>([])
+  const [players, setPlayers] = useState<Player[]>([])
+  const [championships, setChampionships] = useState<Championship[]>([])
+  const [loading, setLoading] = useState(true)
+  
+  const { toast } = useToast()
 
-  const teams = [
-    {
-      id: 1,
-      name: "Nova City Sparks",
-      category: "Profissional",
-      players: 28,
-      coach: "Roberto Silva",
-      founded: "1995",
-      division: "Primeira Divisão",
-      position: 1,
-      points: 65,
-      matches: 25,
-      wins: 20,
-      draws: 3,
-      losses: 2
-    },
-    {
-      id: 2,
-      name: "Northbridge Thunder",
-      category: "Profissional",
-      players: 26,
-      coach: "Ana Costa",
-      founded: "1987",
-      division: "Primeira Divisão",
-      position: 2,
-      points: 58,
-      matches: 25,
-      wins: 18,
-      draws: 4,
-      losses: 3
-    },
-    {
-      id: 3,
-      name: "Brookdale Saints",
-      category: "Profissional",
-      players: 24,
-      coach: "Carlos Mendes",
-      founded: "2001",
-      division: "Primeira Divisão",
-      position: 3,
-      points: 52,
-      matches: 25,
-      wins: 16,
-      draws: 4,
-      losses: 5
-    },
-    {
-      id: 4,
-      name: "Luna Sparks",
-      category: "Sub-20",
-      players: 20,
-      coach: "Pedro Oliveira",
-      founded: "2010",
-      division: "Juvenil A",
-      position: 1,
-      points: 42,
-      matches: 18,
-      wins: 14,
-      draws: 0,
-      losses: 4
-    },
-    {
-      id: 5,
-      name: "Southbay Queens",
-      category: "Feminino",
-      players: 18,
-      coach: "Sofia Lima",
-      founded: "2015",
-      division: "Liga Feminina",
-      position: 2,
-      points: 38,
-      matches: 16,
-      wins: 12,
-      draws: 2,
-      losses: 2
-    },
-    {
-      id: 6,
-      name: "Thunderbhowl",
-      category: "Profissional",
-      players: 25,
-      coach: "Miguel Santos",
-      founded: "2008",
-      division: "Segunda Divisão",
-      position: 4,
-      points: 48,
-      matches: 24,
-      wins: 15,
-      draws: 3,
-      losses: 6
-    },
-    {
-      id: 7,
-      name: "Basement Bridge",
-      category: "Profissional",
-      players: 23,
-      coach: "João Silva",
-      founded: "2012",
-      division: "Segunda Divisão",
-      position: 7,
-      points: 32,
-      matches: 24,
-      wins: 9,
-      draws: 5,
-      losses: 10
-    },
-    {
-      id: 8,
-      name: "Red Rock Comets",
-      category: "Profissional",
-      players: 27,
-      coach: "Maria Oliveira",
-      founded: "1998",
-      division: "Primeira Divisão",
-      position: 6,
-      points: 44,
-      matches: 25,
-      wins: 13,
-      draws: 5,
-      losses: 7
-    },
-    {
-      id: 9,
-      name: "IronHill Cyclones",
-      category: "Profissional",
-      players: 24,
-      coach: "Ricardo Costa",
-      founded: "2003",
-      division: "Segunda Divisão",
-      position: 3,
-      points: 51,
-      matches: 24,
-      wins: 16,
-      draws: 3,
-      losses: 5
-    },
-    {
-      id: 10,
-      name: "Pinevale",
-      category: "Sub-20",
-      players: 19,
-      coach: "Paulo Mendes",
-      founded: "2018",
-      division: "Juvenil B",
-      position: 5,
-      points: 28,
-      matches: 18,
-      wins: 8,
-      draws: 4,
-      losses: 6
-    }
-  ]
+  // Load data on component mount
+  useEffect(() => {
+    loadData()
+  }, [])
 
-  const players = [
-    {
-      id: 1,
-      name: "Marcus Johnson",
-      position: "Armador",
-      number: 10,
-      age: 28,
-      team: "Nova City Sparks",
-      nationality: "Americano",
-      goals: 245,
-      assists: 189,
-      matches: 25,
-      status: "active",
-      marketValue: "R$ 2.8M"
-    },
-    {
-      id: 2,
-      name: "André Silva",
-      position: "Ala-Pivô",
-      number: 15,
-      age: 26,
-      team: "Nova City Sparks",
-      nationality: "Brasileiro",
-      goals: 198,
-      assists: 87,
-      matches: 24,
-      status: "active",
-      marketValue: "R$ 2.2M"
-    },
-    {
-      id: 3,
-      name: "James Wilson",
-      position: "Pivô",
-      number: 23,
-      age: 30,
-      team: "Northbridge Thunder",
-      nationality: "Americano",
-      goals: 167,
-      assists: 45,
-      matches: 23,
-      status: "active",
-      marketValue: "R$ 1.9M"
-    },
-    {
-      id: 4,
-      name: "Rafael Costa",
-      position: "Ala",
-      number: 7,
-      age: 24,
-      team: "Northbridge Thunder",
-      nationality: "Brasileiro",
-      goals: 156,
-      assists: 112,
-      matches: 25,
-      status: "injured",
-      marketValue: "R$ 1.5M"
-    },
-    {
-      id: 5,
-      name: "Diego Santos",
-      position: "Armador",
-      number: 11,
-      age: 22,
-      team: "Brookdale Saints",
-      nationality: "Brasileiro",
-      goals: 134,
-      assists: 145,
-      matches: 24,
-      status: "active",
-      marketValue: "R$ 1.3M"
+  const loadData = async () => {
+    try {
+      setLoading(true)
+      
+      // Initialize sample data if needed
+      await initializeSampleData()
+      
+      // Load all data
+      const [teamsData, playersData, championshipsData] = await Promise.all([
+        getTeams(),
+        getPlayers(),
+        getChampionships()
+      ])
+      
+      setTeams(teamsData)
+      setPlayers(playersData)
+      setChampionships(championshipsData)
+    } catch (error) {
+      console.error('Error loading data:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar dados. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
     }
-  ]
+  }
 
-  const championships = [
-    {
-      id: 1,
-      name: "Campeonato Estadual 2024",
-      type: "Estadual",
-      startDate: "2024-02-01",
-      endDate: "2024-06-30",
-      teams: 16,
-      matches: 120,
-      status: "ongoing",
-      ourPosition: 3,
-      phase: "Quartas de Final"
-    },
-    {
-      id: 2,
-      name: "Copa Regional Sub-20",
-      type: "Regional",
-      startDate: "2024-03-15",
-      endDate: "2024-05-20",
-      teams: 8,
-      matches: 28,
-      status: "ongoing",
-      ourPosition: 1,
-      phase: "Final"
-    },
-    {
-      id: 3,
-      name: "Torneio de Verão 2024",
-      type: "Amistoso",
-      startDate: "2024-01-10",
-      endDate: "2024-01-25",
-      teams: 4,
-      matches: 6,
-      status: "finished",
-      ourPosition: 2,
-      phase: "Finalizado"
-    }
-  ]
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
+          <p className="text-muted-foreground">Carregando dados...</p>
+        </div>
+      </div>
+    )
+  }
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -331,6 +123,10 @@ export default function TeamsPage() {
           <p className="text-muted-foreground">Gerencie times, jogadores e campeonatos</p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={loadData} disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
+            {loading ? "Carregando..." : "Recarregar Dados"}
+          </Button>
           <Button variant="outline">
             <Plus className="h-4 w-4 mr-2" />
             Novo Jogador
@@ -524,7 +320,7 @@ export default function TeamsPage() {
                       </div>
                       <div>
                         <p className="text-muted-foreground">Time</p>
-                        <p className="font-semibold text-xs">{player.team}</p>
+                        <p className="font-semibold text-xs">{player.team_id ? 'Time associado' : 'Sem time'}</p>
                       </div>
                       <div>
                         <p className="text-muted-foreground">Gols</p>
@@ -539,7 +335,7 @@ export default function TeamsPage() {
                     <div className="flex items-center justify-between">
                       {getStatusBadge(player.status)}
                       <span className="text-xs text-muted-foreground">
-                        {player.marketValue}
+                        {player.market_value || 'N/A'}
                       </span>
                     </div>
 
@@ -581,15 +377,11 @@ export default function TeamsPage() {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-muted-foreground">Times</p>
-                      <p className="font-semibold">{championship.teams}</p>
+                      <p className="font-semibold">{championship.teams_count}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Jogos</p>
-                      <p className="font-semibold">{championship.matches}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Nossa Posição</p>
-                      <p className="font-semibold">{championship.ourPosition}º lugar</p>
+                      <p className="font-semibold">{championship.matches_count}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Fase</p>
@@ -601,7 +393,7 @@ export default function TeamsPage() {
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span>
-                        {new Date(championship.startDate).toLocaleDateString('pt-BR')} - {new Date(championship.endDate).toLocaleDateString('pt-BR')}
+                        {new Date(championship.start_date).toLocaleDateString('pt-BR')} - {new Date(championship.end_date).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
                   </div>
