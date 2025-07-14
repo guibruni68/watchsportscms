@@ -3,9 +3,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Plus, Search, Edit, Calendar, Star } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Plus, Search, Edit, Trash2, Star, Eye } from "lucide-react"
 import { NewsForm } from "@/components/forms/NewsForm"
-import { ListControls, ListPagination } from "@/components/ui/list-controls"
+import { toast } from "@/hooks/use-toast"
 
 interface News {
   id: string
@@ -41,22 +44,42 @@ const mockNews: News[] = [
     destaque: true,
     dataPublicacao: "2024-01-16T16:45:00",
     views: 2987
+  },
+  {
+    id: "4",
+    titulo: "Novo técnico é apresentado para a temporada 2024",
+    conteudo: "Roberto Silva, de 45 anos, foi oficialmente apresentado como novo técnico da equipe principal. O profissional chega com vasta experiência em competições nacionais.",
+    destaque: false,
+    dataPublicacao: "2024-01-15T09:00:00",
+    views: 1543
+  },
+  {
+    id: "5",
+    titulo: "Inauguração do novo centro de treinamento",
+    conteudo: "O clube inaugurou suas novas instalações de treinamento, com academia, piscina e campos de última geração para melhor preparação dos atletas.",
+    destaque: true,
+    dataPublicacao: "2024-01-14T11:30:00",
+    views: 4521
   }
 ]
 
 export default function NewsPage() {
   const [news, setNews] = useState<News[]>(mockNews)
   const [searchTerm, setSearchTerm] = useState("")
+  const [highlightFilter, setHighlightFilter] = useState<string>("all")
   const [showForm, setShowForm] = useState(false)
   const [editingNews, setEditingNews] = useState<News | null>(null)
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list")
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(12)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
-  const filteredNews = news.filter(item =>
-    item.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.conteudo.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredNews = news.filter(item => {
+    const matchesSearch = item.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.conteudo.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesHighlight = highlightFilter === "all" || 
+      (highlightFilter === "highlight" && item.destaque) ||
+      (highlightFilter === "normal" && !item.destaque)
+    return matchesSearch && matchesHighlight
+  })
 
   const totalPages = Math.ceil(filteredNews.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -70,6 +93,14 @@ export default function NewsPage() {
   const handleNewNews = () => {
     setEditingNews(null)
     setShowForm(true)
+  }
+
+  const handleDelete = (id: string) => {
+    setNews(news.filter(item => item.id !== id))
+    toast({
+      title: "Notícia excluída",
+      description: "A notícia foi removida com sucesso.",
+    })
   }
 
   if (showForm) {
@@ -109,91 +140,128 @@ export default function NewsPage() {
             className="pl-10"
           />
         </div>
+        <Select value={highlightFilter} onValueChange={setHighlightFilter}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Filtrar por tipo" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas as notícias</SelectItem>
+            <SelectItem value="highlight">Apenas destaques</SelectItem>
+            <SelectItem value="normal">Apenas normais</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <ListControls
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={(items) => {
-          setItemsPerPage(items)
-          setCurrentPage(1)
-        }}
-        totalItems={filteredNews.length}
-      />
-
-      <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" : "grid gap-4"}>
-        {paginatedNews.map((item) => (
-          <Card key={item.id} className="transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-lg line-clamp-2 break-words">{item.titulo}</h3>
-                        {item.destaque && (
-                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                        )}
-                      </div>
-                      <p className="text-muted-foreground text-sm mt-1 line-clamp-2">
-                        {item.conteudo.replace(/<[^>]*>/g, "")}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      {item.destaque && (
-                        <Badge variant="default">
-                          Destaque
-                        </Badge>
-                      )}
-                    </div>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Título</TableHead>
+              <TableHead>Data</TableHead>
+              <TableHead>Visualizações</TableHead>
+              <TableHead>Destaque</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedNews.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>
+                  <div className="max-w-md">
+                    <p className="font-medium line-clamp-1">{item.titulo}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-1">
+                      {item.conteudo.replace(/<[^>]*>/g, "")}
+                    </p>
                   </div>
-                  
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(item.dataPublicacao).toLocaleDateString("pt-BR")}
-                    </div>
-                    <div>
-                      {item.views.toLocaleString()} visualizações
-                    </div>
+                </TableCell>
+                <TableCell>
+                  {new Date(item.dataPublicacao).toLocaleDateString("pt-BR")}
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <Eye className="h-4 w-4" />
+                    {item.views.toLocaleString()}
                   </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(item)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                </TableCell>
+                <TableCell>
+                  {item.destaque ? (
+                    <Badge variant="default" className="gap-1">
+                      <Star className="h-3 w-3" />
+                      Destaque
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary">Normal</Badge>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex gap-2 justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(item)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir Notícia</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja excluir a notícia "{item.titulo}"? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(item.id)}>
+                            Confirmar exclusão
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
 
-      <ListPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={(items) => {
-          setItemsPerPage(items)
-          setCurrentPage(1)
-        }}
-        totalItems={filteredNews.length}
-      />
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </Button>
+          <span className="flex items-center px-4 text-sm">
+            Página {currentPage} de {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Próxima
+          </Button>
+        </div>
+      )}
 
-      {paginatedNews.length === 0 && filteredNews.length === 0 && (
+      {paginatedNews.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">
-              {searchTerm ? "Nenhuma notícia encontrada com este termo." : "Nenhuma notícia cadastrada ainda."}
+              {searchTerm || highlightFilter !== "all" ? "Nenhuma notícia encontrada com os filtros aplicados." : "Nenhuma notícia cadastrada ainda."}
             </div>
-            {!searchTerm && (
+            {!searchTerm && highlightFilter === "all" && (
               <Button onClick={handleNewNews} className="mt-4">
                 Criar Primeira Notícia
               </Button>

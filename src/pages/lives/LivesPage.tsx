@@ -3,9 +3,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Plus, Search, Edit, Calendar, Clock, Users } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Plus, Search, Edit, Trash2, Play, Users } from "lucide-react"
 import { LiveForm } from "@/components/forms/LiveForm"
-import { ListControls, ListPagination } from "@/components/ui/list-controls"
+import { toast } from "@/hooks/use-toast"
 
 interface Live {
   id: string
@@ -41,6 +44,22 @@ const mockLives: Live[] = [
     dataHora: "2024-01-15T15:00:00",
     status: "encerrado",
     viewers: 892
+  },
+  {
+    id: "4",
+    nomeEvento: "Entrevista com o técnico",
+    descricao: "Conversa exclusiva sobre a temporada 2024",
+    dataHora: "2024-01-14T14:00:00",
+    status: "encerrado",
+    viewers: 567
+  },
+  {
+    id: "5",
+    nomeEvento: "Treino aberto para torcedores",
+    descricao: "Acompanhe o treino da equipe antes do jogo decisivo",
+    dataHora: "2024-01-22T09:00:00",
+    status: "em_breve",
+    viewers: 0
   }
 ]
 
@@ -53,16 +72,18 @@ const statusLabels = {
 export default function LivesPage() {
   const [lives, setLives] = useState<Live[]>(mockLives)
   const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState<string>("all")
   const [showForm, setShowForm] = useState(false)
   const [editingLive, setEditingLive] = useState<Live | null>(null)
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list")
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(12)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
-  const filteredLives = lives.filter(live =>
-    live.nomeEvento.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    live.descricao.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredLives = lives.filter(live => {
+    const matchesSearch = live.nomeEvento.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      live.descricao.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesStatus = statusFilter === "all" || live.status === statusFilter
+    return matchesSearch && matchesStatus
+  })
 
   const totalPages = Math.ceil(filteredLives.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -76,6 +97,14 @@ export default function LivesPage() {
   const handleNewLive = () => {
     setEditingLive(null)
     setShowForm(true)
+  }
+
+  const handleDelete = (id: string) => {
+    setLives(lives.filter(live => live.id !== id))
+    toast({
+      title: "Live excluída",
+      description: "A transmissão foi removida com sucesso.",
+    })
   }
 
   if (showForm) {
@@ -116,86 +145,134 @@ export default function LivesPage() {
             className="pl-10"
           />
         </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Filtrar por status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os status</SelectItem>
+            <SelectItem value="em_breve">Em Breve</SelectItem>
+            <SelectItem value="ao_vivo">Ao Vivo</SelectItem>
+            <SelectItem value="encerrado">Encerrado</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <ListControls
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={(items) => {
-          setItemsPerPage(items)
-          setCurrentPage(1)
-        }}
-        totalItems={filteredLives.length}
-      />
-
-      <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" : "grid gap-4"}>
-        {paginatedLives.map((live) => (
-          <Card key={live.id} className="transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-lg line-clamp-2 break-words">{live.nomeEvento}</h3>
-                      <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{live.descricao}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(live)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Evento</TableHead>
+              <TableHead>Data/Hora</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Viewers</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedLives.map((live) => (
+              <TableRow key={live.id}>
+                <TableCell>
+                  <div>
+                    <p className="font-medium">{live.nomeEvento}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-1">{live.descricao}</p>
                   </div>
-                  
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(live.dataHora).toLocaleDateString("pt-BR")}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    <p>{new Date(live.dataHora).toLocaleDateString("pt-BR")}</p>
+                    <p className="text-muted-foreground">
                       {new Date(live.dataHora).toLocaleTimeString("pt-BR", { 
                         hour: "2-digit", 
                         minute: "2-digit" 
                       })}
-                    </div>
-                    {live.viewers !== undefined && (
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        {live.viewers} {live.status === "ao_vivo" ? "assistindo" : "assistiram"}
-                      </div>
-                    )}
+                    </p>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={
+                    live.status === "ao_vivo" ? "default" : 
+                    live.status === "em_breve" ? "secondary" : "outline"
+                  }>
+                    {live.status === "ao_vivo" && <Play className="h-3 w-3 mr-1" />}
+                    {statusLabels[live.status]}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <Users className="h-4 w-4" />
+                    {live.viewers || 0}
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex gap-2 justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(live)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir Live</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja excluir a transmissão "{live.nomeEvento}"? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(live.id)}>
+                            Confirmar exclusão
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
 
-      <ListPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={(items) => {
-          setItemsPerPage(items)
-          setCurrentPage(1)
-        }}
-        totalItems={filteredLives.length}
-      />
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </Button>
+          <span className="flex items-center px-4 text-sm">
+            Página {currentPage} de {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Próxima
+          </Button>
+        </div>
+      )}
 
-      {paginatedLives.length === 0 && filteredLives.length === 0 && (
+      {paginatedLives.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">
-              {searchTerm ? "Nenhuma transmissão encontrada com este termo." : "Nenhuma transmissão cadastrada ainda."}
+              {searchTerm || statusFilter !== "all" ? "Nenhuma transmissão encontrada com os filtros aplicados." : "Nenhuma transmissão cadastrada ainda."}
             </div>
-            {!searchTerm && (
+            {!searchTerm && statusFilter === "all" && (
               <Button onClick={handleNewLive} className="mt-4">
                 Criar Primeira Live
               </Button>
