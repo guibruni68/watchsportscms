@@ -46,9 +46,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     )
   }
 
-  // Redirect to auth if not authenticated
-  if (!user) {
-    navigate("/auth")
+  // Redirect to auth if not authenticated (use useEffect to avoid render phase warning)
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth")
+    }
+  }, [user, loading, navigate])
+
+  if (!user && !loading) {
     return null
   }
   return (
