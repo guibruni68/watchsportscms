@@ -180,6 +180,10 @@ export default function NewsPage() {
         totalPages={totalPages}
         onPageChange={(page) => setCurrentPage(page)}
         itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={(items) => {
+          setItemsPerPage(items)
+          setCurrentPage(1)
+        }}
         totalItems={filteredNews.length}
       />
 
