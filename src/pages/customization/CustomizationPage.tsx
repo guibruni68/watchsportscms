@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useCustomization } from "@/hooks/useCustomization"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -18,11 +19,8 @@ import {
 } from "lucide-react"
 
 export default function CustomizationPage() {
-  const [primaryColor, setPrimaryColor] = useState("#3b82f6")
-  const [secondaryColor, setSecondaryColor] = useState("#10b981")
-  const [clubName, setClubName] = useState("Clube Fictício FC")
-  const [clubDescription, setClubDescription] = useState("O maior clube da região com mais de 25 anos de história")
-  const [logoUrl, setLogoUrl] = useState("")
+  const { settings, updateSettings, saveSettings } = useCustomization()
+  const { primaryColor, secondaryColor, clubName, clubDescription, logoUrl } = settings
 
   const colorPresets = [
     { name: "Azul Clássico", primary: "#3b82f6", secondary: "#10b981" },
@@ -34,19 +32,20 @@ export default function CustomizationPage() {
   ]
 
   const handleColorPreset = (preset: { primary: string; secondary: string }) => {
-    setPrimaryColor(preset.primary)
-    setSecondaryColor(preset.secondary)
+    updateSettings({
+      primaryColor: preset.primary,
+      secondaryColor: preset.secondary
+    })
   }
 
-  const handleSave = () => {
-    // Simular salvamento das configurações
-    console.log("Salvando configurações:", {
-      primaryColor,
-      secondaryColor,
-      clubName,
-      clubDescription,
-      logoUrl
-    })
+  const handleSave = async () => {
+    try {
+      await saveSettings()
+      // Aqui você pode adicionar uma notificação de sucesso
+      console.log("Configurações salvas com sucesso!")
+    } catch (error) {
+      console.error("Erro ao salvar configurações:", error)
+    }
   }
 
   return (
@@ -102,7 +101,7 @@ export default function CustomizationPage() {
                   Enviar Logo
                 </Button>
                 {logoUrl && (
-                  <Button variant="outline" onClick={() => setLogoUrl("")}>
+                  <Button variant="outline" onClick={() => updateSettings({ logoUrl: "" })}>
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Remover
                   </Button>
@@ -132,7 +131,7 @@ export default function CustomizationPage() {
                 <Input
                   id="clubName"
                   value={clubName}
-                  onChange={(e) => setClubName(e.target.value)}
+                  onChange={(e) => updateSettings({ clubName: e.target.value })}
                   placeholder="Digite o nome do clube"
                 />
               </div>
@@ -141,7 +140,7 @@ export default function CustomizationPage() {
                 <Textarea
                   id="clubDescription"
                   value={clubDescription}
-                  onChange={(e) => setClubDescription(e.target.value)}
+                  onChange={(e) => updateSettings({ clubDescription: e.target.value })}
                   placeholder="Descreva seu clube em poucas palavras"
                   rows={3}
                 />
@@ -200,12 +199,12 @@ export default function CustomizationPage() {
                       id="primaryColor"
                       type="color"
                       value={primaryColor}
-                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      onChange={(e) => updateSettings({ primaryColor: e.target.value })}
                       className="w-16 h-10 p-1 cursor-pointer"
                     />
                     <Input
                       value={primaryColor}
-                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      onChange={(e) => updateSettings({ primaryColor: e.target.value })}
                       placeholder="#3b82f6"
                       className="flex-1"
                     />
@@ -222,12 +221,12 @@ export default function CustomizationPage() {
                       id="secondaryColor"
                       type="color"
                       value={secondaryColor}
-                      onChange={(e) => setSecondaryColor(e.target.value)}
+                      onChange={(e) => updateSettings({ secondaryColor: e.target.value })}
                       className="w-16 h-10 p-1 cursor-pointer"
                     />
                     <Input
                       value={secondaryColor}
-                      onChange={(e) => setSecondaryColor(e.target.value)}
+                      onChange={(e) => updateSettings({ secondaryColor: e.target.value })}
                       placeholder="#10b981"
                       className="flex-1"
                     />

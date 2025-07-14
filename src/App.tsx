@@ -9,6 +9,8 @@ import Index from "./pages/dashboard/Index";
 import VideosPage from "./pages/videos/VideosPage";
 import LivesPage from "./pages/lives/LivesPage";
 import TeamsPage from "./pages/teams/TeamsPage";
+import TeamDetailsPage from "./pages/teams/TeamDetailsPage";
+import ChampionshipDetailsPage from "./pages/championships/ChampionshipDetailsPage";
 import SchedulePage from "./pages/schedule/SchedulePage";
 import NewsPage from "./pages/news/NewsPage";
 import CarouselsPage from "./pages/carousels/CarouselsPage";
@@ -32,6 +34,8 @@ const App = () => (
               <Route path="/videos" element={<VideosPage />} />
               <Route path="/lives" element={<LivesPage />} />
               <Route path="/teams" element={<TeamsPage />} />
+              <Route path="/teams/:id" element={<TeamDetailsPage />} />
+              <Route path="/championships/:id" element={<ChampionshipDetailsPage />} />
               <Route path="/schedule" element={<SchedulePage />} />
               <Route path="/news" element={<NewsPage />} />
               <Route path="/carousels" element={<CarouselsPage />} />

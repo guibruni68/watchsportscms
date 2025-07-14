@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -340,68 +341,75 @@ export default function TeamsPage() {
           
           <div className={teamsViewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "grid gap-4"}>
             {teams.slice((teamsCurrentPage - 1) * teamsItemsPerPage, teamsCurrentPage * teamsItemsPerPage).map((team) => (
-              <Card key={team.id} className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{team.name}</CardTitle>
-                      <CardDescription>{team.category}</CardDescription>
+              <Link key={team.id} to={`/teams/${team.id}`} className="block">
+                <Card className="bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 cursor-pointer">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-card border border-border rounded-lg flex items-center justify-center flex-shrink-0">
+                          <img src="/placeholder.svg" alt={`Logo ${team.name}`} className="w-10 h-10 object-scale-down" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">{team.name}</CardTitle>
+                          <CardDescription>{team.category}</CardDescription>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {team.division}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {team.division}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Jogadores</p>
-                      <p className="font-semibold">{team.players}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Jogadores</p>
+                        <p className="font-semibold">{team.players}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Posição</p>
+                        <p className="font-semibold">{team.position}º lugar</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Pontos</p>
+                        <p className="font-semibold">{team.points} pts</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Partidas</p>
+                        <p className="font-semibold">{team.matches}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground">Técnico</p>
-                      <p className="font-semibold">{team.coach}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Posição</p>
-                      <p className="font-semibold">{team.position}º lugar</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Pontos</p>
-                      <p className="font-semibold">{team.points} pts</p>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-3 gap-2 text-xs text-center">
-                    <div className="bg-secondary/20 rounded p-2">
-                      <p className="text-secondary font-semibold">{team.wins}</p>
-                      <p className="text-muted-foreground">Vitórias</p>
+                    <div className="grid grid-cols-3 gap-2 text-xs text-center">
+                      <div className="bg-secondary/20 rounded p-2">
+                        <p className="text-secondary font-semibold">{team.wins}</p>
+                        <p className="text-muted-foreground">Vitórias</p>
+                      </div>
+                      <div className="bg-muted/50 rounded p-2">
+                        <p className="font-semibold">{team.draws}</p>
+                        <p className="text-muted-foreground">Empates</p>
+                      </div>
+                      <div className="bg-destructive/20 rounded p-2">
+                        <p className="text-destructive font-semibold">{team.losses}</p>
+                        <p className="text-muted-foreground">Derrotas</p>
+                      </div>
                     </div>
-                    <div className="bg-muted/50 rounded p-2">
-                      <p className="font-semibold">{team.draws}</p>
-                      <p className="text-muted-foreground">Empates</p>
-                    </div>
-                    <div className="bg-destructive/20 rounded p-2">
-                      <p className="text-destructive font-semibold">{team.losses}</p>
-                      <p className="text-muted-foreground">Derrotas</p>
-                    </div>
-                  </div>
 
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-xs text-muted-foreground">
-                      Fundado em {team.founded}
-                    </span>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Users className="h-3 w-3" />
-                      </Button>
+                    <div className="flex justify-between items-center pt-2">
+                      <Badge className="bg-primary text-primary-foreground">
+                        {team.position}º Colocado
+                      </Badge>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={(e) => e.preventDefault()}>
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={(e) => e.preventDefault()}>
+                          <Users className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </TabsContent>
