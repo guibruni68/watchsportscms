@@ -213,6 +213,7 @@ export default function AuthPage() {
                           onChange={(e) => setEmail(e.target.value)}
                           required
                           disabled={loading}
+                          className="h-12"
                         />
                       </div>
 
@@ -227,6 +228,7 @@ export default function AuthPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             disabled={loading}
+                            className="h-12"
                           />
                           <Button
                             type="button"
@@ -276,6 +278,7 @@ export default function AuthPage() {
                           onChange={(e) => setFullName(e.target.value)}
                           required
                           disabled={loading}
+                          className="h-12"
                         />
                       </div>
 
@@ -289,6 +292,7 @@ export default function AuthPage() {
                           onChange={(e) => setEmail(e.target.value)}
                           required
                           disabled={loading}
+                          className="h-12"
                         />
                       </div>
 
@@ -304,6 +308,7 @@ export default function AuthPage() {
                             required
                             minLength={6}
                             disabled={loading}
+                            className="h-12"
                           />
                           <Button
                             type="button"
