@@ -69,8 +69,8 @@ export function AppSidebar() {
       <SidebarContent className="bg-gradient-to-b from-card to-muted/20">
         {/* Logo Section */}
         <div className="p-6 border-b border-border/50 flex justify-center">
-          <div className="w-20 h-20 rounded-lg flex items-center justify-center overflow-hidden">
-            <img src={teamLogo} alt="Logo do Clube" className="w-20 h-20 object-contain" />
+          <div className="flex items-center justify-center overflow-hidden">
+            <img src={teamLogo} alt="Logo do Clube" className="w-24 h-24 object-contain" />
           </div>
         </div>
 
