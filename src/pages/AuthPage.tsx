@@ -167,17 +167,6 @@ export default function AuthPage() {
             Gerencie times, campeonatos e muito mais
           </p>
         </div>
-
-        <div className="flex items-center gap-4">
-          <span className="text-white/60">Não tem uma conta?</span>
-          <Button 
-            variant="secondary"
-            className="bg-white text-primary hover:bg-white/90"
-            onClick={() => {/* handled by tabs */}}
-          >
-            Cadastre-se
-          </Button>
-        </div>
       </div>
 
       {/* Right Side - Auth Forms */}
