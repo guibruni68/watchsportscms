@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { 
   Users, 
   Plus, 
@@ -18,7 +19,9 @@ import {
   Trash2,
   Star,
   UserCheck,
-  Loader2
+  Loader2,
+  ChevronDown,
+  RefreshCw
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ListControls, ListPagination } from "@/components/ui/list-controls"
@@ -122,20 +125,33 @@ export default function TeamsPage() {
           <h1 className="text-3xl font-bold text-foreground">Times & Elencos</h1>
           <p className="text-muted-foreground">Gerencie times, jogadores e campeonatos</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={loadData} disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
-            {loading ? "Carregando..." : "Recarregar Dados"}
-          </Button>
-          <Button variant="outline">
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Jogador
-          </Button>
-          <Button className="bg-gradient-primary transition-all">
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Time
-          </Button>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="bg-gradient-primary transition-all" disabled={loading}>
+              {loading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4 mr-2" />
+              )}
+              Ações
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => {}}>
+              <Plus className="h-4 w-4 mr-2" />
+              Novo Time
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {}}>
+              <User className="h-4 w-4 mr-2" />
+              Novo Jogador
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={loadData} disabled={loading}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Recarregar Dados
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Stats Cards */}
