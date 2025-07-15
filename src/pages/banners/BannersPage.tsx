@@ -187,8 +187,8 @@ export default function BannersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Título</TableHead>
                 <TableHead>Thumb</TableHead>
+                <TableHead>Título</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead>Layout</TableHead>
                 <TableHead>Status</TableHead>
@@ -208,7 +208,6 @@ export default function BannersPage() {
               ) : (
                 banners.map((banner) => (
                   <TableRow key={banner.id}>
-                    <TableCell className="font-medium">{banner.titulo}</TableCell>
                     <TableCell>
                       {banner.midia_url ? (
                         <div className="w-16 h-10 bg-muted rounded overflow-hidden">
@@ -232,6 +231,7 @@ export default function BannersPage() {
                         </div>
                       )}
                     </TableCell>
+                    <TableCell className="font-medium">{banner.titulo}</TableCell>
                     <TableCell>{getTipoConteudoLabel(banner.tipo_conteudo)}</TableCell>
                     <TableCell>{getLayoutLabel(banner.layout_banner)}</TableCell>
                     <TableCell>
