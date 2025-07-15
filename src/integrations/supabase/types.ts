@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      banners: {
+        Row: {
+          cliques: number | null
+          conteudo_vinculado_id: string | null
+          created_at: string
+          data_fim: string
+          data_inicio: string
+          exibir_botao: boolean | null
+          id: string
+          layout_banner: string
+          midia_tipo: string | null
+          midia_url: string | null
+          ordem: number | null
+          planos_permitidos: string[] | null
+          status: boolean | null
+          tempo_total_reproducao: number | null
+          texto_botao: string | null
+          tipo_conteudo: string
+          titulo: string
+          updated_at: string
+          url_acao: string | null
+          visualizacoes: number | null
+        }
+        Insert: {
+          cliques?: number | null
+          conteudo_vinculado_id?: string | null
+          created_at?: string
+          data_fim: string
+          data_inicio: string
+          exibir_botao?: boolean | null
+          id?: string
+          layout_banner: string
+          midia_tipo?: string | null
+          midia_url?: string | null
+          ordem?: number | null
+          planos_permitidos?: string[] | null
+          status?: boolean | null
+          tempo_total_reproducao?: number | null
+          texto_botao?: string | null
+          tipo_conteudo: string
+          titulo: string
+          updated_at?: string
+          url_acao?: string | null
+          visualizacoes?: number | null
+        }
+        Update: {
+          cliques?: number | null
+          conteudo_vinculado_id?: string | null
+          created_at?: string
+          data_fim?: string
+          data_inicio?: string
+          exibir_botao?: boolean | null
+          id?: string
+          layout_banner?: string
+          midia_tipo?: string | null
+          midia_url?: string | null
+          ordem?: number | null
+          planos_permitidos?: string[] | null
+          status?: boolean | null
+          tempo_total_reproducao?: number | null
+          texto_botao?: string | null
+          tipo_conteudo?: string
+          titulo?: string
+          updated_at?: string
+          url_acao?: string | null
+          visualizacoes?: number | null
+        }
+        Relationships: []
+      }
       championships: {
         Row: {
           created_at: string

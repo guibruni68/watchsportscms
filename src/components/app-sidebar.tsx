@@ -1,4 +1,4 @@
-import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone } from "lucide-react";
+import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker } from "lucide-react";
 import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
 import { NavLink, useLocation } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
@@ -30,6 +30,10 @@ const mainNavItems = [{
   title: "Carrosséis",
   url: "/carousels",
   icon: Layout
+}, {
+  title: "Banners",
+  url: "/banners",
+  icon: MonitorSpeaker
 }];
 const businessNavItems = [{
   title: "Anúncios",

@@ -14,6 +14,10 @@ import ChampionshipDetailsPage from "./pages/championships/ChampionshipDetailsPa
 import SchedulePage from "./pages/schedule/SchedulePage";
 import NewsPage from "./pages/news/NewsPage";
 import CarouselsPage from "./pages/carousels/CarouselsPage";
+import BannersPage from "./pages/banners/BannersPage";
+import BannerDetailsPage from "./pages/banners/BannerDetailsPage";
+import NewBannerPage from "./pages/banners/NewBannerPage";
+import EditBannerPage from "./pages/banners/EditBannerPage";
 import CustomizationPage from "./pages/customization/CustomizationPage";
 import AdsPage from "./pages/ads/AdsPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
@@ -77,6 +81,26 @@ const App = () => (
             <Route path="/carousels" element={
               <ProtectedRoute>
                 <CarouselsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/banners" element={
+              <ProtectedRoute>
+                <BannersPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/banners/novo" element={
+              <ProtectedRoute>
+                <NewBannerPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/banners/:id" element={
+              <ProtectedRoute>
+                <BannerDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/banners/:id/editar" element={
+              <ProtectedRoute>
+                <EditBannerPage />
               </ProtectedRoute>
             } />
             <Route path="/customization" element={
