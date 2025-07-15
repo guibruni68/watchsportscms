@@ -388,9 +388,6 @@ export default function SchedulePage() {
       {/* Dialogs */}
       <Dialog open={showNewEventDialog} onOpenChange={setShowNewEventDialog}>
         <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Criar Novo Evento</DialogTitle>
-          </DialogHeader>
           <EventForm
             onClose={() => setShowNewEventDialog(false)}
             isEdit={false}
