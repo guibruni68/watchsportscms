@@ -324,46 +324,21 @@ export default function SchedulePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {todayEvents.length > 0 ? (
-              todayEvents.map((event) => {
-                const Icon = getEventIcon(event.type)
-                return (
-                  <div key={event.id} className="p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
-                    <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg bg-muted/50 ${getEventColor(event.type)}`}>
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm text-foreground">{event.title}</h4>
-                        <div className="space-y-1 mt-1">
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {event.time}
-                          </p>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {event.location}
-                          </p>
-                          {event.opponent && (
-                            <p className="text-xs text-muted-foreground">
-                              vs {event.opponent}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge variant="outline" className="text-xs">
-                            {getEventTypeLabel(event.type)}
-                          </Badge>
-                          {event.hasLive && (
-                            <Badge className="text-xs bg-warning text-warning-foreground">
-                              AO VIVO
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
+              todayEvents.map((event) => (
+                <div key={event.id} className="p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="text-xs">
+                        {getEventTypeLabel(event.type)}
+                      </Badge>
                     </div>
+                    <h4 className="font-medium text-sm text-foreground">{event.title}</h4>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(event.date).toLocaleDateString('pt-BR')} às {event.time}
+                    </p>
                   </div>
-                )
-              })
+                </div>
+              ))
             ) : (
               <div className="text-center py-8">
                 <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
