@@ -8,7 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { mockBanners, Banner } from "@/data/mockData";
-import { Plus, Edit, Trash2, Eye, BarChart3, Activity, MousePointer, Clock, Play } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, BarChart3, Activity, MousePointer, Clock, Play, Image } from "lucide-react";
 import { format } from "date-fns";
 
 
@@ -210,7 +210,7 @@ export default function BannersPage() {
                   <TableRow key={banner.id}>
                     <TableCell>
                       <div className="w-16 h-10 bg-muted rounded flex items-center justify-center">
-                        <span className="text-xs text-muted-foreground">Sem mídia</span>
+                        <Image className="h-4 w-4 text-muted-foreground" />
                       </div>
                     </TableCell>
                     <TableCell className="font-medium">{banner.titulo}</TableCell>
