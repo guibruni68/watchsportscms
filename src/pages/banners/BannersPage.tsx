@@ -194,14 +194,13 @@ export default function BannersPage() {
                 <TableHead>Período</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Ordem</TableHead>
-                <TableHead>Estatísticas</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {banners.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
+                  <TableCell colSpan={8} className="text-center py-8">
                     <div className="text-muted-foreground">
                       Nenhum banner encontrado. Crie seu primeiro banner.
                     </div>
@@ -258,13 +257,6 @@ export default function BannersPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>{banner.ordem}</TableCell>
-                    <TableCell>
-                      <div className="text-sm space-y-1">
-                        <div>{banner.visualizacoes} views</div>
-                        <div>{banner.cliques} cliques</div>
-                        <div>{formatTime(banner.tempo_total_reproducao)}</div>
-                      </div>
-                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Dialog>
