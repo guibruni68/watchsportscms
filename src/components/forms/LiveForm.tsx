@@ -7,14 +7,20 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ArrowLeft, CalendarIcon, Clock } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
+import { cn } from "@/lib/utils"
 
 const liveSchema = z.object({
   nomeEvento: z.string().min(1, "Nome do evento é obrigatório"),
   descricao: z.string().min(1, "Descrição é obrigatória"),
-  dataHora: z.string().min(1, "Data e hora são obrigatórias"),
+  data: z.date(),
+  hora: z.string().min(1, "Hora é obrigatória"),
   status: z.string().min(1, "Status é obrigatório"),
   playerEmbed: z.string().optional(),
 })
@@ -22,7 +28,13 @@ const liveSchema = z.object({
 type LiveFormData = z.infer<typeof liveSchema>
 
 interface LiveFormProps {
-  initialData?: Partial<LiveFormData>
+  initialData?: {
+    nomeEvento?: string
+    descricao?: string
+    dataHora?: string
+    status?: string
+    playerEmbed?: string
+  }
   isEdit?: boolean
 }
 
@@ -30,12 +42,17 @@ export function LiveForm({ initialData, isEdit = false }: LiveFormProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
 
+  // Parse initial datetime if provided
+  const initialDate = initialData?.dataHora ? new Date(initialData.dataHora) : undefined
+  const initialTime = initialData?.dataHora ? format(new Date(initialData.dataHora), "HH:mm") : ""
+
   const form = useForm<LiveFormData>({
     resolver: zodResolver(liveSchema),
     defaultValues: {
       nomeEvento: initialData?.nomeEvento || "",
       descricao: initialData?.descricao || "",
-      dataHora: initialData?.dataHora || "",
+      data: initialDate,
+      hora: initialTime,
       status: initialData?.status || "",
       playerEmbed: initialData?.playerEmbed || "",
     },
@@ -138,19 +155,68 @@ export function LiveForm({ initialData, isEdit = false }: LiveFormProps) {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="dataHora"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data e Hora *</FormLabel>
-                    <FormControl>
-                      <Input type="datetime-local" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="data"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data *</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "justify-start text-left font-normal w-full",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? (
+                                format(field.value, "PPP", { locale: ptBR })
+                              ) : (
+                                <span>Selecione a data</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="hora"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Hora *</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Clock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="time"
+                            className="pl-10"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
