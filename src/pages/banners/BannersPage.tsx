@@ -191,7 +191,6 @@ export default function BannersPage() {
                 <TableHead>Thumb</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead>Layout</TableHead>
-                <TableHead>Período</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Ordem</TableHead>
                 <TableHead>Ações</TableHead>
@@ -200,7 +199,7 @@ export default function BannersPage() {
             <TableBody>
               {banners.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8">
                     <div className="text-muted-foreground">
                       Nenhum banner encontrado. Crie seu primeiro banner.
                     </div>
@@ -235,14 +234,6 @@ export default function BannersPage() {
                     </TableCell>
                     <TableCell>{getTipoConteudoLabel(banner.tipo_conteudo)}</TableCell>
                     <TableCell>{getLayoutLabel(banner.layout_banner)}</TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <div>{format(new Date(banner.data_inicio), 'dd/MM/yyyy HH:mm')}</div>
-                        <div className="text-muted-foreground">
-                          {format(new Date(banner.data_fim), 'dd/MM/yyyy HH:mm')}
-                        </div>
-                      </div>
-                    </TableCell>
                     <TableCell>
                       <Badge 
                         variant={
