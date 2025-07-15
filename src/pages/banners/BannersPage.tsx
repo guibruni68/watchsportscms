@@ -5,27 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Plus, Edit, Trash2, Eye, BarChart3, Activity, MousePointer, Clock } from "lucide-react";
+import { mockBanners, Banner } from "@/data/mockData";
+import { Plus, Edit, Trash2, Eye, BarChart3, Activity, MousePointer, Clock, Play } from "lucide-react";
 import { format } from "date-fns";
 
-interface Banner {
-  id: string;
-  titulo: string;
-  tipo_conteudo: string;
-  layout_banner: string;
-  midia_url?: string;
-  midia_tipo?: string;
-  data_inicio: string;
-  data_fim: string;
-  status: boolean;
-  ordem: number;
-  visualizacoes: number;
-  cliques: number;
-  tempo_total_reproducao: number;
-  created_at: string;
-}
 
 interface BannerStats {
   total_banners: number;
@@ -46,66 +31,37 @@ export default function BannersPage() {
   });
   const [loading, setLoading] = useState(true);
 
-  const fetchBanners = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('banners')
-        .select('*')
-        .order('ordem', { ascending: true });
+  const fetchBanners = () => {
+    // Usar dados mockados
+    const data = mockBanners;
+    setBanners(data);
+    
+    // Calcular estatísticas
+    const totalBanners = data.length;
+    const bannersAtivos = data.filter(b => b.status).length;
+    const totalVisualizacoes = data.reduce((sum, b) => sum + (b.visualizacoes || 0), 0);
+    const totalCliques = data.reduce((sum, b) => sum + (b.cliques || 0), 0);
+    const totalTempoReproducao = data.reduce((sum, b) => sum + (b.tempo_total_reproducao || 0), 0);
 
-      if (error) throw error;
-
-      setBanners(data || []);
-      
-      // Calcular estatísticas
-      const totalBanners = data?.length || 0;
-      const bannersAtivos = data?.filter(b => b.status).length || 0;
-      const totalVisualizacoes = data?.reduce((sum, b) => sum + (b.visualizacoes || 0), 0) || 0;
-      const totalCliques = data?.reduce((sum, b) => sum + (b.cliques || 0), 0) || 0;
-      const totalTempoReproducao = data?.reduce((sum, b) => sum + (b.tempo_total_reproducao || 0), 0) || 0;
-
-      setStats({
-        total_banners: totalBanners,
-        banners_ativos: bannersAtivos,
-        total_visualizacoes: totalVisualizacoes,
-        total_cliques: totalCliques,
-        total_tempo_reproducao: totalTempoReproducao
-      });
-    } catch (error) {
-      console.error('Erro ao carregar banners:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar os banners.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+    setStats({
+      total_banners: totalBanners,
+      banners_ativos: bannersAtivos,
+      total_visualizacoes: totalVisualizacoes,
+      total_cliques: totalCliques,
+      total_tempo_reproducao: totalTempoReproducao
+    });
+    
+    setLoading(false);
   };
 
-  const deleteBanner = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('banners')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Banner excluído com sucesso.",
-      });
-      
-      fetchBanners();
-    } catch (error) {
-      console.error('Erro ao excluir banner:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível excluir o banner.",
-        variant: "destructive",
-      });
-    }
+  const deleteBanner = (id: string) => {
+    // Simular exclusão
+    setBanners(banners.filter(b => b.id !== id));
+    
+    toast({
+      title: "Sucesso",
+      description: "Banner excluído com sucesso.",
+    });
   };
 
   const getTipoConteudoLabel = (tipo: string) => {
@@ -311,11 +267,116 @@ export default function BannersPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link to={`/banners/${banner.id}`}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        </Button>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Preview do Banner - {banner.titulo}</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-6">
+                              {/* Preview Visual */}
+                              <div className="border rounded-lg p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
+                                <div className="relative">
+                                  {banner.midia_url && (
+                                    <div className="relative rounded-lg overflow-hidden">
+                                      {banner.midia_tipo === 'video' ? (
+                                        <div className="relative">
+                                          <video 
+                                            src={banner.midia_url} 
+                                            className="w-full h-64 object-cover"
+                                            poster={banner.midia_url}
+                                          />
+                                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                            <Play className="h-16 w-16 text-white opacity-80" />
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <img 
+                                          src={banner.midia_url} 
+                                          alt={banner.titulo}
+                                          className="w-full h-64 object-cover"
+                                        />
+                                      )}
+                                      
+                                      {/* Overlay com título e botão */}
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
+                                        <h3 className="text-white text-2xl font-bold mb-2">{banner.titulo}</h3>
+                                        {banner.exibir_botao && banner.texto_botao && (
+                                          <Button 
+                                            className="w-fit"
+                                            variant={banner.layout_banner === 'hero_cta' ? 'default' : 'secondary'}
+                                          >
+                                            {banner.texto_botao}
+                                          </Button>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Informações do Banner */}
+                              <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                  <div>
+                                    <h4 className="font-medium text-sm text-muted-foreground">Tipo de Conteúdo</h4>
+                                    <p className="font-medium">{getTipoConteudoLabel(banner.tipo_conteudo)}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-medium text-sm text-muted-foreground">Layout</h4>
+                                    <p className="font-medium">{getLayoutLabel(banner.layout_banner)}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-medium text-sm text-muted-foreground">Status</h4>
+                                    <Badge 
+                                      variant={
+                                        !banner.status ? "secondary" : 
+                                        isExpired(banner.data_fim) ? "outline" : 
+                                        "default"
+                                      }
+                                    >
+                                      {!banner.status ? "Inativo" : 
+                                       isExpired(banner.data_fim) ? "Expirado" : 
+                                       "Ativo"}
+                                    </Badge>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                  <div>
+                                    <h4 className="font-medium text-sm text-muted-foreground">Estatísticas</h4>
+                                    <div className="grid grid-cols-3 gap-2 text-sm">
+                                      <div className="text-center p-2 bg-muted rounded">
+                                        <div className="font-bold">{banner.visualizacoes.toLocaleString()}</div>
+                                        <div className="text-xs text-muted-foreground">Views</div>
+                                      </div>
+                                      <div className="text-center p-2 bg-muted rounded">
+                                        <div className="font-bold">{banner.cliques.toLocaleString()}</div>
+                                        <div className="text-xs text-muted-foreground">Cliques</div>
+                                      </div>
+                                      <div className="text-center p-2 bg-muted rounded">
+                                        <div className="font-bold">{formatTime(banner.tempo_total_reproducao)}</div>
+                                        <div className="text-xs text-muted-foreground">Tempo</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-medium text-sm text-muted-foreground">Período</h4>
+                                    <div className="text-sm">
+                                      <div>{format(new Date(banner.data_inicio), 'dd/MM/yyyy HH:mm')}</div>
+                                      <div className="text-muted-foreground">até {format(new Date(banner.data_fim), 'dd/MM/yyyy HH:mm')}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+
                         <Button variant="ghost" size="sm" asChild>
                           <Link to={`/banners/${banner.id}/editar`}>
                             <Edit className="h-4 w-4" />

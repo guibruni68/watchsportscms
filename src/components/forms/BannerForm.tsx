@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { mockCampaigns, mockLives, mockVideos, mockContents } from "@/data/mockData";
 import { ArrowLeft, Upload, X } from "lucide-react";
 
 const bannerSchema = z.object({
@@ -89,43 +89,29 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
     return "imagem";
   };
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = (file: File) => {
     setUploadingMedia(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = `banners/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('logos')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('logos')
-        .getPublicUrl(filePath);
-
+    
+    // Simular upload - usar URL local para demonstração
+    const reader = new FileReader();
+    reader.onload = (e) => {
       const mediaType = file.type.startsWith('video/') ? 'video' : 'imagem';
+      const mockUrl = e.target?.result as string;
       
-      form.setValue('midia_url', publicUrl);
+      form.setValue('midia_url', mockUrl);
       form.setValue('midia_tipo', mediaType);
-      setMediaPreview(publicUrl);
-
-      toast({
-        title: "Sucesso",
-        description: "Mídia enviada com sucesso.",
-      });
-    } catch (error) {
-      console.error('Erro ao fazer upload:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível fazer upload da mídia.",
-        variant: "destructive",
-      });
-    } finally {
-      setUploadingMedia(false);
-    }
+      setMediaPreview(mockUrl);
+      
+      setTimeout(() => {
+        setUploadingMedia(false);
+        toast({
+          title: "Sucesso",
+          description: "Mídia enviada com sucesso.",
+        });
+      }, 1000);
+    };
+    
+    reader.readAsDataURL(file);
   };
 
   const removeMedia = () => {
@@ -134,72 +120,40 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
     setMediaPreview(null);
   };
 
-  const onSubmit = async (data: BannerFormData) => {
+  const onSubmit = (data: BannerFormData) => {
     setLoading(true);
-    try {
-      // Validar se a mídia é do tipo correto para o layout
-      const requiredMediaType = getRequiredMediaType(data.layout_banner);
-      if (data.midia_url && data.midia_tipo !== requiredMediaType) {
-        toast({
-          title: "Erro",
-          description: `O layout "${layoutsDisponiveis.find(l => l.value === data.layout_banner)?.label}" requer mídia do tipo ${requiredMediaType}.`,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Validar datas
-      if (new Date(data.data_inicio) >= new Date(data.data_fim)) {
-        toast({
-          title: "Erro",
-          description: "A data de início deve ser anterior à data de fim.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const bannerData = {
-        ...data,
-        data_inicio: new Date(data.data_inicio).toISOString(),
-        data_fim: new Date(data.data_fim).toISOString(),
-      };
-
-      if (bannerId) {
-        const { error } = await supabase
-          .from('banners')
-          .update(bannerData)
-          .eq('id', bannerId);
-
-        if (error) throw error;
-
-        toast({
-          title: "Sucesso",
-          description: "Banner atualizado com sucesso.",
-        });
-      } else {
-        const { error } = await supabase
-          .from('banners')
-          .insert([bannerData]);
-
-        if (error) throw error;
-
-        toast({
-          title: "Sucesso",
-          description: "Banner criado com sucesso.",
-        });
-      }
-
-      navigate('/banners');
-    } catch (error) {
-      console.error('Erro ao salvar banner:', error);
+    
+    // Validar se a mídia é do tipo correto para o layout
+    const requiredMediaType = getRequiredMediaType(data.layout_banner);
+    if (data.midia_url && data.midia_tipo !== requiredMediaType) {
       toast({
         title: "Erro",
-        description: "Não foi possível salvar o banner.",
+        description: `O layout "${layoutsDisponiveis.find(l => l.value === data.layout_banner)?.label}" requer mídia do tipo ${requiredMediaType}.`,
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
+      return;
     }
+
+    // Validar datas
+    if (new Date(data.data_inicio) >= new Date(data.data_fim)) {
+      toast({
+        title: "Erro",
+        description: "A data de início deve ser anterior à data de fim.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
+    // Simular salvamento
+    setTimeout(() => {
+      toast({
+        title: "Sucesso",
+        description: bannerId ? "Banner atualizado com sucesso." : "Banner criado com sucesso.",
+      });
+      navigate('/banners');
+    }, 1000);
   };
 
   useEffect(() => {
@@ -392,6 +346,61 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                   </div>
                 )}
               </div>
+
+              {/* Conteúdo Vinculado */}
+              {(form.watch('tipo_conteudo') === 'vod' || 
+                form.watch('tipo_conteudo') === 'live_agora' || 
+                form.watch('tipo_conteudo') === 'live_programado' || 
+                form.watch('tipo_conteudo') === 'campanha' ||
+                form.watch('tipo_conteudo') === 'recomendado') && (
+                <FormField
+                  control={form.control}
+                  name="conteudo_vinculado_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {form.watch('tipo_conteudo') === 'campanha' && 'Campanha Vinculada'}
+                        {(form.watch('tipo_conteudo') === 'live_agora' || form.watch('tipo_conteudo') === 'live_programado') && 'Evento ao Vivo'}
+                        {(form.watch('tipo_conteudo') === 'vod' || form.watch('tipo_conteudo') === 'recomendado') && 'Vídeo/Conteúdo'}
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o conteúdo..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {form.watch('tipo_conteudo') === 'campanha' && 
+                            mockCampaigns.map((campaign) => (
+                              <SelectItem key={campaign.id} value={campaign.id}>
+                                {campaign.name}
+                              </SelectItem>
+                            ))
+                          }
+                          {(form.watch('tipo_conteudo') === 'live_agora' || form.watch('tipo_conteudo') === 'live_programado') && 
+                            mockLives.map((live) => (
+                              <SelectItem key={live.id} value={live.id}>
+                                {live.name}
+                              </SelectItem>
+                            ))
+                          }
+                          {(form.watch('tipo_conteudo') === 'vod' || form.watch('tipo_conteudo') === 'recomendado') && 
+                            mockVideos.map((video) => (
+                              <SelectItem key={video.id} value={video.id}>
+                                {video.name}
+                              </SelectItem>
+                            ))
+                          }
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Selecione o conteúdo que será destacado por este banner
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               {/* CTA e URL */}
               <div className="space-y-4">

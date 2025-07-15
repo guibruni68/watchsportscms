@@ -487,3 +487,258 @@ export const getContentsByAlgorithm = (algorithm: string) => {
       return mockContents.slice(0, 5);
   }
 };
+
+// Dados mockados para banners
+export interface Banner {
+  id: string;
+  titulo: string;
+  tipo_conteudo: string;
+  layout_banner: string;
+  midia_url?: string;
+  midia_tipo?: string;
+  data_inicio: string;
+  data_fim: string;
+  status: boolean;
+  ordem: number;
+  visualizacoes: number;
+  cliques: number;
+  tempo_total_reproducao: number;
+  created_at: string;
+  conteudo_vinculado_id?: string;
+  planos_permitidos: string[];
+  texto_botao?: string;
+  url_acao?: string;
+  exibir_botao: boolean;
+}
+
+export const mockBanners: Banner[] = [
+  {
+    id: "banner1",
+    titulo: "Jogo da Final - Ao Vivo Agora",
+    tipo_conteudo: "live_agora",
+    layout_banner: "hero_cta",
+    midia_url: "/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png",
+    midia_tipo: "imagem",
+    data_inicio: new Date(Date.now() - 3600000).toISOString(),
+    data_fim: new Date(Date.now() + 7200000).toISOString(),
+    status: true,
+    ordem: 1,
+    texto_botao: "Assistir Agora",
+    url_acao: "/live/final-championship",
+    planos_permitidos: ["gratuito", "basico", "premium", "vip"],
+    visualizacoes: 15420,
+    cliques: 892,
+    tempo_total_reproducao: 45600,
+    created_at: new Date().toISOString(),
+    conteudo_vinculado_id: "content1",
+    exibir_botao: true
+  },
+  {
+    id: "banner2",
+    titulo: "Semifinal - Hoje às 20h",
+    tipo_conteudo: "live_programado",
+    layout_banner: "video_texto",
+    midia_url: "/lovable-uploads/3e4f7302-40a3-4b04-95b2-f925cfb43250.png",
+    midia_tipo: "imagem",
+    data_inicio: new Date(Date.now() + 21600000).toISOString(),
+    data_fim: new Date(Date.now() + 28800000).toISOString(),
+    status: true,
+    ordem: 2,
+    texto_botao: "Lembrar-me",
+    url_acao: "/schedule/semifinal",
+    planos_permitidos: ["basico", "premium", "vip"],
+    visualizacoes: 8930,
+    cliques: 445,
+    tempo_total_reproducao: 0,
+    created_at: new Date().toISOString(),
+    conteudo_vinculado_id: "content2",
+    exibir_botao: true
+  },
+  {
+    id: "banner3",
+    titulo: "Melhores Momentos da Rodada",
+    tipo_conteudo: "vod",
+    layout_banner: "imagem_botao",
+    midia_url: "/lovable-uploads/56b1b2ee-687f-4828-8038-c0902cb9f932.png",
+    midia_tipo: "imagem",
+    data_inicio: new Date(Date.now() - 172800000).toISOString(),
+    data_fim: new Date(Date.now() + 432000000).toISOString(),
+    status: true,
+    ordem: 3,
+    texto_botao: "Ver Vídeo",
+    url_acao: "/videos/melhores-momentos-rodada-15",
+    planos_permitidos: ["gratuito", "basico", "premium", "vip"],
+    visualizacoes: 12340,
+    cliques: 678,
+    tempo_total_reproducao: 89400,
+    created_at: new Date().toISOString(),
+    conteudo_vinculado_id: "content3",
+    exibir_botao: true
+  },
+  {
+    id: "banner4",
+    titulo: "Campanha Black Friday - 50% OFF",
+    tipo_conteudo: "campanha",
+    layout_banner: "hero_cta",
+    midia_url: "/lovable-uploads/68bd6b68-c5e2-4cdc-81bb-941708e88ddb.png",
+    midia_tipo: "imagem",
+    data_inicio: new Date(Date.now() - 86400000).toISOString(),
+    data_fim: new Date(Date.now() + 604800000).toISOString(),
+    status: true,
+    ordem: 4,
+    texto_botao: "Aproveitar Oferta",
+    url_acao: "/campaigns/black-friday-2024",
+    planos_permitidos: ["gratuito", "basico"],
+    visualizacoes: 25670,
+    cliques: 1892,
+    tempo_total_reproducao: 0,
+    created_at: new Date().toISOString(),
+    exibir_botao: true
+  },
+  {
+    id: "banner5",
+    titulo: "Novo Documentário: História do Clube",
+    tipo_conteudo: "recomendado",
+    layout_banner: "video_texto",
+    midia_url: "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
+    midia_tipo: "video",
+    data_inicio: new Date(Date.now() - 259200000).toISOString(),
+    data_fim: new Date(Date.now() + 864000000).toISOString(),
+    status: true,
+    ordem: 5,
+    texto_botao: "Assistir Trailer",
+    url_acao: "/videos/documentario-historia-clube",
+    planos_permitidos: ["premium", "vip"],
+    visualizacoes: 5670,
+    cliques: 234,
+    tempo_total_reproducao: 67800,
+    created_at: new Date().toISOString(),
+    conteudo_vinculado_id: "content4",
+    exibir_botao: true
+  },
+  {
+    id: "banner6",
+    titulo: "Banner Institucional - Novos Valores",
+    tipo_conteudo: "institucional",
+    layout_banner: "mini_card",
+    midia_url: "/lovable-uploads/7ec692e9-77df-4673-90f4-ed298d10760f.png",
+    midia_tipo: "imagem",
+    data_inicio: new Date(Date.now() - 604800000).toISOString(),
+    data_fim: new Date(Date.now() + 2592000000).toISOString(),
+    status: true,
+    ordem: 6,
+    texto_botao: "Saiba Mais",
+    url_acao: "/about/novos-valores",
+    planos_permitidos: ["gratuito", "basico", "premium", "vip"],
+    visualizacoes: 3450,
+    cliques: 123,
+    tempo_total_reproducao: 0,
+    created_at: new Date().toISOString(),
+    exibir_botao: true
+  },
+  {
+    id: "banner7",
+    titulo: "Entrevista Exclusiva com o Técnico",
+    tipo_conteudo: "vod",
+    layout_banner: "imagem_botao",
+    midia_url: "/lovable-uploads/a945b2ac-8b16-4c57-a844-122cc1e8170c.png",
+    midia_tipo: "video",
+    data_inicio: new Date(Date.now() - 432000000).toISOString(),
+    data_fim: new Date(Date.now() + 259200000).toISOString(),
+    status: true,
+    ordem: 7,
+    texto_botao: "Ver Entrevista",
+    url_acao: "/videos/entrevista-tecnico-dezembro",
+    planos_permitidos: ["basico", "premium", "vip"],
+    visualizacoes: 8920,
+    cliques: 445,
+    tempo_total_reproducao: 123600,
+    created_at: new Date().toISOString(),
+    conteudo_vinculado_id: "content5",
+    exibir_botao: true
+  },
+  {
+    id: "banner8",
+    titulo: "Promoção: Ingresso + Camisa",
+    tipo_conteudo: "campanha",
+    layout_banner: "hero_cta",
+    midia_url: "/lovable-uploads/b178263a-95eb-4d88-ad87-aa9de585a258.png",
+    midia_tipo: "imagem",
+    data_inicio: new Date(Date.now() + 86400000).toISOString(),
+    data_fim: new Date(Date.now() + 1209600000).toISOString(),
+    status: false,
+    ordem: 8,
+    texto_botao: "Comprar Combo",
+    url_acao: "/campaigns/combo-ingresso-camisa",
+    planos_permitidos: ["gratuito", "basico", "premium"],
+    visualizacoes: 0,
+    cliques: 0,
+    tempo_total_reproducao: 0,
+    created_at: new Date().toISOString(),
+    exibir_botao: true
+  },
+  {
+    id: "banner9",
+    titulo: "Live de Análise Pós-Jogo",
+    tipo_conteudo: "live_programado",
+    layout_banner: "video_texto",
+    midia_url: "/lovable-uploads/c77a6a4a-5568-4a9c-bdcc-34a53dca4782.png",
+    midia_tipo: "imagem",
+    data_inicio: new Date(Date.now() + 10800000).toISOString(),
+    data_fim: new Date(Date.now() + 18000000).toISOString(),
+    status: true,
+    ordem: 9,
+    texto_botao: "Participar",
+    url_acao: "/live/analise-pos-jogo",
+    planos_permitidos: ["premium", "vip"],
+    visualizacoes: 2340,
+    cliques: 89,
+    tempo_total_reproducao: 0,
+    created_at: new Date().toISOString(),
+    exibir_botao: true
+  },
+  {
+    id: "banner10",
+    titulo: "Top 10 Gols da Temporada",
+    tipo_conteudo: "recomendado",
+    layout_banner: "mini_card",
+    midia_url: "/lovable-uploads/d5035e4b-b98c-4f58-a0b5-6c9da2398ab0.png",
+    midia_tipo: "video",
+    data_inicio: new Date(Date.now() - 604800000).toISOString(),
+    data_fim: new Date(Date.now() + 1209600000).toISOString(),
+    status: true,
+    ordem: 10,
+    texto_botao: "Ver Ranking",
+    url_acao: "/videos/top-10-gols-temporada",
+    planos_permitidos: ["gratuito", "basico", "premium", "vip"],
+    visualizacoes: 18930,
+    cliques: 923,
+    tempo_total_reproducao: 234500,
+    created_at: new Date().toISOString(),
+    exibir_botao: true
+  }
+];
+
+// Mock de campanhas
+export const mockCampaigns = [
+  { id: "camp1", name: "Black Friday 2024" },
+  { id: "camp2", name: "Volta às Aulas" },
+  { id: "camp3", name: "Dia dos Pais" },
+  { id: "camp4", name: "Playoffs Premium" }
+];
+
+// Mock de lives
+export const mockLives = [
+  { id: "live1", name: "Final do Campeonato", status: "ao_vivo" },
+  { id: "live2", name: "Semifinal", status: "programado" },
+  { id: "live3", name: "Análise Pós-Jogo", status: "programado" },
+  { id: "live4", name: "Treino Aberto", status: "finalizado" }
+];
+
+// Mock de vídeos
+export const mockVideos = [
+  { id: "vid1", name: "Melhores Momentos - Rodada 15" },
+  { id: "vid2", name: "Entrevista com Técnico" },
+  { id: "vid3", name: "Documentário: História do Clube" },
+  { id: "vid4", name: "Top 10 Gols da Temporada" }
+];
