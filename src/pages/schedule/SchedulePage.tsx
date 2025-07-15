@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Calendar } from "@/components/ui/calendar"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { EventForm } from "@/components/forms/EventForm"
 import { 
   Calendar as CalendarIcon, 
   Plus, 
@@ -13,12 +15,15 @@ import {
   Radio,
   Video,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FileUp
 } from "lucide-react"
 
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [showNewEventDialog, setShowNewEventDialog] = useState(false)
+  const [showImportDialog, setShowImportDialog] = useState(false)
 
   const events = [
     {
@@ -207,10 +212,16 @@ export default function SchedulePage() {
           <h1 className="text-3xl font-bold text-foreground">Agenda Esportiva</h1>
           <p className="text-muted-foreground">Gerencie jogos, treinos e eventos do clube</p>
         </div>
-        <Button className="bg-gradient-primary transition-all">
-          <Plus className="h-4 w-4 mr-2" />
-          Novo Evento
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowImportDialog(true)}>
+            <FileUp className="h-4 w-4 mr-2" />
+            Importar Agenda
+          </Button>
+          <Button className="bg-gradient-primary transition-all" onClick={() => setShowNewEventDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Evento
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -398,6 +409,46 @@ export default function SchedulePage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Dialogs */}
+      <Dialog open={showNewEventDialog} onOpenChange={setShowNewEventDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Criar Novo Evento</DialogTitle>
+          </DialogHeader>
+          <EventForm
+            onClose={() => setShowNewEventDialog(false)}
+            isEdit={false}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Importar Agenda</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Importe eventos em lote ou conecte com calendários externos
+            </p>
+            <div className="flex flex-col gap-2">
+              <Button variant="outline" className="justify-start">
+                <FileUp className="h-4 w-4 mr-2" />
+                Importar arquivo CSV
+              </Button>
+              <Button variant="outline" className="justify-start">
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                Conectar Google Calendar
+              </Button>
+              <Button variant="outline" className="justify-start">
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                Importar arquivo .ics
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
