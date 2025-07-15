@@ -45,6 +45,34 @@ const isExpired = (dataFim: string) => {
   return new Date(dataFim) < new Date();
 };
 
+const getTipoConteudoLabel = (tipo: string) => {
+  const tipos: Record<string, string> = {
+    vod: "VOD",
+    live_agora: "Ao Vivo Agora",
+    live_programado: "Live Programada",
+    campanha: "Campanha",
+    recomendado: "Recomendado",
+    institucional: "Institucional"
+  };
+  return tipos[tipo] || tipo;
+};
+
+const getLayoutLabel = (layout: string) => {
+  const layouts: Record<string, string> = {
+    imagem_botao: "Imagem + Botão",
+    video_texto: "Vídeo + Texto",
+    hero_cta: "Hero + CTA",
+    mini_card: "Mini Card"
+  };
+  return layouts[layout] || layout;
+};
+
+const formatTime = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return `${hours}h ${minutes}m`;
+};
+
 // Componente para linha sortável
 function SortableRow({ banner, children }: { 
   banner: Banner; 
@@ -162,38 +190,6 @@ export default function BannersPage() {
       title: "Sucesso",
       description: "Banner excluído com sucesso.",
     });
-  };
-
-  const getTipoConteudoLabel = (tipo: string) => {
-    const tipos: Record<string, string> = {
-      vod: "VOD",
-      live_agora: "Ao Vivo Agora",
-      live_programado: "Live Programada",
-      campanha: "Campanha",
-      recomendado: "Recomendado",
-      institucional: "Institucional"
-    };
-    return tipos[tipo] || tipo;
-  };
-
-  const getLayoutLabel = (layout: string) => {
-    const layouts: Record<string, string> = {
-      imagem_botao: "Imagem + Botão",
-      video_texto: "Vídeo + Texto",
-      hero_cta: "Hero + CTA",
-      mini_card: "Mini Card"
-    };
-    return layouts[layout] || layout;
-  };
-
-  const isExpired = (dataFim: string) => {
-    return new Date(dataFim) < new Date();
-  };
-
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}m`;
   };
 
   useEffect(() => {
