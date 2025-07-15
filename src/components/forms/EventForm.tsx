@@ -5,13 +5,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Save, AlertCircle } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ArrowLeft, Save, AlertCircle, CalendarIcon, Clock } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
+import { cn } from "@/lib/utils"
 
 interface EventFormData {
   type: "jogo" | "treino" | "coletiva" | ""
   title: string
-  datetime: string
+  date: Date | undefined
+  time: string
   description: string
   status: "planejado" | "concluido"
 }
@@ -30,10 +36,15 @@ interface EventFormProps {
 }
 
 export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
+  // Parse initial datetime if provided
+  const initialDate = initialData?.datetime ? new Date(initialData.datetime) : undefined
+  const initialTime = initialData?.datetime ? format(new Date(initialData.datetime), "HH:mm") : ""
+  
   const [formData, setFormData] = useState<EventFormData>({
     type: initialData?.type || "",
     title: initialData?.title || "",
-    datetime: initialData?.datetime || "",
+    date: initialDate,
+    time: initialTime,
     description: initialData?.description || "",
     status: initialData?.status || "planejado"
   })
@@ -52,8 +63,12 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
       newErrors.title = "Título é obrigatório"
     }
     
-    if (!formData.datetime) {
-      newErrors.datetime = "Data e hora são obrigatórias"
+    if (!formData.date) {
+      newErrors.date = "Data é obrigatória"
+    }
+    
+    if (!formData.time) {
+      newErrors.time = "Hora é obrigatória"
     }
     
     if (!formData.description.trim()) {
@@ -172,18 +187,55 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
                 )}
               </div>
 
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="datetime">Data e Hora</Label>
-                <Input
-                  id="datetime"
-                  type="datetime-local"
-                  value={formData.datetime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, datetime: e.target.value }))}
-                />
-                {errors.datetime && (
+              <div className="space-y-2">
+                <Label htmlFor="date">Data</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "justify-start text-left font-normal w-full",
+                        !formData.date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.date ? format(formData.date, "PPP", { locale: ptBR }) : <span>Selecione a data</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.date}
+                      onSelect={(date) => setFormData(prev => ({ ...prev, date }))}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+                {errors.date && (
                   <div className="flex items-center gap-1 text-sm text-destructive">
                     <AlertCircle className="h-4 w-4" />
-                    {errors.datetime}
+                    {errors.date}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="time">Hora</Label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="time"
+                    type="time"
+                    value={formData.time}
+                    onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
+                    className="pl-10"
+                  />
+                </div>
+                {errors.time && (
+                  <div className="flex items-center gap-1 text-sm text-destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    {errors.time}
                   </div>
                 )}
               </div>
