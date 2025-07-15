@@ -296,59 +296,39 @@ export default function BannersPage() {
         </CardHeader>
         <CardContent>
           {activeBanners.length > 0 ? (
-            <Carousel className="w-full">
+            <Carousel 
+              className="w-full"
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+            >
               <CarouselContent>
                 {activeBanners.map((banner, index) => (
-                  <CarouselItem key={banner.id} className="md:basis-1/2 lg:basis-1/3">
+                  <CarouselItem key={banner.id}>
                     <div className="relative">
-                      <div className="relative rounded-lg overflow-hidden border bg-gradient-to-br from-primary/5 to-secondary/5">
-                        {banner.midia_url ? (
-                          <>
-                            {banner.midia_tipo === 'video' ? (
-                              <div className="relative">
-                                <video 
-                                  src={banner.midia_url} 
-                                  className="w-full h-48 object-cover"
-                                  muted
-                                  poster={banner.midia_url}
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                  <Play className="h-12 w-12 text-white opacity-80" />
-                                </div>
-                              </div>
-                            ) : (
-                              <img 
-                                src={banner.midia_url} 
-                                alt={banner.titulo}
-                                className="w-full h-48 object-cover"
-                              />
+                      <div className="relative rounded-lg overflow-hidden border bg-gradient-to-br from-primary/5 to-secondary/5 h-64">
+                        {/* Sempre usar placeholder */}
+                        <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <div className="text-center">
+                            <Image className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                            <h3 className="text-lg font-bold mb-2">{banner.titulo}</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              {getTipoConteudoLabel(banner.tipo_conteudo)} • {getLayoutLabel(banner.layout_banner)}
+                            </p>
+                            {banner.exibir_botao && banner.texto_botao && (
+                              <Button 
+                                size="sm"
+                                variant={banner.layout_banner === 'hero_cta' ? 'default' : 'secondary'}
+                              >
+                                {banner.texto_botao}
+                              </Button>
                             )}
-                            
-                            {/* Overlay com título e botão */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
-                              <h3 className="text-white text-lg font-bold mb-2">{banner.titulo}</h3>
-                              {banner.exibir_botao && banner.texto_botao && (
-                                <Button 
-                                  size="sm"
-                                  className="w-fit"
-                                  variant={banner.layout_banner === 'hero_cta' ? 'default' : 'secondary'}
-                                >
-                                  {banner.texto_botao}
-                                </Button>
-                              )}
-                            </div>
-                          </>
-                        ) : (
-                          <div className="w-full h-48 bg-muted flex items-center justify-center">
-                            <div className="text-center">
-                              <Image className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                              <p className="text-sm text-muted-foreground">{banner.titulo}</p>
-                            </div>
                           </div>
-                        )}
+                        </div>
                         
                         {/* Badge de ordem */}
-                        <div className="absolute top-2 left-2">
+                        <div className="absolute top-4 left-4">
                           <Badge variant="secondary" className="text-xs">
                             #{banner.ordem}
                           </Badge>
@@ -358,8 +338,8 @@ export default function BannersPage() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
+              <CarouselPrevious data-carousel="prev" />
+              <CarouselNext data-carousel="next" />
             </Carousel>
           ) : (
             <div className="text-center py-8">
