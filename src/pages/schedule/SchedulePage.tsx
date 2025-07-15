@@ -374,63 +374,27 @@ export default function SchedulePage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {upcomingEvents.map((event) => {
-              const Icon = getEventIcon(event.type)
-              return (
-                <div key={event.id} className="p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors border border-border/50">
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className={`p-2 rounded-lg bg-muted/50 ${getEventColor(event.type)}`}>
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <Badge variant="outline" className="text-xs">
-                            {getEventTypeLabel(event.type)}
-                          </Badge>
-                        </div>
-                      </div>
-                      {event.hasLive && (
-                        <Badge className="text-xs bg-warning text-warning-foreground">
-                          LIVE
-                        </Badge>
-                      )}
-                    </div>
+            {upcomingEvents.map((event) => (
+              <div key={event.id} className="p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors border border-border/50">
+                <div className="space-y-3">
+                  <div>
+                    <Badge variant="outline" className="text-xs mb-2">
+                      {getEventTypeLabel(event.type)}
+                    </Badge>
+                    <h4 className="font-semibold text-foreground">{event.title}</h4>
+                    {event.opponent && (
+                      <p className="text-sm text-muted-foreground">vs {event.opponent}</p>
+                    )}
+                  </div>
 
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-1">{event.title}</h4>
-                      {event.opponent && (
-                        <p className="text-sm text-muted-foreground mb-2">vs {event.opponent}</p>
-                      )}
-                      {event.championship && (
-                        <Badge variant="outline" className="text-xs mb-2">
-                          {event.championship}
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <CalendarIcon className="h-3 w-3" />
-                        {new Date(event.date).toLocaleDateString('pt-BR')}
-                      </p>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {event.time}
-                      </p>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {event.location}
-                      </p>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        {event.team}
-                      </p>
-                    </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(event.date).toLocaleDateString('pt-BR')} às {event.time}
+                    </p>
                   </div>
                 </div>
-              )
-            })}
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
