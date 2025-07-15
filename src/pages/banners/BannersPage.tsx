@@ -209,27 +209,9 @@ export default function BannersPage() {
                 banners.map((banner) => (
                   <TableRow key={banner.id}>
                     <TableCell>
-                      {banner.midia_url ? (
-                        <div className="w-16 h-10 bg-muted rounded overflow-hidden">
-                          {banner.midia_tipo === 'video' ? (
-                            <video 
-                              src={banner.midia_url} 
-                              className="w-full h-full object-cover"
-                              muted
-                            />
-                          ) : (
-                            <img 
-                              src={banner.midia_url} 
-                              alt={banner.titulo}
-                              className="w-full h-full object-cover"
-                            />
-                          )}
-                        </div>
-                      ) : (
-                        <div className="w-16 h-10 bg-muted rounded flex items-center justify-center">
-                          <span className="text-xs text-muted-foreground">Sem mídia</span>
-                        </div>
-                      )}
+                      <div className="w-16 h-10 bg-muted rounded flex items-center justify-center">
+                        <span className="text-xs text-muted-foreground">Sem mídia</span>
+                      </div>
                     </TableCell>
                     <TableCell className="font-medium">{banner.titulo}</TableCell>
                     <TableCell>{getTipoConteudoLabel(banner.tipo_conteudo)}</TableCell>
