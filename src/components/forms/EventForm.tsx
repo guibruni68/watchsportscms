@@ -111,24 +111,13 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onClose}
-          className="gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">
-            {isEdit ? "Editar Evento" : "Novo Evento"}
-          </h1>
-          <p className="text-muted-foreground">
-            {isEdit ? "Modifique os dados do evento" : "Cadastre um novo evento na agenda"}
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold">
+          {isEdit ? "Editar Evento" : "Novo Evento"}
+        </h1>
+        <p className="text-muted-foreground">
+          {isEdit ? "Modifique os dados do evento" : "Cadastre um novo evento na agenda"}
+        </p>
       </div>
 
       <Card>
