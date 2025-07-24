@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -33,6 +34,10 @@ const formSchema = z.object({
   order: z.number().min(1, "Ordem deve ser maior que 0").max(100, "Ordem deve ser menor que 100"),
   status: z.boolean(),
   showMoreButton: z.boolean(),
+  // Novos campos
+  sortType: z.enum(["alphabetical", "random", "mostWatched", "newest"]),
+  contentLimit: z.number().min(1, "Deve exibir pelo menos 1 conteúdo").max(50, "Máximo 50 conteúdos"),
+  planType: z.enum(["all", "free", "premium", "vip"]),
   // Campos condicionais
   agentType: z.string().optional(),
   agentIds: z.array(z.string()).optional(),
@@ -61,6 +66,9 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
       order: initialData?.order || 1,
       status: initialData?.status === "active" || !initialData,
       showMoreButton: initialData?.showMoreButton || false,
+      sortType: initialData?.sortType || "alphabetical",
+      contentLimit: initialData?.contentLimit || 10,
+      planType: initialData?.planType || "all",
       agentType: initialData?.agentType || "",
       agentIds: initialData?.agentIds || [],
       genreType: initialData?.genreType || "",
@@ -154,6 +162,87 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                 </Select>
                 <FormDescription>
                   Layout visual que será utilizado para exibir o carrossel
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Novos campos de configuração */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="sortType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tipo de Ordenação</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a ordenação" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="alphabetical">Alfabética</SelectItem>
+                    <SelectItem value="random">Aleatória</SelectItem>
+                    <SelectItem value="mostWatched">Mais Assistidos</SelectItem>
+                    <SelectItem value="newest">Mais Recentes</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Como os conteúdos serão ordenados
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="contentLimit"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantidade de Conteúdos</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    min="1" 
+                    max="50"
+                    placeholder="10"
+                    {...field} 
+                    onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Número máximo de conteúdos a exibir
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="planType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Plano de Exibição</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o plano" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os Planos</SelectItem>
+                    <SelectItem value="free">Apenas Gratuito</SelectItem>
+                    <SelectItem value="premium">Apenas Premium</SelectItem>
+                    <SelectItem value="vip">Apenas VIP</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Para quais planos o carrossel será exibido
                 </FormDescription>
                 <FormMessage />
               </FormItem>

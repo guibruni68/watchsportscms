@@ -45,6 +45,9 @@ interface Carousel {
   status: "active" | "inactive";
   showMoreButton: boolean;
   createdAt: string;
+  sortType: "alphabetical" | "random" | "mostWatched" | "newest";
+  contentLimit: number;
+  planType: "all" | "free" | "premium" | "vip";
   agentType?: string;
   agentIds?: string[];
   genreType?: string;
@@ -62,6 +65,9 @@ const mockCarousels: Carousel[] = [
     status: "active",
     showMoreButton: true,
     createdAt: "2024-01-15",
+    sortType: "mostWatched",
+    contentLimit: 15,
+    planType: "all",
     agentType: "player",
     agentIds: ["player1"],
   },
@@ -74,6 +80,9 @@ const mockCarousels: Carousel[] = [
     status: "active",
     showMoreButton: false,
     createdAt: "2024-01-10",
+    sortType: "alphabetical",
+    contentLimit: 20,
+    planType: "premium",
     genreType: "goals",
   },
   {
@@ -85,6 +94,9 @@ const mockCarousels: Carousel[] = [
     status: "inactive",
     showMoreButton: true,
     createdAt: "2024-01-05",
+    sortType: "random",
+    contentLimit: 12,
+    planType: "vip",
     algorithmType: "personalized",
   },
   {
@@ -96,6 +108,9 @@ const mockCarousels: Carousel[] = [
     status: "active",
     showMoreButton: false,
     createdAt: "2024-01-20",
+    sortType: "newest",
+    contentLimit: 8,
+    planType: "all",
     manualContent: ["content1", "content2", "content3"],
   },
 ];
@@ -107,6 +122,36 @@ const getTypeLabel = (type: string) => {
     slider: "Slider com Fundo"
   };
   return labels[type as keyof typeof labels];
+};
+
+const getSortTypeLabel = (sortType: string) => {
+  const labels = {
+    alphabetical: "Alfabética",
+    random: "Aleatória",
+    mostWatched: "Mais Assistidos",
+    newest: "Mais Recentes"
+  };
+  return labels[sortType as keyof typeof labels];
+};
+
+const getPlanTypeLabel = (planType: string) => {
+  const labels = {
+    all: "Todos",
+    free: "Gratuito",
+    premium: "Premium",
+    vip: "VIP"
+  };
+  return labels[planType as keyof typeof labels];
+};
+
+const getPlanTypeBadgeVariant = (planType: string) => {
+  const variants = {
+    all: "outline",
+    free: "secondary",
+    premium: "default",
+    vip: "destructive"
+  };
+  return variants[planType as keyof typeof variants] as any;
 };
 
 const getContentSourceLabel = (source: string) => {
@@ -212,6 +257,9 @@ export default function CarouselsPage() {
       status: data.status ? "active" : "inactive",
       showMoreButton: data.showMoreButton,
       createdAt: new Date().toISOString().split('T')[0],
+      sortType: data.sortType,
+      contentLimit: data.contentLimit,
+      planType: data.planType,
     };
     
     setCarousels([...carousels, newCarousel]);
@@ -233,6 +281,9 @@ export default function CarouselsPage() {
       order: data.order,
       status: data.status ? "active" : "inactive",
       showMoreButton: data.showMoreButton,
+      sortType: data.sortType,
+      contentLimit: data.contentLimit,
+      planType: data.planType,
     };
     
     setCarousels(carousels.map(c => c.id === editingCarousel.id ? updatedCarousel : c));
@@ -328,8 +379,10 @@ export default function CarouselsPage() {
                       <TableHead className="w-8"></TableHead>
                       <TableHead>Título</TableHead>
                       <TableHead>Tipo</TableHead>
-                      <TableHead>Fonte de Conteúdo</TableHead>
-                      <TableHead>Ordem</TableHead>
+                      <TableHead>Fonte</TableHead>
+                      <TableHead>Ordenação</TableHead>
+                      <TableHead>Limite</TableHead>
+                      <TableHead>Plano</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
@@ -344,7 +397,13 @@ export default function CarouselsPage() {
                           <TableCell className="font-medium">{carousel.title}</TableCell>
                           <TableCell>{getTypeLabel(carousel.type)}</TableCell>
                           <TableCell>{getContentSourceLabel(carousel.contentSource)}</TableCell>
-                          <TableCell>{carousel.order}</TableCell>
+                          <TableCell>{getSortTypeLabel(carousel.sortType)}</TableCell>
+                          <TableCell>{carousel.contentLimit}</TableCell>
+                          <TableCell>
+                            <Badge variant={getPlanTypeBadgeVariant(carousel.planType)}>
+                              {getPlanTypeLabel(carousel.planType)}
+                            </Badge>
+                          </TableCell>
                           <TableCell>
                             <Badge variant={carousel.status === "active" ? "default" : "secondary"}>
                               {carousel.status === "active" ? "Ativo" : "Inativo"}
@@ -396,7 +455,16 @@ export default function CarouselsPage() {
                         <span className="font-medium">Fonte:</span> {getContentSourceLabel(carousel.contentSource)}
                       </div>
                       <div>
-                        <span className="font-medium">Ordem:</span> {carousel.order}
+                        <span className="font-medium">Ordenação:</span> {getSortTypeLabel(carousel.sortType)}
+                      </div>
+                      <div>
+                        <span className="font-medium">Limite:</span> {carousel.contentLimit} conteúdos
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">Plano:</span>
+                        <Badge variant={getPlanTypeBadgeVariant(carousel.planType)} className="text-xs">
+                          {getPlanTypeLabel(carousel.planType)}
+                        </Badge>
                       </div>
                     </div>
                   </CardContent>
@@ -432,6 +500,8 @@ export default function CarouselsPage() {
                     <div><span className="font-medium">Título:</span> {viewingCarousel.title}</div>
                     <div><span className="font-medium">Tipo:</span> {getTypeLabel(viewingCarousel.type)}</div>
                     <div><span className="font-medium">Fonte:</span> {getContentSourceLabel(viewingCarousel.contentSource)}</div>
+                    <div><span className="font-medium">Ordenação:</span> {getSortTypeLabel(viewingCarousel.sortType)}</div>
+                    <div><span className="font-medium">Limite:</span> {viewingCarousel.contentLimit} conteúdos</div>
                     <div><span className="font-medium">Ordem:</span> {viewingCarousel.order}</div>
                     <div><span className="font-medium">Status:</span> 
                       <Badge variant={viewingCarousel.status === "active" ? "default" : "secondary"} className="ml-2">
@@ -443,6 +513,12 @@ export default function CarouselsPage() {
                 <div>
                   <h3 className="font-semibold mb-2">Configurações</h3>
                   <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">Plano:</span>
+                      <Badge variant={getPlanTypeBadgeVariant(viewingCarousel.planType)}>
+                        {getPlanTypeLabel(viewingCarousel.planType)}
+                      </Badge>
+                    </div>
                     {viewingCarousel.contentSource === "agent" && (
                       <>
                         <div><span className="font-medium">Tipo de Agente:</span> {viewingCarousel.agentType}</div>
@@ -484,7 +560,6 @@ export default function CarouselsPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {/* Mock data para demonstração */}
                       {[1, 2, 3, 4, 5].map((item) => (
                         <TableRow key={item}>
                           <TableCell className="font-medium">
