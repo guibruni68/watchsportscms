@@ -13,6 +13,8 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Edit, Eye, Trash2, Grid3X3, List, GripVertical } from "lucide-react";
 import { CarouselForm } from "@/components/forms/CarouselForm";
+import { ActionDropdown } from "@/components/ui/action-dropdown"
+import { SearchFilters } from "@/components/ui/search-filters"
 import { ListControls, ListPagination } from "@/components/ui/list-controls";
 import { useToast } from "@/hooks/use-toast";
 import { getAgentsByType } from "@/data/mockData";
@@ -212,6 +214,9 @@ export default function CarouselsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [viewingCarousel, setViewingCarousel] = useState<Carousel | null>(null);
+  const [searchTerm, setSearchTerm] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState<string>("all")
+  const [statusFilter, setStatusFilter] = useState<string>("all")
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -220,6 +225,27 @@ export default function CarouselsPage() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  const categories = [
+    { value: "all", label: "Todas as fontes" },
+    { value: "agent", label: "Agente" },
+    { value: "genre", label: "Gênero" },
+    { value: "recommendations", label: "Recomendação Personalizada" },
+    { value: "manual", label: "Manual" }
+  ];
+
+  const statuses = [
+    { value: "all", label: "Todos os status" },
+    { value: "active", label: "Ativo" },
+    { value: "inactive", label: "Inativo" }
+  ];
+
+  const filteredCarousels = carousels.filter(carousel => {
+    const matchesSearch = carousel.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || carousel.contentSource === categoryFilter;
+    const matchesStatus = statusFilter === "all" || carousel.status === statusFilter;
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -313,10 +339,10 @@ export default function CarouselsPage() {
     setIsFormOpen(true);
   };
 
-  const totalPages = Math.ceil(carousels.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredCarousels.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentCarousels = carousels.slice(startIndex, endIndex);
+  const currentCarousels = filteredCarousels.slice(startIndex, endIndex);
 
   return (
     <div className="space-y-6 p-6">
@@ -350,12 +376,26 @@ export default function CarouselsPage() {
         </Dialog>
       </div>
 
+      <SearchFilters
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        categories={categories}
+        statuses={statuses}
+        searchPlaceholder="Buscar carrosséis..."
+        categoryPlaceholder="Fonte de Conteúdo"
+        statusPlaceholder="Status"
+      />
+
       <ListControls
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={setItemsPerPage}
-        totalItems={carousels.length}
+        totalItems={filteredCarousels.length}
       />
 
       <Card>
@@ -404,22 +444,11 @@ export default function CarouselsPage() {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="sm" onClick={() => openEditForm(carousel)}>
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="sm" onClick={() => setViewingCarousel(carousel)}>
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => handleDeleteCarousel(carousel.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
+                            <ActionDropdown
+                              onView={() => setViewingCarousel(carousel)}
+                              onEdit={() => openEditForm(carousel)}
+                              onDelete={() => handleDeleteCarousel(carousel.id)}
+                            />
                           </TableCell>
                         </SortableRow>
                       ))}
@@ -463,14 +492,14 @@ export default function CarouselsPage() {
         </CardContent>
       </Card>
 
-      <ListPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={setItemsPerPage}
-        totalItems={carousels.length}
-      />
+        <ListPagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredCarousels.length / itemsPerPage)}
+          onPageChange={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={setItemsPerPage}
+          totalItems={filteredCarousels.length}
+        />
 
       {/* Modal de Visualização do Carrossel */}
       <Dialog open={!!viewingCarousel} onOpenChange={() => setViewingCarousel(null)}>

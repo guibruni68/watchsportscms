@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Plus, Search, Edit, Trash2, Calendar, Target } from "lucide-react"
 import { CampaignForm } from "@/components/forms/CampaignForm"
+import { ActionDropdown } from "@/components/ui/action-dropdown"
+import { SearchFilters } from "@/components/ui/search-filters"
 import { toast } from "@/hooks/use-toast"
 
 interface Campaign {
@@ -63,18 +65,30 @@ const typeLabels = {
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>(mockCampaigns)
   const [searchTerm, setSearchTerm] = useState("")
-  const [typeFilter, setTypeFilter] = useState<string>("all")
+  const [categoryFilter, setCategoryFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [showForm, setShowForm] = useState(false)
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
 
+  const categories = [
+    { value: "all", label: "Todos os tipos" },
+    { value: "banner", label: "Banner" },
+    { value: "video", label: "Vídeo" },
+    { value: "conteudo_destacado", label: "Conteúdo Destacado" }
+  ]
+  const statuses = [
+    { value: "all", label: "Todos os status" },
+    { value: "active", label: "Ativo" },
+    { value: "inactive", label: "Inativo" }
+  ]
+
   const filteredCampaigns = campaigns.filter(campaign => {
     const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesType = typeFilter === "all" || campaign.type === typeFilter
+    const matchesCategory = categoryFilter === "all" || campaign.type === categoryFilter
     const matchesStatus = statusFilter === "all" || campaign.status === statusFilter
-    return matchesSearch && matchesType && matchesStatus
+    return matchesSearch && matchesCategory && matchesStatus
   })
 
   const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage)
@@ -122,38 +136,19 @@ export default function CampaignsPage() {
         </Button>
       </div>
 
-      <div className="flex gap-4 items-center">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar campanhas..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filtrar por tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os tipos</SelectItem>
-            <SelectItem value="banner">Banner</SelectItem>
-            <SelectItem value="video">Vídeo</SelectItem>
-            <SelectItem value="conteudo_destacado">Conteúdo Destacado</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filtrar por status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
-            <SelectItem value="active">Ativo</SelectItem>
-            <SelectItem value="inactive">Inativo</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <SearchFilters
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        categories={categories}
+        statuses={statuses}
+        searchPlaceholder="Buscar campanhas..."
+        categoryPlaceholder="Tipo"
+        statusPlaceholder="Status"
+      />
 
       <Card>
         <Table>
@@ -199,36 +194,11 @@ export default function CampaignsPage() {
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex gap-2 justify-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(campaign)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Campanha</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Tem certeza que deseja excluir a campanha "{campaign.name}"? Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(campaign.id)}>
-                            Confirmar exclusão
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                  <ActionDropdown
+                    onEdit={() => handleEdit(campaign)}
+                    onDelete={() => handleDelete(campaign.id)}
+                    showView={false}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -264,9 +234,9 @@ export default function CampaignsPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">
-              {searchTerm || typeFilter !== "all" || statusFilter !== "all" ? "Nenhuma campanha encontrada com os filtros aplicados." : "Nenhuma campanha cadastrada ainda."}
+              {searchTerm || categoryFilter !== "all" || statusFilter !== "all" ? "Nenhuma campanha encontrada com os filtros aplicados." : "Nenhuma campanha cadastrada ainda."}
             </div>
-            {!searchTerm && typeFilter === "all" && statusFilter === "all" && (
+            {!searchTerm && categoryFilter === "all" && statusFilter === "all" && (
               <Button onClick={handleNewCampaign} className="mt-4">
                 Criar Primeira Campanha
               </Button>

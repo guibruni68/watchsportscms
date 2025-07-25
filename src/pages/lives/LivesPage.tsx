@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Plus, Search, Edit, Trash2, Play, Users } from "lucide-react"
 import { LiveForm } from "@/components/forms/LiveForm"
+import { ActionDropdown } from "@/components/ui/action-dropdown"
+import { SearchFilters } from "@/components/ui/search-filters"
 import { toast } from "@/hooks/use-toast"
 
 interface Live {
@@ -72,17 +74,27 @@ const statusLabels = {
 export default function LivesPage() {
   const [lives, setLives] = useState<Live[]>(mockLives)
   const [searchTerm, setSearchTerm] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [showForm, setShowForm] = useState(false)
   const [editingLive, setEditingLive] = useState<Live | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
 
+  const categories = [{ value: "all", label: "Todas as categorias" }]
+  const statuses = [
+    { value: "all", label: "Todos os status" },
+    { value: "em_breve", label: "Em Breve" },
+    { value: "ao_vivo", label: "Ao Vivo" },
+    { value: "encerrado", label: "Encerrado" }
+  ]
+
   const filteredLives = lives.filter(live => {
     const matchesSearch = live.nomeEvento.toLowerCase().includes(searchTerm.toLowerCase()) ||
       live.descricao.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = categoryFilter === "all"
     const matchesStatus = statusFilter === "all" || live.status === statusFilter
-    return matchesSearch && matchesStatus
+    return matchesSearch && matchesCategory && matchesStatus
   })
 
   const totalPages = Math.ceil(filteredLives.length / itemsPerPage)
@@ -135,28 +147,19 @@ export default function LivesPage() {
         </Button>
       </div>
 
-      <div className="flex gap-4 items-center">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar transmissões..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filtrar por status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
-            <SelectItem value="em_breve">Em Breve</SelectItem>
-            <SelectItem value="ao_vivo">Ao Vivo</SelectItem>
-            <SelectItem value="encerrado">Encerrado</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <SearchFilters
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        categories={categories}
+        statuses={statuses}
+        searchPlaceholder="Buscar transmissões..."
+        categoryPlaceholder="Categoria"
+        statusPlaceholder="Status"
+      />
 
       <Card>
         <Table>
@@ -205,36 +208,11 @@ export default function LivesPage() {
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex gap-2 justify-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(live)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Live</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Tem certeza que deseja excluir a transmissão "{live.nomeEvento}"? Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(live.id)}>
-                            Confirmar exclusão
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                  <ActionDropdown
+                    onEdit={() => handleEdit(live)}
+                    onDelete={() => handleDelete(live.id)}
+                    showView={false}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -270,9 +248,9 @@ export default function LivesPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">
-              {searchTerm || statusFilter !== "all" ? "Nenhuma transmissão encontrada com os filtros aplicados." : "Nenhuma transmissão cadastrada ainda."}
+              {searchTerm || categoryFilter !== "all" || statusFilter !== "all" ? "Nenhuma transmissão encontrada com os filtros aplicados." : "Nenhuma transmissão cadastrada ainda."}
             </div>
-            {!searchTerm && statusFilter === "all" && (
+            {!searchTerm && categoryFilter === "all" && statusFilter === "all" && (
               <Button onClick={handleNewLive} className="mt-4">
                 Criar Primeira Live
               </Button>

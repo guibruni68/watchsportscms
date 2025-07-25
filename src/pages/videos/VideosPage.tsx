@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Search, Edit, Trash2, Eye, Calendar, Play, Filter } from "lucide-react"
+import { ActionDropdown } from "@/components/ui/action-dropdown"
+import { SearchFilters } from "@/components/ui/search-filters"
 import { VideoForm } from "@/components/forms/VideoForm"
 
 interface Video {
@@ -314,47 +316,28 @@ export default function VideosPage() {
       </div>
 
       {/* Filtros */}
-      <Card className="p-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar vídeos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Categoria" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as categorias</SelectItem>
-                {categories.map(category => (
-                  <SelectItem key={category} value={category}>{category}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
-                {statuses.map(status => (
-                  <SelectItem key={status} value={status}>
-                    {status === "publicado" ? "Publicado" : "Rascunho"}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </Card>
+      <SearchFilters
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        categories={[
+          { value: "all", label: "Todas as categorias" },
+          ...categories.map(cat => ({ value: cat, label: cat }))
+        ]}
+        statuses={[
+          { value: "all", label: "Todos os status" },
+          ...statuses.map(status => ({ 
+            value: status, 
+            label: status === "publicado" ? "Publicado" : "Rascunho" 
+          }))
+        ]}
+        searchPlaceholder="Buscar vídeos..."
+        categoryPlaceholder="Categoria"
+        statusPlaceholder="Status"
+      />
 
       {/* Tabela */}
       <Card>
@@ -405,22 +388,11 @@ export default function VideosPage() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(video)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(video.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <ActionDropdown
+                    onEdit={() => handleEdit(video)}
+                    onDelete={() => handleDelete(video.id)}
+                    showView={false}
+                  />
                 </TableCell>
               </TableRow>
             ))}

@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Plus, Search, Edit, Trash2, Star, Eye } from "lucide-react"
+import { ActionDropdown } from "@/components/ui/action-dropdown"
+import { SearchFilters } from "@/components/ui/search-filters"
 import { NewsForm } from "@/components/forms/NewsForm"
 import { toast } from "@/hooks/use-toast"
 
@@ -66,19 +68,28 @@ const mockNews: News[] = [
 export default function NewsPage() {
   const [news, setNews] = useState<News[]>(mockNews)
   const [searchTerm, setSearchTerm] = useState("")
-  const [highlightFilter, setHighlightFilter] = useState<string>("all")
+  const [categoryFilter, setCategoryFilter] = useState<string>("all") 
+  const [statusFilter, setStatusFilter] = useState<string>("all")
   const [showForm, setShowForm] = useState(false)
   const [editingNews, setEditingNews] = useState<News | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
 
+  const categories = [{ value: "all", label: "Todas as categorias" }]
+  const statuses = [
+    { value: "all", label: "Todos os status" },
+    { value: "highlight", label: "Apenas destaques" },
+    { value: "normal", label: "Apenas normais" }
+  ]
+
   const filteredNews = news.filter(item => {
     const matchesSearch = item.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.conteudo.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesHighlight = highlightFilter === "all" || 
-      (highlightFilter === "highlight" && item.destaque) ||
-      (highlightFilter === "normal" && !item.destaque)
-    return matchesSearch && matchesHighlight
+    const matchesCategory = categoryFilter === "all"
+    const matchesStatus = statusFilter === "all" || 
+      (statusFilter === "highlight" && item.destaque) ||
+      (statusFilter === "normal" && !item.destaque)
+    return matchesSearch && matchesCategory && matchesStatus
   })
 
   const totalPages = Math.ceil(filteredNews.length / itemsPerPage)
@@ -130,27 +141,19 @@ export default function NewsPage() {
         </Button>
       </div>
 
-      <div className="flex gap-4 items-center">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar notícias..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Select value={highlightFilter} onValueChange={setHighlightFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filtrar por tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas as notícias</SelectItem>
-            <SelectItem value="highlight">Apenas destaques</SelectItem>
-            <SelectItem value="normal">Apenas normais</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <SearchFilters
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        categories={categories}
+        statuses={statuses}
+        searchPlaceholder="Buscar notícias..."
+        categoryPlaceholder="Categoria"
+        statusPlaceholder="Tipo"
+      />
 
       <Card>
         <Table>
@@ -194,36 +197,11 @@ export default function NewsPage() {
                   )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex gap-2 justify-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(item)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir Notícia</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Tem certeza que deseja excluir a notícia "{item.titulo}"? Esta ação não pode ser desfeita.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(item.id)}>
-                            Confirmar exclusão
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                  <ActionDropdown
+                    onEdit={() => handleEdit(item)}
+                    onDelete={() => handleDelete(item.id)}
+                    showView={false}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -259,9 +237,9 @@ export default function NewsPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">
-              {searchTerm || highlightFilter !== "all" ? "Nenhuma notícia encontrada com os filtros aplicados." : "Nenhuma notícia cadastrada ainda."}
+              {searchTerm || categoryFilter !== "all" || statusFilter !== "all" ? "Nenhuma notícia encontrada com os filtros aplicados." : "Nenhuma notícia cadastrada ainda."}
             </div>
-            {!searchTerm && highlightFilter === "all" && (
+            {!searchTerm && categoryFilter === "all" && statusFilter === "all" && (
               <Button onClick={handleNewNews} className="mt-4">
                 Criar Primeira Notícia
               </Button>

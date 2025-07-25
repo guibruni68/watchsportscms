@@ -11,6 +11,8 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { toast } from "@/hooks/use-toast";
 import { mockBanners, Banner } from "@/data/mockData";
 import { Plus, Edit, Trash2, Eye, BarChart3, Activity, MousePointer, Clock, Play, Image, GripVertical } from "lucide-react";
+import { ActionDropdown } from "@/components/ui/action-dropdown"
+import { SearchFilters } from "@/components/ui/search-filters"
 import { format } from "date-fns";
 import {
   DndContext,
@@ -110,6 +112,9 @@ function SortableRow({ banner, children }: {
 export default function BannersPage() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string>("premium");
+  const [searchTerm, setSearchTerm] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState<string>("all")
+  const [statusFilter, setStatusFilter] = useState<string>("all")
   const [stats, setStats] = useState<BannerStats>({
     total_banners: 0,
     banners_ativos: 0,
@@ -126,8 +131,35 @@ export default function BannersPage() {
     })
   );
 
+  const categories = [
+    { value: "all", label: "Todos os tipos" },
+    { value: "vod", label: "VOD" },
+    { value: "live_agora", label: "Ao Vivo Agora" },
+    { value: "live_programado", label: "Live Programada" },
+    { value: "campanha", label: "Campanha" },
+    { value: "recomendado", label: "Recomendado" },
+    { value: "institucional", label: "Institucional" }
+  ];
+
+  const statuses = [
+    { value: "all", label: "Todos os status" },
+    { value: "active", label: "Ativo" },
+    { value: "inactive", label: "Inativo" },
+    { value: "expired", label: "Expirado" }
+  ];
+
+  const filteredBanners = banners.filter(banner => {
+    const matchesSearch = banner.titulo.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || banner.tipo_conteudo === categoryFilter;
+    const matchesStatus = statusFilter === "all" || 
+      (statusFilter === "active" && banner.status && !isExpired(banner.data_fim)) ||
+      (statusFilter === "inactive" && !banner.status) ||
+      (statusFilter === "expired" && isExpired(banner.data_fim));
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
   // Filtrar banners ativos para o carrossel
-  const activeBanners = banners.filter(banner => 
+  const activeBanners = filteredBanners.filter(banner => 
     banner.status && 
     !isExpired(banner.data_fim) && 
     (banner.planos_permitidos?.includes(selectedPlan) || !banner.planos_permitidos?.length)
@@ -220,6 +252,21 @@ export default function BannersPage() {
           </Link>
         </Button>
       </div>
+
+      {/* Filtros */}
+      <SearchFilters
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        categories={categories}
+        statuses={statuses}
+        searchPlaceholder="Buscar banners..."
+        categoryPlaceholder="Tipo de Conteúdo"
+        statusPlaceholder="Status"
+      />
 
       {/* Dashboard Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -379,20 +426,20 @@ export default function BannersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {banners.length === 0 ? (
+                {filteredBanners.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center py-8">
                       <div className="text-muted-foreground">
-                        Nenhum banner encontrado. Crie seu primeiro banner.
+                        Nenhum banner encontrado.
                       </div>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  <SortableContext 
-                    items={banners.map(banner => banner.id)} 
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {banners.map((banner) => (
+                  <SortableContext
+                     items={filteredBanners.map(banner => banner.id)} 
+                     strategy={verticalListSortingStrategy}
+                   >
+                     {filteredBanners.map((banner) => (
                       <SortableRow key={banner.id} banner={banner}>
                         <TableCell>
                           <div className="w-16 h-10 bg-muted rounded flex items-center justify-center">
@@ -417,145 +464,11 @@ export default function BannersPage() {
                         </TableCell>
                         <TableCell>{banner.ordem}</TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                                <DialogHeader>
-                                  <DialogTitle>Preview do Banner - {banner.titulo}</DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-6">
-                                  {/* Preview Visual */}
-                                  <div className="border rounded-lg p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
-                                    <div className="relative">
-                                      {banner.midia_url && (
-                                        <div className="relative rounded-lg overflow-hidden">
-                                          {banner.midia_tipo === 'video' ? (
-                                            <div className="relative">
-                                              <video 
-                                                src={banner.midia_url} 
-                                                className="w-full h-64 object-cover"
-                                                poster={banner.midia_url}
-                                              />
-                                              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                                <Play className="h-16 w-16 text-white opacity-80" />
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <img 
-                                              src={banner.midia_url} 
-                                              alt={banner.titulo}
-                                              className="w-full h-64 object-cover"
-                                            />
-                                          )}
-                                          
-                                          {/* Overlay com título e botão */}
-                                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
-                                            <h3 className="text-white text-2xl font-bold mb-2">{banner.titulo}</h3>
-                                            {banner.exibir_botao && banner.texto_botao && (
-                                              <Button 
-                                                className="w-fit"
-                                                variant={banner.layout_banner === 'hero_cta' ? 'default' : 'secondary'}
-                                              >
-                                                {banner.texto_botao}
-                                              </Button>
-                                            )}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {/* Informações do Banner */}
-                                  <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-4">
-                                      <div>
-                                        <h4 className="font-medium text-sm text-muted-foreground">Tipo de Conteúdo</h4>
-                                        <p className="font-medium">{getTipoConteudoLabel(banner.tipo_conteudo)}</p>
-                                      </div>
-                                      <div>
-                                        <h4 className="font-medium text-sm text-muted-foreground">Layout</h4>
-                                        <p className="font-medium">{getLayoutLabel(banner.layout_banner)}</p>
-                                      </div>
-                                      <div>
-                                        <h4 className="font-medium text-sm text-muted-foreground">Status</h4>
-                                        <Badge 
-                                          variant={
-                                            !banner.status ? "secondary" : 
-                                            isExpired(banner.data_fim) ? "outline" : 
-                                            "default"
-                                          }
-                                        >
-                                          {!banner.status ? "Inativo" : 
-                                           isExpired(banner.data_fim) ? "Expirado" : 
-                                           "Ativo"}
-                                        </Badge>
-                                      </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                      <div>
-                                        <h4 className="font-medium text-sm text-muted-foreground">Estatísticas</h4>
-                                        <div className="grid grid-cols-3 gap-2 text-sm">
-                                          <div className="text-center p-2 bg-muted rounded">
-                                            <div className="font-bold">{banner.visualizacoes.toLocaleString()}</div>
-                                            <div className="text-xs text-muted-foreground">Views</div>
-                                          </div>
-                                          <div className="text-center p-2 bg-muted rounded">
-                                            <div className="font-bold">{banner.cliques.toLocaleString()}</div>
-                                            <div className="text-xs text-muted-foreground">Cliques</div>
-                                          </div>
-                                          <div className="text-center p-2 bg-muted rounded">
-                                            <div className="font-bold">{formatTime(banner.tempo_total_reproducao)}</div>
-                                            <div className="text-xs text-muted-foreground">Tempo</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <h4 className="font-medium text-sm text-muted-foreground">Período</h4>
-                                        <div className="text-sm">
-                                          <div>{format(new Date(banner.data_inicio), 'dd/MM/yyyy HH:mm')}</div>
-                                          <div className="text-muted-foreground">até {format(new Date(banner.data_fim), 'dd/MM/yyyy HH:mm')}</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
-
-                            <Button variant="ghost" size="sm" asChild>
-                              <Link to={`/banners/${banner.id}/editar`}>
-                                <Edit className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Tem certeza que deseja excluir o banner "{banner.titulo}"? 
-                                    Esta ação não pode ser desfeita.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => deleteBanner(banner.id)}>
-                                    Confirmar
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
+                          <ActionDropdown
+                            onView={() => {}} // Dialog de preview será mostrado
+                            onEdit={() => window.location.href = `/banners/${banner.id}/editar`}
+                            onDelete={() => deleteBanner(banner.id)}
+                          />
                         </TableCell>
                       </SortableRow>
                     ))}
