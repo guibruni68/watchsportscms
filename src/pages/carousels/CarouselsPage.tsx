@@ -382,7 +382,6 @@ export default function CarouselsPage() {
                       <TableHead>Fonte</TableHead>
                       <TableHead>Ordenação</TableHead>
                       <TableHead>Limite</TableHead>
-                      <TableHead>Plano</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
@@ -399,11 +398,6 @@ export default function CarouselsPage() {
                           <TableCell>{getContentSourceLabel(carousel.contentSource)}</TableCell>
                           <TableCell>{getSortTypeLabel(carousel.sortType)}</TableCell>
                           <TableCell>{carousel.contentLimit}</TableCell>
-                          <TableCell>
-                            <Badge variant={getPlanTypeBadgeVariant(carousel.planType)}>
-                              {getPlanTypeLabel(carousel.planType)}
-                            </Badge>
-                          </TableCell>
                           <TableCell>
                             <Badge variant={carousel.status === "active" ? "default" : "secondary"}>
                               {carousel.status === "active" ? "Ativo" : "Inativo"}
@@ -459,12 +453,6 @@ export default function CarouselsPage() {
                       </div>
                       <div>
                         <span className="font-medium">Limite:</span> {carousel.contentLimit} conteúdos
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">Plano:</span>
-                        <Badge variant={getPlanTypeBadgeVariant(carousel.planType)} className="text-xs">
-                          {getPlanTypeLabel(carousel.planType)}
-                        </Badge>
                       </div>
                     </div>
                   </CardContent>
