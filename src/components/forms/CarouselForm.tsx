@@ -23,6 +23,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, Search } from "lucide-react";
 import { getAgentsByType } from "@/data/mockData";
 import { useState } from "react";
@@ -92,8 +93,9 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+    <ScrollArea className="h-[80vh] w-full">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 p-6">
         <FormField
           control={form.control}
           name="title"
@@ -532,7 +534,8 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
             {initialData ? "Atualizar Carrossel" : "Criar Carrossel"}
           </Button>
         </div>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </ScrollArea>
   );
 }
