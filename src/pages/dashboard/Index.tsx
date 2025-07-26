@@ -112,12 +112,6 @@ export default function DashboardIndex() {
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground">Bem-vindo ao painel de controle da FNB</p>
         </div>
-        <div className="flex gap-2">
-          <Button className="bg-gradient-primary transition-all">
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Conteúdo
-          </Button>
-        </div>
       </div>
 
       {/* Stats Grid */}
