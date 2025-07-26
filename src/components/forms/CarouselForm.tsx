@@ -30,21 +30,28 @@ import { useState } from "react";
 
 const formSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(100, "Título deve ter no máximo 100 caracteres"),
-  contentSource: z.enum(["agent", "genre", "recommendations", "manual"]),
-  type: z.enum(["horizontal", "grid", "slider"]),
+  carouselType: z.enum(["vod", "lives", "news", "ads", "players", "store", "top5"]),
+  layout: z.enum(["horizontal", "grid", "slider"]),
   order: z.number().min(1, "Ordem deve ser maior que 0").max(100, "Ordem deve ser menor que 100"),
   status: z.boolean(),
   showMoreButton: z.boolean(),
-  // Novos campos
+  // Campos universais
   sortType: z.enum(["alphabetical", "random", "mostWatched", "newest"]),
-  contentLimit: z.number().min(1, "Deve exibir pelo menos 1 conteúdo").max(50, "Máximo 50 conteúdos"),
+  contentLimit: z.number().min(1, "Deve exibir pelo menos 1 conteúdo").max(50, "Máximo 50 conteúdos").optional(),
   planType: z.enum(["all", "free", "premium", "vip"]),
-  // Campos condicionais
+  // Campos específicos por tipo
+  contentSource: z.enum(["agent", "genre", "recommendations", "manual"]).optional(),
   agentType: z.string().optional(),
   agentIds: z.array(z.string()).optional(),
   genreType: z.string().optional(),
   algorithmType: z.string().optional(),
   manualContent: z.array(z.string()).optional(),
+  // Campos específicos para ADS
+  adCategory: z.string().optional(),
+  adPosition: z.string().optional(),
+  // Campos específicos para Loja
+  productCategory: z.string().optional(),
+  priceRange: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -62,22 +69,28 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: initialData?.title || "",
-      contentSource: initialData?.contentSource || "agent",
-      type: initialData?.type || "horizontal", 
+      carouselType: initialData?.carouselType || "vod",
+      layout: initialData?.layout || initialData?.type || "horizontal", 
       order: initialData?.order || 1,
       status: initialData?.status === "active" || !initialData,
       showMoreButton: initialData?.showMoreButton || false,
       sortType: initialData?.sortType || "alphabetical",
       contentLimit: initialData?.contentLimit || 10,
       planType: initialData?.planType || "all",
-      agentType: initialData?.agentType || "",
+      contentSource: initialData?.contentSource,
+      agentType: initialData?.agentType,
       agentIds: initialData?.agentIds || [],
-      genreType: initialData?.genreType || "",
-      algorithmType: initialData?.algorithmType || "",
+      genreType: initialData?.genreType,
+      algorithmType: initialData?.algorithmType,
       manualContent: initialData?.manualContent || [],
+      adCategory: initialData?.adCategory,
+      adPosition: initialData?.adPosition,
+      productCategory: initialData?.productCategory,
+      priceRange: initialData?.priceRange,
     },
   });
 
+  const carouselType = form.watch("carouselType");
   const contentSource = form.watch("contentSource");
   const agentType = form.watch("agentType");
   const selectedAgentIds = form.watch("agentIds") || [];
@@ -119,25 +132,28 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="contentSource"
+            name="carouselType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Fonte de Conteúdo</FormLabel>
+                <FormLabel>Tipo de Carrossel</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione a fonte" />
+                      <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="agent">Agente (Jogador, Técnico, Time, etc.)</SelectItem>
-                    <SelectItem value="genre">Gênero/Categoria</SelectItem>
-                    <SelectItem value="recommendations">Recomendação Personalizada</SelectItem>
-                    <SelectItem value="manual">Carrossel Manual</SelectItem>
+                    <SelectItem value="vod">VOD (Vídeos On Demand)</SelectItem>
+                    <SelectItem value="lives">Canais ao Vivo</SelectItem>
+                    <SelectItem value="news">Notícias</SelectItem>
+                    <SelectItem value="ads">Anúncios/ADS</SelectItem>
+                    <SelectItem value="players">Jogadores</SelectItem>
+                    <SelectItem value="store">Loja</SelectItem>
+                    <SelectItem value="top5">TOP 5 Conteúdos</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormDescription>
-                  Define que tipo de conteúdo será exibido no carrossel
+                  Define o tipo de conteúdo do carrossel
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -146,14 +162,14 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
 
           <FormField
             control={form.control}
-            name="type"
+            name="layout"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tipo de Carrossel</FormLabel>
+                <FormLabel>Layout do Carrossel</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o tipo" />
+                      <SelectValue placeholder="Selecione o layout" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -171,7 +187,7 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
           />
         </div>
 
-        {/* Novos campos de configuração */}
+        {/* Configurações universais */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FormField
             control={form.control}
@@ -200,29 +216,32 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="contentLimit"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Quantidade de Conteúdos</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    min="1" 
-                    max="50"
-                    placeholder="10"
-                    {...field} 
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Número máximo de conteúdos a exibir
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Campo de quantidade de conteúdos - não aparece para TOP5 */}
+          {carouselType !== "top5" && (
+            <FormField
+              control={form.control}
+              name="contentLimit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantidade de Conteúdos</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      min="1" 
+                      max="50"
+                      placeholder="10"
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Número máximo de conteúdos a exibir
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           <FormField
             control={form.control}
@@ -251,6 +270,147 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
             )}
           />
         </div>
+
+        {/* Configurações específicas por tipo de carrossel */}
+        {(carouselType === "vod" || carouselType === "news") && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Configurações de Conteúdo</h3>
+            <FormField
+              control={form.control}
+              name="contentSource"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fonte de Conteúdo</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a fonte" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="agent">Agente (Jogador, Técnico, Time, etc.)</SelectItem>
+                      <SelectItem value="genre">Gênero/Categoria</SelectItem>
+                      <SelectItem value="recommendations">Recomendação Personalizada</SelectItem>
+                      <SelectItem value="manual">Carrossel Manual</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Define que tipo de conteúdo será exibido no carrossel
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
+
+        {carouselType === "ads" && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Configurações de Anúncios</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="adCategory"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categoria do Anúncio</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a categoria" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="banner">Banner</SelectItem>
+                        <SelectItem value="video">Vídeo</SelectItem>
+                        <SelectItem value="interstitial">Intersticial</SelectItem>
+                        <SelectItem value="native">Nativo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="adPosition"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Posição do Anúncio</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a posição" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="top">Topo</SelectItem>
+                        <SelectItem value="middle">Meio</SelectItem>
+                        <SelectItem value="bottom">Rodapé</SelectItem>
+                        <SelectItem value="sidebar">Barra lateral</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        )}
+
+        {carouselType === "store" && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Configurações da Loja</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="productCategory"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categoria de Produtos</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a categoria" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="jerseys">Camisas</SelectItem>
+                        <SelectItem value="accessories">Acessórios</SelectItem>
+                        <SelectItem value="equipment">Equipamentos</SelectItem>
+                        <SelectItem value="collectibles">Colecionáveis</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="priceRange"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Faixa de Preço</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a faixa" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="0-50">R$ 0 - R$ 50</SelectItem>
+                        <SelectItem value="50-100">R$ 50 - R$ 100</SelectItem>
+                        <SelectItem value="100-200">R$ 100 - R$ 200</SelectItem>
+                        <SelectItem value="200+">R$ 200+</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Campos condicionais baseados na fonte de conteúdo */}
         {contentSource === "agent" && (

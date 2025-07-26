@@ -41,27 +41,34 @@ import {
 interface Carousel {
   id: string;
   title: string;
-  type: "horizontal" | "grid" | "slider";
-  contentSource: "agent" | "genre" | "recommendations" | "manual";
+  carouselType: "vod" | "lives" | "news" | "ads" | "players" | "store" | "top5";
+  layout: "horizontal" | "grid" | "slider";
   order: number;
   status: "active" | "inactive";
   showMoreButton: boolean;
   createdAt: string;
   sortType: "alphabetical" | "random" | "mostWatched" | "newest";
-  contentLimit: number;
+  contentLimit?: number;
   planType: "all" | "free" | "premium" | "vip";
+  // Campos específicos por tipo
+  contentSource?: "agent" | "genre" | "recommendations" | "manual";
   agentType?: string;
   agentIds?: string[];
   genreType?: string;
   algorithmType?: string;
   manualContent?: string[];
+  adCategory?: string;
+  adPosition?: string;
+  productCategory?: string;
+  priceRange?: string;
 }
 
 const mockCarousels: Carousel[] = [
   {
     id: "1",
-    title: "Melhores Momentos - Marcus Johnson",
-    type: "horizontal",
+    title: "VOD - Melhores Momentos Marcus Johnson",
+    carouselType: "vod",
+    layout: "horizontal",
     contentSource: "agent",
     order: 1,
     status: "active",
@@ -75,8 +82,9 @@ const mockCarousels: Carousel[] = [
   },
   {
     id: "2", 
-    title: "Categoria: Gols Históricos",
-    type: "grid",
+    title: "Notícias - Gols Históricos",
+    carouselType: "news",
+    layout: "grid",
     contentSource: "genre",
     order: 2,
     status: "active",
@@ -89,23 +97,21 @@ const mockCarousels: Carousel[] = [
   },
   {
     id: "3",
-    title: "Recomendações Personalizadas",
-    type: "slider",
-    contentSource: "recommendations",
+    title: "TOP 5 - Melhores Jogadas",
+    carouselType: "top5",
+    layout: "slider",
     order: 3,
     status: "inactive",
     showMoreButton: true,
     createdAt: "2024-01-05",
     sortType: "random",
-    contentLimit: 12,
     planType: "vip",
-    algorithmType: "personalized",
   },
   {
     id: "4",
-    title: "Seleção Manual - Final do Campeonato",
-    type: "horizontal",
-    contentSource: "manual",
+    title: "ADS - Banners Promocionais",
+    carouselType: "ads",
+    layout: "horizontal",
     order: 4,
     status: "active",
     showMoreButton: false,
@@ -113,17 +119,46 @@ const mockCarousels: Carousel[] = [
     sortType: "newest",
     contentLimit: 8,
     planType: "all",
-    manualContent: ["content1", "content2", "content3"],
+    adCategory: "banner",
+    adPosition: "top",
+  },
+  {
+    id: "5",
+    title: "Loja - Camisas Premium",
+    carouselType: "store",
+    layout: "grid",
+    order: 5,
+    status: "active",
+    showMoreButton: true,
+    createdAt: "2024-01-18",
+    sortType: "newest",
+    contentLimit: 12,
+    planType: "premium",
+    productCategory: "jerseys",
+    priceRange: "100-200",
   },
 ];
 
-const getTypeLabel = (type: string) => {
+const getCarouselTypeLabel = (type: string) => {
+  const labels = {
+    vod: "VOD",
+    lives: "Canais ao Vivo",
+    news: "Notícias",
+    ads: "Anúncios/ADS",
+    players: "Jogadores",
+    store: "Loja",
+    top5: "TOP 5"
+  };
+  return labels[type as keyof typeof labels];
+};
+
+const getLayoutLabel = (layout: string) => {
   const labels = {
     horizontal: "Horizontal Scroll",
     grid: "Grade com Destaques", 
     slider: "Slider com Fundo"
   };
-  return labels[type as keyof typeof labels];
+  return labels[layout as keyof typeof labels];
 };
 
 const getSortTypeLabel = (sortType: string) => {
@@ -227,11 +262,14 @@ export default function CarouselsPage() {
   );
 
   const categories = [
-    { value: "all", label: "Todas as fontes" },
-    { value: "agent", label: "Agente" },
-    { value: "genre", label: "Gênero" },
-    { value: "recommendations", label: "Recomendação Personalizada" },
-    { value: "manual", label: "Manual" }
+    { value: "all", label: "Todos os tipos" },
+    { value: "vod", label: "VOD" },
+    { value: "lives", label: "Canais ao Vivo" },
+    { value: "news", label: "Notícias" },
+    { value: "ads", label: "Anúncios/ADS" },
+    { value: "players", label: "Jogadores" },
+    { value: "store", label: "Loja" },
+    { value: "top5", label: "TOP 5" }
   ];
 
   const statuses = [
@@ -242,7 +280,7 @@ export default function CarouselsPage() {
 
   const filteredCarousels = carousels.filter(carousel => {
     const matchesSearch = carousel.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || carousel.contentSource === categoryFilter;
+    const matchesCategory = categoryFilter === "all" || carousel.carouselType === categoryFilter;
     const matchesStatus = statusFilter === "all" || carousel.status === statusFilter;
     return matchesSearch && matchesCategory && matchesStatus;
   });
@@ -277,7 +315,8 @@ export default function CarouselsPage() {
     const newCarousel: Carousel = {
       id: String(Date.now()),
       title: data.title,
-      type: data.type,
+      carouselType: data.carouselType,
+      layout: data.layout,
       contentSource: data.contentSource,
       order: data.order,
       status: data.status ? "active" : "inactive",
@@ -286,6 +325,15 @@ export default function CarouselsPage() {
       sortType: data.sortType,
       contentLimit: data.contentLimit,
       planType: data.planType,
+      agentType: data.agentType,
+      agentIds: data.agentIds,
+      genreType: data.genreType,
+      algorithmType: data.algorithmType,
+      manualContent: data.manualContent,
+      adCategory: data.adCategory,
+      adPosition: data.adPosition,
+      productCategory: data.productCategory,
+      priceRange: data.priceRange,
     };
     
     setCarousels([...carousels, newCarousel]);
@@ -302,7 +350,8 @@ export default function CarouselsPage() {
     const updatedCarousel: Carousel = {
       ...editingCarousel,
       title: data.title,
-      type: data.type,
+      carouselType: data.carouselType,
+      layout: data.layout,
       contentSource: data.contentSource,
       order: data.order,
       status: data.status ? "active" : "inactive",
@@ -310,6 +359,15 @@ export default function CarouselsPage() {
       sortType: data.sortType,
       contentLimit: data.contentLimit,
       planType: data.planType,
+      agentType: data.agentType,
+      agentIds: data.agentIds,
+      genreType: data.genreType,
+      algorithmType: data.algorithmType,
+      manualContent: data.manualContent,
+      adCategory: data.adCategory,
+      adPosition: data.adPosition,
+      productCategory: data.productCategory,
+      priceRange: data.priceRange,
     };
     
     setCarousels(carousels.map(c => c.id === editingCarousel.id ? updatedCarousel : c));
@@ -386,7 +444,7 @@ export default function CarouselsPage() {
         categories={categories}
         statuses={statuses}
         searchPlaceholder="Buscar carrosséis..."
-        categoryPlaceholder="Fonte de Conteúdo"
+        categoryPlaceholder="Tipo de Carrossel"
         statusPlaceholder="Status"
       />
 
@@ -419,7 +477,7 @@ export default function CarouselsPage() {
                       <TableHead className="w-8"></TableHead>
                       <TableHead>Título</TableHead>
                       <TableHead>Tipo</TableHead>
-                      <TableHead>Fonte</TableHead>
+                      <TableHead>Layout</TableHead>
                       <TableHead>Ordenação</TableHead>
                       <TableHead>Limite</TableHead>
                       <TableHead>Status</TableHead>
@@ -434,10 +492,12 @@ export default function CarouselsPage() {
                       {currentCarousels.map((carousel) => (
                         <SortableRow key={carousel.id} carousel={carousel}>
                           <TableCell className="font-medium">{carousel.title}</TableCell>
-                          <TableCell>{getTypeLabel(carousel.type)}</TableCell>
-                          <TableCell>{getContentSourceLabel(carousel.contentSource)}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{getCarouselTypeLabel(carousel.carouselType)}</Badge>
+                          </TableCell>
+                          <TableCell>{getLayoutLabel(carousel.layout)}</TableCell>
                           <TableCell>{getSortTypeLabel(carousel.sortType)}</TableCell>
-                          <TableCell>{carousel.contentLimit}</TableCell>
+                          <TableCell>{carousel.carouselType === "top5" ? "5" : carousel.contentLimit}</TableCell>
                           <TableCell>
                             <Badge variant={carousel.status === "active" ? "default" : "secondary"}>
                               {carousel.status === "active" ? "Ativo" : "Inativo"}
@@ -472,16 +532,17 @@ export default function CarouselsPage() {
                   <CardContent className="space-y-3">
                     <div className="space-y-2 text-sm">
                       <div>
-                        <span className="font-medium">Tipo:</span> {getTypeLabel(carousel.type)}
+                        <span className="font-medium">Tipo:</span> 
+                        <Badge variant="outline" className="ml-2">{getCarouselTypeLabel(carousel.carouselType)}</Badge>
                       </div>
                       <div>
-                        <span className="font-medium">Fonte:</span> {getContentSourceLabel(carousel.contentSource)}
+                        <span className="font-medium">Layout:</span> {getLayoutLabel(carousel.layout)}
                       </div>
                       <div>
                         <span className="font-medium">Ordenação:</span> {getSortTypeLabel(carousel.sortType)}
                       </div>
                       <div>
-                        <span className="font-medium">Limite:</span> {carousel.contentLimit} conteúdos
+                        <span className="font-medium">Limite:</span> {carousel.carouselType === "top5" ? "5" : carousel.contentLimit} conteúdos
                       </div>
                     </div>
                   </CardContent>
@@ -515,10 +576,12 @@ export default function CarouselsPage() {
                   <h3 className="font-semibold mb-2">Informações Básicas</h3>
                   <div className="space-y-2 text-sm">
                     <div><span className="font-medium">Título:</span> {viewingCarousel.title}</div>
-                    <div><span className="font-medium">Tipo:</span> {getTypeLabel(viewingCarousel.type)}</div>
-                    <div><span className="font-medium">Fonte:</span> {getContentSourceLabel(viewingCarousel.contentSource)}</div>
+                    <div><span className="font-medium">Tipo:</span> 
+                      <Badge variant="outline" className="ml-2">{getCarouselTypeLabel(viewingCarousel.carouselType)}</Badge>
+                    </div>
+                    <div><span className="font-medium">Layout:</span> {getLayoutLabel(viewingCarousel.layout)}</div>
                     <div><span className="font-medium">Ordenação:</span> {getSortTypeLabel(viewingCarousel.sortType)}</div>
-                    <div><span className="font-medium">Limite:</span> {viewingCarousel.contentLimit} conteúdos</div>
+                    <div><span className="font-medium">Limite:</span> {viewingCarousel.carouselType === "top5" ? "5" : viewingCarousel.contentLimit} conteúdos</div>
                     <div><span className="font-medium">Ordem:</span> {viewingCarousel.order}</div>
                     <div><span className="font-medium">Status:</span> 
                       <Badge variant={viewingCarousel.status === "active" ? "default" : "secondary"} className="ml-2">
