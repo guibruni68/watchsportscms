@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { StreamingPreview } from "@/components/customization/StreamingPreview"
 import { 
   Palette, 
   Upload, 
@@ -250,66 +251,7 @@ export default function CustomizationPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="border border-border rounded-lg overflow-hidden bg-background">
-                {/* Mock Header */}
-                <div 
-                  className="h-12 flex items-center px-4 text-white"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                      {logoUrl ? (
-                        <img src={logoUrl} alt="Logo" className="w-5 h-5 object-contain" />
-                      ) : (
-                        <Image className="h-3 w-3" />
-                      )}
-                    </div>
-                    <span className="font-medium text-sm">{clubName}</span>
-                  </div>
-                </div>
-
-                {/* Mock Content */}
-                <div className="p-4 space-y-4">
-                  <div>
-                    <h3 className="font-bold text-lg" style={{ color: primaryColor }}>
-                      Bem-vindo ao {clubName}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {clubDescription}
-                    </p>
-                  </div>
-
-                  {/* Mock Button */}
-                  <div 
-                    className="inline-block px-4 py-2 rounded-lg text-white text-sm font-medium"
-                    style={{ backgroundColor: primaryColor }}
-                  >
-                    Botão Primário
-                  </div>
-
-                  {/* Mock Badge */}
-                  <div 
-                    className="inline-block px-2 py-1 rounded text-white text-xs ml-2"
-                    style={{ backgroundColor: secondaryColor }}
-                  >
-                    Badge Secundário
-                  </div>
-
-                  {/* Mock Card */}
-                  <div className="border border-border rounded-lg p-3 bg-card">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div 
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: primaryColor }}
-                      />
-                      <span className="text-sm font-medium">Notícia em destaque</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Exemplo de como o conteúdo aparecerá com as cores escolhidas.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <StreamingPreview type="desktop" />
             </CardContent>
           </Card>
 
@@ -321,56 +263,7 @@ export default function CustomizationPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="max-w-48 mx-auto border border-border rounded-xl overflow-hidden bg-background">
-                {/* Mock Mobile Header */}
-                <div 
-                  className="h-10 flex items-center px-3 text-white"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center">
-                      {logoUrl ? (
-                        <img src={logoUrl} alt="Logo" className="w-3 h-3 object-contain" />
-                      ) : (
-                        <Image className="h-2 w-2" />
-                      )}
-                    </div>
-                    <span className="font-medium text-xs truncate">{clubName}</span>
-                  </div>
-                </div>
-
-                {/* Mock Mobile Content */}
-                <div className="p-3 space-y-3">
-                  <div>
-                    <h4 className="font-bold text-sm" style={{ color: primaryColor }}>
-                      {clubName}
-                    </h4>
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {clubDescription}
-                    </p>
-                  </div>
-
-                  <div 
-                    className="inline-block px-3 py-1 rounded text-white text-xs"
-                    style={{ backgroundColor: primaryColor }}
-                  >
-                    Ação
-                  </div>
-
-                  <div className="border border-border rounded p-2">
-                    <div className="flex items-center gap-1 mb-1">
-                      <div 
-                        className="w-1.5 h-1.5 rounded-full"
-                        style={{ backgroundColor: secondaryColor }}
-                      />
-                      <span className="text-xs font-medium">Item</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Preview mobile
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <StreamingPreview type="mobile" />
             </CardContent>
           </Card>
 
