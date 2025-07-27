@@ -36,7 +36,7 @@ const formSchema = z.object({
   status: z.boolean(),
   showMoreButton: z.boolean(),
   // Campos universais
-  sortType: z.enum(["alphabetical", "random", "mostWatched", "newest"]),
+  sortType: z.enum(["alphabetical", "random", "mostWatched", "newest"]).optional(),
   contentLimit: z.number().min(1, "Deve exibir pelo menos 1 conteúdo").max(50, "Máximo 50 conteúdos").optional(),
   planType: z.enum(["all", "free", "premium", "vip"]),
   // Campos específicos por tipo
@@ -47,11 +47,15 @@ const formSchema = z.object({
   algorithmType: z.string().optional(),
   manualContent: z.array(z.string()).optional(),
   // Campos específicos para ADS
-  adCategory: z.string().optional(),
-  adPosition: z.string().optional(),
+  adId: z.string().optional(),
   // Campos específicos para Loja
   productCategory: z.string().optional(),
   priceRange: z.string().optional(),
+  // Campos específicos para Canais ao Vivo
+  channelIds: z.array(z.string()).optional(),
+  // Campos específicos para Jogadores
+  teamFilter: z.enum(["all", "specific", "none"]).optional(),
+  teamIds: z.array(z.string()).optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -83,10 +87,12 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
       genreType: initialData?.genreType,
       algorithmType: initialData?.algorithmType,
       manualContent: initialData?.manualContent || [],
-      adCategory: initialData?.adCategory,
-      adPosition: initialData?.adPosition,
+      adId: initialData?.adId,
       productCategory: initialData?.productCategory,
       priceRange: initialData?.priceRange,
+      channelIds: initialData?.channelIds || [],
+      teamFilter: initialData?.teamFilter || "all",
+      teamIds: initialData?.teamIds || [],
     },
   });
 
@@ -189,32 +195,35 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
 
         {/* Configurações universais */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FormField
-            control={form.control}
-            name="sortType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tipo de Ordenação</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a ordenação" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="alphabetical">Alfabética</SelectItem>
-                    <SelectItem value="random">Aleatória</SelectItem>
-                    <SelectItem value="mostWatched">Mais Assistidos</SelectItem>
-                    <SelectItem value="newest">Mais Recentes</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>
-                  Como os conteúdos serão ordenados
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Campo de ordenação - não aparece para TOP5 */}
+          {carouselType !== "top5" && (
+            <FormField
+              control={form.control}
+              name="sortType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Ordenação</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a ordenação" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="alphabetical">Alfabética</SelectItem>
+                      <SelectItem value="random">Aleatória</SelectItem>
+                      <SelectItem value="mostWatched">Mais Assistidos</SelectItem>
+                      <SelectItem value="newest">Mais Recentes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Como os conteúdos serão ordenados
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           {/* Campo de quantidade de conteúdos - não aparece para TOP5 */}
           {carouselType !== "top5" && (
@@ -223,7 +232,9 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
               name="contentLimit"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Quantidade de Conteúdos</FormLabel>
+                  <FormLabel>
+                    {carouselType === "lives" ? "Quantidade de Canais" : "Quantidade de Conteúdos"}
+                  </FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -235,7 +246,7 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                     />
                   </FormControl>
                   <FormDescription>
-                    Número máximo de conteúdos a exibir
+                    {carouselType === "lives" ? "Número máximo de canais a exibir" : "Número máximo de conteúdos a exibir"}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -272,7 +283,7 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
         </div>
 
         {/* Configurações específicas por tipo de carrossel */}
-        {(carouselType === "vod" || carouselType === "news") && (
+        {(carouselType === "vod" || carouselType === "news" || carouselType === "top5") && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Configurações de Conteúdo</h3>
             <FormField
@@ -304,57 +315,126 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
           </div>
         )}
 
+        {carouselType === "lives" && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Configurações de Canais ao Vivo</h3>
+            <FormField
+              control={form.control}
+              name="channelIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Canais Selecionados</FormLabel>
+                  <Select>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione os canais" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="channel1">Canal Esporte Total</SelectItem>
+                      <SelectItem value="channel2">Transmissão Oficial</SelectItem>
+                      <SelectItem value="channel3">Canal da Copa</SelectItem>
+                      <SelectItem value="channel4">Esportes 24h</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Selecione quais canais serão exibidos no carrossel
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
+
+        {carouselType === "players" && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Configurações de Jogadores</h3>
+            <FormField
+              control={form.control}
+              name="teamFilter"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Filtro por Time</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o filtro" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os Jogadores</SelectItem>
+                      <SelectItem value="specific">Times Específicos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Como filtrar os jogadores por time
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {form.watch("teamFilter") === "specific" && (
+              <FormField
+                control={form.control}
+                name="teamIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Times Selecionados</FormLabel>
+                    <Select>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione os times" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="team1">Flamengo</SelectItem>
+                        <SelectItem value="team2">Palmeiras</SelectItem>
+                        <SelectItem value="team3">São Paulo</SelectItem>
+                        <SelectItem value="team4">Corinthians</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Selecione de quais times mostrar os jogadores
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+          </div>
+        )}
+
         {carouselType === "ads" && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Configurações de Anúncios</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="adCategory"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Categoria do Anúncio</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a categoria" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="banner">Banner</SelectItem>
-                        <SelectItem value="video">Vídeo</SelectItem>
-                        <SelectItem value="interstitial">Intersticial</SelectItem>
-                        <SelectItem value="native">Nativo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="adPosition"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Posição do Anúncio</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a posição" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="top">Topo</SelectItem>
-                        <SelectItem value="middle">Meio</SelectItem>
-                        <SelectItem value="bottom">Rodapé</SelectItem>
-                        <SelectItem value="sidebar">Barra lateral</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="adId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Anúncio Selecionado</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o anúncio" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="ad1">Banner Patrocinador Principal</SelectItem>
+                      <SelectItem value="ad2">Vídeo Promocional Copa</SelectItem>
+                      <SelectItem value="ad3">Banner Fornecedor Esportivo</SelectItem>
+                      <SelectItem value="ad4">Anúncio Parceiro Oficial</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Selecione qual anúncio será exibido no carrossel
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         )}
 
