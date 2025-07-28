@@ -19,9 +19,10 @@ const bannerSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
   tipo_conteudo: z.enum(["vod", "live_agora", "live_programado", "campanha", "recomendado", "institucional"]),
   layout_banner: z.enum(["imagem_botao", "video_texto", "hero_cta", "mini_card"]),
-  midia_url: z.string().optional(),
-  midia_tipo: z.enum(["imagem", "video"]).optional(),
-  banner_type: z.enum(["web", "mobile"]).optional(),
+  midia_web_url: z.string().optional(),
+  midia_web_tipo: z.enum(["imagem", "video"]).optional(),
+  midia_mobile_url: z.string().optional(),
+  midia_mobile_tipo: z.enum(["imagem", "video"]).optional(),
   texto_botao: z.string().optional(),
   exibir_botao: z.boolean(),
   url_acao: z.string().optional(),
@@ -43,9 +44,12 @@ interface BannerFormProps {
 export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [uploadingMedia, setUploadingMedia] = useState(false);
-  const [mediaPreview, setMediaPreview] = useState<string | null>(null);
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadingWebMedia, setUploadingWebMedia] = useState(false);
+  const [uploadingMobileMedia, setUploadingMobileMedia] = useState(false);
+  const [webMediaPreview, setWebMediaPreview] = useState<string | null>(null);
+  const [mobileMediaPreview, setMobileMediaPreview] = useState<string | null>(null);
+  const [webUploadedFileName, setWebUploadedFileName] = useState<string | null>(null);
+  const [mobileUploadedFileName, setMobileUploadedFileName] = useState<string | null>(null);
 
   const form = useForm<BannerFormData>({
     resolver: zodResolver(bannerSchema),
@@ -91,25 +95,24 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
     return "imagem";
   };
 
-  const handleFileUpload = (file: File) => {
-    setUploadingMedia(true);
+  const handleWebFileUpload = (file: File) => {
+    setUploadingWebMedia(true);
     
-    // Simular upload - usar URL local para demonstração
     const reader = new FileReader();
     reader.onload = (e) => {
       const mediaType = file.type.startsWith('video/') ? 'video' : 'imagem';
       const mockUrl = e.target?.result as string;
       
-      form.setValue('midia_url', mockUrl);
-      form.setValue('midia_tipo', mediaType);
-      setMediaPreview(mockUrl);
-      setUploadedFileName(file.name);
+      form.setValue('midia_web_url', mockUrl);
+      form.setValue('midia_web_tipo', mediaType);
+      setWebMediaPreview(mockUrl);
+      setWebUploadedFileName(file.name);
       
       setTimeout(() => {
-        setUploadingMedia(false);
+        setUploadingWebMedia(false);
         toast({
           title: "Sucesso",
-          description: "Mídia enviada com sucesso.",
+          description: "Mídia web enviada com sucesso.",
         });
       }, 1000);
     };
@@ -117,11 +120,43 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
     reader.readAsDataURL(file);
   };
 
-  const removeMedia = () => {
-    form.setValue('midia_url', '');
-    form.setValue('midia_tipo', undefined);
-    setMediaPreview(null);
-    setUploadedFileName(null);
+  const handleMobileFileUpload = (file: File) => {
+    setUploadingMobileMedia(true);
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'imagem';
+      const mockUrl = e.target?.result as string;
+      
+      form.setValue('midia_mobile_url', mockUrl);
+      form.setValue('midia_mobile_tipo', mediaType);
+      setMobileMediaPreview(mockUrl);
+      setMobileUploadedFileName(file.name);
+      
+      setTimeout(() => {
+        setUploadingMobileMedia(false);
+        toast({
+          title: "Sucesso",
+          description: "Mídia mobile enviada com sucesso.",
+        });
+      }, 1000);
+    };
+    
+    reader.readAsDataURL(file);
+  };
+
+  const removeWebMedia = () => {
+    form.setValue('midia_web_url', '');
+    form.setValue('midia_web_tipo', undefined);
+    setWebMediaPreview(null);
+    setWebUploadedFileName(null);
+  };
+
+  const removeMobileMedia = () => {
+    form.setValue('midia_mobile_url', '');
+    form.setValue('midia_mobile_tipo', undefined);
+    setMobileMediaPreview(null);
+    setMobileUploadedFileName(null);
   };
 
   const onSubmit = (data: BannerFormData) => {
@@ -129,10 +164,20 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
     
     // Validar se a mídia é do tipo correto para o layout
     const requiredMediaType = getRequiredMediaType(data.layout_banner);
-    if (data.midia_url && data.midia_tipo !== requiredMediaType) {
+    if (data.midia_web_url && data.midia_web_tipo !== requiredMediaType) {
       toast({
         title: "Erro",
-        description: `O layout "${layoutsDisponiveis.find(l => l.value === data.layout_banner)?.label}" requer mídia do tipo ${requiredMediaType}.`,
+        description: `O layout "${layoutsDisponiveis.find(l => l.value === data.layout_banner)?.label}" requer mídia do tipo ${requiredMediaType} para web.`,
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (data.midia_mobile_url && data.midia_mobile_tipo !== requiredMediaType) {
+      toast({
+        title: "Erro",
+        description: `O layout "${layoutsDisponiveis.find(l => l.value === data.layout_banner)?.label}" requer mídia do tipo ${requiredMediaType} para mobile.`,
         variant: "destructive",
       });
       setLoading(false);
@@ -161,8 +206,11 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
   };
 
   useEffect(() => {
-    if (initialData?.midia_url) {
-      setMediaPreview(initialData.midia_url);
+    if (initialData?.midia_web_url) {
+      setWebMediaPreview(initialData.midia_web_url);
+    }
+    if (initialData?.midia_mobile_url) {
+      setMobileMediaPreview(initialData.midia_mobile_url);
     }
   }, [initialData]);
 
@@ -280,46 +328,9 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                 />
               </div>
 
-              {/* Tipo de Banner */}
-              <FormField
-                control={form.control}
-                name="banner_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Banner</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o tipo de banner..." />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="web">
-                          <div className="flex items-center gap-2">
-                            <Monitor className="h-4 w-4" />
-                            Banner Web (Desktop)
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="mobile">
-                          <div className="flex items-center gap-2">
-                            <Smartphone className="h-4 w-4" />
-                            Banner Mobile
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      {field.value === 'web' && 'Recomendado: 16:9 (1920x1080px ou 1200x675px)'}
-                      {field.value === 'mobile' && 'Recomendado: 9:16 (1080x1920px ou 375x667px)'}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Upload de Mídia */}
+              {/* Upload de Mídia - Web e Mobile lado a lado */}
               <div className="space-y-4">
-                <FormLabel>
+                <FormLabel className="text-base">
                   Mídia ({getRequiredMediaType(form.watch('layout_banner')) === 'video' ? 'Vídeo' : 'Imagem'})
                 </FormLabel>
                 
@@ -339,84 +350,171 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                         <p><strong>Formatos aceitos:</strong> JPG, PNG, GIF, WebP</p>
                         <p><strong>Tamanho máximo:</strong> 5MB</p>
                         <p><strong>Qualidade:</strong> Use formato otimizado para web</p>
-                        {form.watch('banner_type') === 'web' && (
-                          <p><strong>Dimensões recomendadas:</strong> 1920x1080px (16:9) ou 1200x675px</p>
-                        )}
-                        {form.watch('banner_type') === 'mobile' && (
-                          <p><strong>Dimensões recomendadas:</strong> 1080x1920px (9:16) ou 375x667px</p>
-                        )}
                       </>
                     )}
                   </div>
                 </div>
-                
-                {mediaPreview && uploadedFileName ? (
-                  <div className="space-y-4">
-                    {/* Input com nome do arquivo e ícone */}
-                    <div className="flex items-center gap-3 p-3 border rounded-lg bg-background">
-                      <Image className="h-5 w-5 text-primary" />
-                      <span className="flex-1 text-sm font-medium truncate">{uploadedFileName}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={removeMedia}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
 
-                    {/* Preview da mídia */}
-                    <div className="relative w-full max-w-md">
-                      {form.getValues('midia_tipo') === 'video' ? (
-                        <video 
-                          src={mediaPreview} 
-                          controls 
-                          className="w-full h-48 object-cover rounded-lg"
-                        />
-                      ) : (
-                        <img 
-                          src={mediaPreview} 
-                          alt="Preview" 
-                          className="w-full h-48 object-cover rounded-lg"
-                        />
-                      )}
+                {/* Container dos dois uploads lado a lado */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Upload Web */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Monitor className="h-4 w-4" />
+                      <span className="font-medium">Banner Web (Desktop)</span>
                     </div>
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6">
-                    <input
-                      type="file"
-                      accept={getRequiredMediaType(form.watch('layout_banner')) === 'video' ? 'video/*' : 'image/*'}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleFileUpload(file);
-                      }}
-                      className="hidden"
-                      id="media-upload"
-                    />
-                    <label htmlFor="media-upload" className="cursor-pointer">
-                      <div className="flex flex-col items-center space-y-2">
-                        <Upload className="h-8 w-8 text-muted-foreground" />
-                        <div className="text-sm text-center">
-                          <p className="font-medium">
-                            Clique para fazer upload de {getRequiredMediaType(form.watch('layout_banner'))}
-                          </p>
-                          <p className="text-muted-foreground">
-                            Arraste e solte o arquivo aqui ou clique para selecionar
-                          </p>
+                    <div className="text-xs text-muted-foreground">
+                      Recomendado: 16:9 (1920x1080px ou 1200x675px)
+                    </div>
+                    
+                    {webMediaPreview && webUploadedFileName ? (
+                      <div className="space-y-3">
+                        {/* Input com nome do arquivo e ícone */}
+                        <div className="flex items-center gap-3 p-3 border rounded-lg bg-background">
+                          <Image className="h-4 w-4 text-primary" />
+                          <span className="flex-1 text-sm font-medium truncate">{webUploadedFileName}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={removeWebMedia}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+
+                        {/* Preview da mídia */}
+                        <div className="relative w-full">
+                          {form.getValues('midia_web_tipo') === 'video' ? (
+                            <video 
+                              src={webMediaPreview} 
+                              controls 
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                          ) : (
+                            <img 
+                              src={webMediaPreview} 
+                              alt="Preview Web" 
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                          )}
                         </div>
                       </div>
-                    </label>
+                    ) : (
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4">
+                        <input
+                          type="file"
+                          accept={getRequiredMediaType(form.watch('layout_banner')) === 'video' ? 'video/*' : 'image/*'}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleWebFileUpload(file);
+                          }}
+                          className="hidden"
+                          id="web-media-upload"
+                        />
+                        <label htmlFor="web-media-upload" className="cursor-pointer">
+                          <div className="flex flex-col items-center space-y-2">
+                            <Upload className="h-6 w-6 text-muted-foreground" />
+                            <div className="text-xs text-center">
+                              <p className="font-medium">
+                                Upload {getRequiredMediaType(form.watch('layout_banner'))} web
+                              </p>
+                              <p className="text-muted-foreground">
+                                Clique para selecionar
+                              </p>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    )}
+                    {uploadingWebMedia && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
+                        Fazendo upload...
+                      </div>
+                    )}
                   </div>
-                )}
-                {uploadingMedia && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                    Fazendo upload...
+
+                  {/* Upload Mobile */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Smartphone className="h-4 w-4" />
+                      <span className="font-medium">Banner Mobile</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Recomendado: 9:16 (1080x1920px ou 375x667px)
+                    </div>
+                    
+                    {mobileMediaPreview && mobileUploadedFileName ? (
+                      <div className="space-y-3">
+                        {/* Input com nome do arquivo e ícone */}
+                        <div className="flex items-center gap-3 p-3 border rounded-lg bg-background">
+                          <Image className="h-4 w-4 text-primary" />
+                          <span className="flex-1 text-sm font-medium truncate">{mobileUploadedFileName}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={removeMobileMedia}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+
+                        {/* Preview da mídia */}
+                        <div className="relative w-full">
+                          {form.getValues('midia_mobile_tipo') === 'video' ? (
+                            <video 
+                              src={mobileMediaPreview} 
+                              controls 
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                          ) : (
+                            <img 
+                              src={mobileMediaPreview} 
+                              alt="Preview Mobile" 
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4">
+                        <input
+                          type="file"
+                          accept={getRequiredMediaType(form.watch('layout_banner')) === 'video' ? 'video/*' : 'image/*'}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleMobileFileUpload(file);
+                          }}
+                          className="hidden"
+                          id="mobile-media-upload"
+                        />
+                        <label htmlFor="mobile-media-upload" className="cursor-pointer">
+                          <div className="flex flex-col items-center space-y-2">
+                            <Upload className="h-6 w-6 text-muted-foreground" />
+                            <div className="text-xs text-center">
+                              <p className="font-medium">
+                                Upload {getRequiredMediaType(form.watch('layout_banner'))} mobile
+                              </p>
+                              <p className="text-muted-foreground">
+                                Clique para selecionar
+                              </p>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    )}
+                    {uploadingMobileMedia && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
+                        Fazendo upload...
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Conteúdo Vinculado */}
