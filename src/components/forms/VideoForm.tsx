@@ -10,10 +10,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ArrowLeft, Upload, CalendarIcon } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { ArrowLeft, Upload, CalendarIcon, X, User, Users } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { mockPlayers, mockTeams } from "@/data/mockData"
 
 const videoSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
@@ -22,6 +24,11 @@ const videoSchema = z.object({
   categoria: z.string().min(1, "Categoria é obrigatória"),
   dataPublicacao: z.date(),
   videoFile: z.string().optional(),
+  agentesRelacionados: z.array(z.object({
+    id: z.string(),
+    nome: z.string(),
+    tipo: z.enum(["jogador", "time"]),
+  })).optional(),
 })
 
 type VideoFormData = z.infer<typeof videoSchema>
@@ -44,6 +51,7 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
       categoria: initialData?.categoria || "",
       dataPublicacao: initialData?.dataPublicacao || new Date(),
       videoFile: initialData?.videoFile || "",
+      agentesRelacionados: initialData?.agentesRelacionados || [],
     },
   })
 
@@ -202,6 +210,128 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="agentesRelacionados"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Agentes Relacionados</FormLabel>
+                    <div className="space-y-4">
+                      {/* Seleção de tipo e agente */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Select onValueChange={(tipo) => {
+                          const selectElement = document.getElementById('agente-select') as HTMLSelectElement;
+                          if (selectElement) selectElement.value = '';
+                        }}>
+                          <SelectTrigger id="tipo-select">
+                            <SelectValue placeholder="Tipo de agente" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="jogador">Jogador</SelectItem>
+                            <SelectItem value="time">Time</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        <Select onValueChange={(agenteId) => {
+                          const tipoSelect = document.getElementById('tipo-select') as HTMLSelectElement;
+                          const tipoSelecionado = tipoSelect?.getAttribute('data-value');
+                          
+                          if (!tipoSelecionado || !agenteId) return;
+
+                          let agenteSelecionado;
+                          if (tipoSelecionado === 'jogador') {
+                            agenteSelecionado = mockPlayers.find(p => p.id === agenteId);
+                          } else {
+                            agenteSelecionado = mockTeams.find(t => t.id === agenteId);
+                          }
+
+                          if (agenteSelecionado && !field.value?.find(a => a.id === agenteId)) {
+                            const novoAgente = {
+                              id: agenteSelecionado.id,
+                              nome: agenteSelecionado.name,
+                              tipo: tipoSelecionado as "jogador" | "time"
+                            };
+                            field.onChange([...(field.value || []), novoAgente]);
+                          }
+                        }}>
+                          <SelectTrigger id="agente-select">
+                            <SelectValue placeholder="Selecionar agente" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {(() => {
+                              const tipoSelect = document.getElementById('tipo-select') as HTMLSelectElement;
+                              const tipo = tipoSelect?.getAttribute('data-value');
+                              
+                              if (tipo === 'jogador') {
+                                return mockPlayers.map((jogador) => (
+                                  <SelectItem key={jogador.id} value={jogador.id}>
+                                    <div className="flex items-center gap-2">
+                                      <User className="h-4 w-4" />
+                                      {jogador.name} - #{jogador.number}
+                                    </div>
+                                  </SelectItem>
+                                ));
+                              } else if (tipo === 'time') {
+                                return mockTeams.map((time) => (
+                                  <SelectItem key={time.id} value={time.id}>
+                                    <div className="flex items-center gap-2">
+                                      <Users className="h-4 w-4" />
+                                      {time.name}
+                                    </div>
+                                  </SelectItem>
+                                ));
+                              }
+                              return null;
+                            })()}
+                          </SelectContent>
+                        </Select>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            const tipoSelect = document.getElementById('tipo-select') as HTMLSelectElement;
+                            const agenteSelect = document.getElementById('agente-select') as HTMLSelectElement;
+                            tipoSelect.value = '';
+                            agenteSelect.value = '';
+                          }}
+                        >
+                          Limpar
+                        </Button>
+                      </div>
+
+                      {/* Agentes selecionados */}
+                      {field.value && field.value.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Agentes selecionados:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {field.value.map((agente, index) => (
+                              <Badge key={`${agente.id}-${index}`} variant="secondary" className="flex items-center gap-1">
+                                {agente.tipo === 'jogador' ? <User className="h-3 w-3" /> : <Users className="h-3 w-3" />}
+                                {agente.nome}
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-auto p-0 ml-1"
+                                  onClick={() => {
+                                    const novosAgentes = field.value?.filter((_, i) => i !== index) || [];
+                                    field.onChange(novosAgentes);
+                                  }}
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
