@@ -295,7 +295,7 @@ export default function VideosPage() {
           descricao: editingVideo.descricao,
           categoria: editingVideo.categoria,
           tags: editingVideo.tags.join(", "),
-          dataPublicacao: editingVideo.dataPublicacao.slice(0, 16),
+          dataPublicacao: new Date(editingVideo.dataPublicacao),
         } : undefined}
         isEdit={!!editingVideo}
       />

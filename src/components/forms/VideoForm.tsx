@@ -1,22 +1,26 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Upload } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ArrowLeft, Upload, CalendarIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 
 const videoSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
   descricao: z.string().min(1, "Descrição é obrigatória"),
   tags: z.string(),
   categoria: z.string().min(1, "Categoria é obrigatória"),
-  dataPublicacao: z.string().min(1, "Data de publicação é obrigatória"),
+  dataPublicacao: z.date(),
   videoFile: z.string().optional(),
 })
 
@@ -38,7 +42,7 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
       descricao: initialData?.descricao || "",
       tags: initialData?.tags || "",
       categoria: initialData?.categoria || "",
-      dataPublicacao: initialData?.dataPublicacao || "",
+      dataPublicacao: initialData?.dataPublicacao || new Date(),
       videoFile: initialData?.videoFile || "",
     },
   })
@@ -162,11 +166,37 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                   control={form.control}
                   name="dataPublicacao"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>Data de Publicação *</FormLabel>
-                      <FormControl>
-                        <Input type="datetime-local" {...field} />
-                      </FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Selecione uma data</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}
