@@ -334,26 +334,6 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                   Mídia ({getRequiredMediaType(form.watch('layout_banner')) === 'video' ? 'Vídeo' : 'Imagem'})
                 </FormLabel>
                 
-                {/* Instruções */}
-                <div className="bg-muted/50 p-4 rounded-lg text-sm">
-                  <div className="font-medium mb-2">Instruções de formato e tamanho:</div>
-                  <div className="space-y-1 text-muted-foreground">
-                    {getRequiredMediaType(form.watch('layout_banner')) === 'video' ? (
-                      <>
-                        <p><strong>Formatos aceitos:</strong> MP4, WebM, MOV</p>
-                        <p><strong>Tamanho máximo:</strong> 50MB</p>
-                        <p><strong>Duração recomendada:</strong> 15-30 segundos</p>
-                        <p><strong>Resolução mínima:</strong> 1280x720px (HD)</p>
-                      </>
-                    ) : (
-                      <>
-                        <p><strong>Formatos aceitos:</strong> JPG, PNG, GIF, WebP</p>
-                        <p><strong>Tamanho máximo:</strong> 5MB</p>
-                        <p><strong>Qualidade:</strong> Use formato otimizado para web</p>
-                      </>
-                    )}
-                  </div>
-                </div>
 
                 {/* Container dos dois uploads lado a lado */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
