@@ -211,16 +211,43 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="time">Hora</Label>
-                <div className="relative">
-                  <Clock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="time"
-                    type="time"
-                    value={formData.time}
-                    onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
-                    className="pl-10"
-                  />
-                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.time && "text-muted-foreground"
+                      )}
+                    >
+                      <Clock className="mr-2 h-4 w-4" />
+                      {formData.time ? formData.time : "Selecionar hora"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <div className="p-3 pointer-events-auto">
+                      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                        {Array.from({ length: 24 }, (_, hour) => {
+                          return Array.from({ length: 4 }, (_, quarter) => {
+                            const minutes = quarter * 15;
+                            const timeString = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                            return (
+                              <Button
+                                key={timeString}
+                                variant="ghost"
+                                size="sm"
+                                className="justify-start"
+                                onClick={() => setFormData(prev => ({ ...prev, time: timeString }))}
+                              >
+                                {timeString}
+                              </Button>
+                            );
+                          });
+                        }).flat()}
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 {errors.time && (
                   <div className="flex items-center gap-1 text-sm text-destructive">
                     <AlertCircle className="h-4 w-4" />
