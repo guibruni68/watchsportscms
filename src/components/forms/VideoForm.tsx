@@ -218,69 +218,60 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                   <FormItem>
                     <FormLabel>Agentes Relacionados</FormLabel>
                     <div className="space-y-4">
-                      {/* Multi-select para adicionar agentes */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">Jogadores</label>
-                          <Select onValueChange={(jogadorId) => {
-                            const jogador = mockPlayers.find(p => p.id === jogadorId);
-                            if (jogador && !field.value?.find(a => a.id === jogadorId)) {
-                              const novoAgente = {
-                                id: jogador.id,
-                                nome: jogador.name,
-                                tipo: "jogador" as const
-                              };
-                              field.onChange([...(field.value || []), novoAgente]);
-                            }
-                          }}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Adicionar jogador" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {mockPlayers
-                                .filter(jogador => !field.value?.find(a => a.id === jogador.id))
-                                .map((jogador) => (
-                                <SelectItem key={jogador.id} value={jogador.id}>
-                                  <div className="flex items-center gap-2">
-                                    <User className="h-4 w-4" />
-                                    {jogador.name} - #{jogador.number}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">Times</label>
-                          <Select onValueChange={(timeId) => {
-                            const time = mockTeams.find(t => t.id === timeId);
-                            if (time && !field.value?.find(a => a.id === timeId)) {
-                              const novoAgente = {
-                                id: time.id,
-                                nome: time.name,
-                                tipo: "time" as const
-                              };
-                              field.onChange([...(field.value || []), novoAgente]);
-                            }
-                          }}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Adicionar time" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {mockTeams
-                                .filter(time => !field.value?.find(a => a.id === time.id))
-                                .map((time) => (
-                                <SelectItem key={time.id} value={time.id}>
-                                  <div className="flex items-center gap-2">
-                                    <Users className="h-4 w-4" />
-                                    {time.name}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
+                      {/* Select unificado para todos os agentes */}
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Adicionar Agentes</label>
+                         <Select onValueChange={(agenteId) => {
+                           // Procurar primeiro nos jogadores
+                           let agenteSelecionado: any = mockPlayers.find(p => p.id === agenteId);
+                           let tipo: "jogador" | "time" = "jogador";
+                           
+                           // Se não encontrou nos jogadores, procurar nos times
+                           if (!agenteSelecionado) {
+                             agenteSelecionado = mockTeams.find(t => t.id === agenteId);
+                             tipo = "time";
+                           }
+                           
+                           if (agenteSelecionado && !field.value?.find(a => a.id === agenteId)) {
+                             const novoAgente = {
+                               id: agenteSelecionado.id,
+                               nome: agenteSelecionado.name,
+                               tipo: tipo
+                             };
+                             field.onChange([...(field.value || []), novoAgente]);
+                           }
+                         }}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Buscar e selecionar agentes (jogadores e times)" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {/* Jogadores disponíveis */}
+                            {mockPlayers
+                              .filter(jogador => !field.value?.find(a => a.id === jogador.id))
+                              .map((jogador) => (
+                              <SelectItem key={`jogador-${jogador.id}`} value={jogador.id}>
+                                <div className="flex items-center gap-2">
+                                  <User className="h-4 w-4 text-blue-500" />
+                                  <span>{jogador.name} - #{jogador.number}</span>
+                                  <Badge variant="outline" className="text-xs">Jogador</Badge>
+                                </div>
+                              </SelectItem>
+                            ))}
+                            
+                            {/* Times disponíveis */}
+                            {mockTeams
+                              .filter(time => !field.value?.find(a => a.id === time.id))
+                              .map((time) => (
+                              <SelectItem key={`time-${time.id}`} value={time.id}>
+                                <div className="flex items-center gap-2">
+                                  <Users className="h-4 w-4 text-green-500" />
+                                  <span>{time.name}</span>
+                                  <Badge variant="outline" className="text-xs">Time</Badge>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {/* Lista dos agentes selecionados */}
