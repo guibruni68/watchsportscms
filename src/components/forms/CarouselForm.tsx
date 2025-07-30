@@ -26,12 +26,13 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, Search } from "lucide-react";
 import { getAgentsByType } from "@/data/mockData";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(100, "Título deve ter no máximo 100 caracteres"),
   carouselType: z.enum(["vod", "lives", "news", "ads", "players", "store", "top5"]),
-  layout: z.enum(["horizontal", "grid", "slider"]),
+  layout: z.enum(["horizontal", "grid", "slider", "top5"]),
   order: z.number().min(1, "Ordem deve ser maior que 0").max(100, "Ordem deve ser menor que 100"),
   status: z.boolean(),
   showMoreButton: z.boolean(),
@@ -68,6 +69,28 @@ interface CarouselFormProps {
 
 export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormProps) {
   const [agentSearch, setAgentSearch] = useState("");
+  const [teams, setTeams] = useState<any[]>([]);
+  const [channels] = useState([
+    { id: "channel1", name: "Canal Esporte Total" },
+    { id: "channel2", name: "Transmissão Oficial" },
+    { id: "channel3", name: "Canal da Copa" },
+    { id: "channel4", name: "Esportes 24h" }
+  ]);
+
+  useEffect(() => {
+    const fetchTeams = async () => {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('id, name')
+        .order('name');
+      
+      if (!error && data) {
+        setTeams(data);
+      }
+    };
+    
+    fetchTeams();
+  }, []);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -142,22 +165,21 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Tipo de Carrossel</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o tipo" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="vod">VOD (Vídeos On Demand)</SelectItem>
-                    <SelectItem value="lives">Canais ao Vivo</SelectItem>
-                    <SelectItem value="news">Notícias</SelectItem>
-                    <SelectItem value="ads">Anúncios/ADS</SelectItem>
-                    <SelectItem value="players">Jogadores</SelectItem>
-                    <SelectItem value="store">Loja</SelectItem>
-                    <SelectItem value="top5">TOP 5 Conteúdos</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o tipo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="vod">VOD (Vídeos On Demand)</SelectItem>
+                      <SelectItem value="lives">Canais ao Vivo</SelectItem>
+                      <SelectItem value="news">Notícias</SelectItem>
+                      <SelectItem value="ads">Anúncios/ADS</SelectItem>
+                      <SelectItem value="players">Jogadores</SelectItem>
+                      <SelectItem value="store">Loja</SelectItem>
+                    </SelectContent>
+                  </Select>
                 <FormDescription>
                   Define o tipo de conteúdo do carrossel
                 </FormDescription>
@@ -182,6 +204,9 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                     <SelectItem value="horizontal">Horizontal scroll</SelectItem>
                     <SelectItem value="grid">Grade com destaques</SelectItem>
                     <SelectItem value="slider">Slider com fundo</SelectItem>
+                    {carouselType === "vod" && (
+                      <SelectItem value="top5">TOP 5</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
                 <FormDescription>
@@ -196,7 +221,7 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
         {/* Configurações universais */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Campo de ordenação - não aparece para TOP5 */}
-          {carouselType !== "top5" && (
+          {form.watch("layout") !== "top5" && (
             <FormField
               control={form.control}
               name="sortType"
@@ -226,7 +251,7 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
           )}
 
           {/* Campo de quantidade de conteúdos - não aparece para TOP5 */}
-          {carouselType !== "top5" && (
+          {form.watch("layout") !== "top5" && (
             <FormField
               control={form.control}
               name="contentLimit"
@@ -283,7 +308,17 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
         </div>
 
         {/* Configurações específicas por tipo de carrossel */}
-        {(carouselType === "vod" || carouselType === "news" || carouselType === "top5") && (
+        {/* TOP 5 só aparece para VOD */}
+        {form.watch("layout") === "top5" && carouselType === "vod" && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Configurações TOP 5</h3>
+            <p className="text-sm text-muted-foreground">
+              Este carrossel exibirá automaticamente os 5 conteúdos mais relevantes.
+            </p>
+          </div>
+        )}
+
+        {(carouselType === "vod" || carouselType === "news") && form.watch("layout") !== "top5" && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Configurações de Conteúdo</h3>
             <FormField
@@ -303,6 +338,9 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                       <SelectItem value="genre">Gênero/Categoria</SelectItem>
                       <SelectItem value="recommendations">Recomendação Personalizada</SelectItem>
                       <SelectItem value="manual">Carrossel Manual</SelectItem>
+                      {carouselType === "news" && (
+                        <SelectItem value="all">Todos os Conteúdos</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                   <FormDescription>
@@ -324,19 +362,52 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Canais Selecionados</FormLabel>
-                  <Select>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione os canais" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="channel1">Canal Esporte Total</SelectItem>
-                      <SelectItem value="channel2">Transmissão Oficial</SelectItem>
-                      <SelectItem value="channel3">Canal da Copa</SelectItem>
-                      <SelectItem value="channel4">Esportes 24h</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-2">
+                    {channels.map((channel) => (
+                      <div key={channel.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={channel.id}
+                          checked={field.value?.includes(channel.id)}
+                          onCheckedChange={(checked) => {
+                            const currentValues = field.value || [];
+                            if (checked) {
+                              field.onChange([...currentValues, channel.id]);
+                            } else {
+                              field.onChange(currentValues.filter(id => id !== channel.id));
+                            }
+                          }}
+                        />
+                        <label
+                          htmlFor={channel.id}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {channel.name}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  {field.value && field.value.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-sm text-muted-foreground mb-2">Canais selecionados:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {field.value.map((channelId) => {
+                          const channel = channels.find(c => c.id === channelId);
+                          return channel ? (
+                            <Badge key={channelId} variant="secondary" className="flex items-center gap-1">
+                              {channel.name}
+                              <X 
+                                className="h-3 w-3 cursor-pointer" 
+                                onClick={() => {
+                                  const newValues = field.value?.filter(id => id !== channelId) || [];
+                                  field.onChange(newValues);
+                                }}
+                              />
+                            </Badge>
+                          ) : null;
+                        })}
+                      </div>
+                    </div>
+                  )}
                   <FormDescription>
                     Selecione quais canais serão exibidos no carrossel
                   </FormDescription>
@@ -382,19 +453,52 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Times Selecionados</FormLabel>
-                    <Select>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione os times" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="team1">Flamengo</SelectItem>
-                        <SelectItem value="team2">Palmeiras</SelectItem>
-                        <SelectItem value="team3">São Paulo</SelectItem>
-                        <SelectItem value="team4">Corinthians</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="space-y-2">
+                      {teams.map((team) => (
+                        <div key={team.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={team.id}
+                            checked={field.value?.includes(team.id)}
+                            onCheckedChange={(checked) => {
+                              const currentValues = field.value || [];
+                              if (checked) {
+                                field.onChange([...currentValues, team.id]);
+                              } else {
+                                field.onChange(currentValues.filter(id => id !== team.id));
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor={team.id}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {team.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    {field.value && field.value.length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-sm text-muted-foreground mb-2">Times selecionados:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {field.value.map((teamId) => {
+                            const team = teams.find(t => t.id === teamId);
+                            return team ? (
+                              <Badge key={teamId} variant="secondary" className="flex items-center gap-1">
+                                {team.name}
+                                <X 
+                                  className="h-3 w-3 cursor-pointer" 
+                                  onClick={() => {
+                                    const newValues = field.value?.filter(id => id !== teamId) || [];
+                                    field.onChange(newValues);
+                                  }}
+                                />
+                              </Badge>
+                            ) : null;
+                          })}
+                        </div>
+                      </div>
+                    )}
                     <FormDescription>
                       Selecione de quais times mostrar os jogadores
                     </FormDescription>
