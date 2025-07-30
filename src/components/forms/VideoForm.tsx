@@ -218,111 +218,116 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                   <FormItem>
                     <FormLabel>Agentes Relacionados</FormLabel>
                     <div className="space-y-4">
-                      {/* Seleção de tipo e agente */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Select onValueChange={(tipo) => {
-                          const selectElement = document.getElementById('agente-select') as HTMLSelectElement;
-                          if (selectElement) selectElement.value = '';
-                        }}>
-                          <SelectTrigger id="tipo-select">
-                            <SelectValue placeholder="Tipo de agente" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="jogador">Jogador</SelectItem>
-                            <SelectItem value="time">Time</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      {/* Multi-select para adicionar agentes */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Jogadores</label>
+                          <Select onValueChange={(jogadorId) => {
+                            const jogador = mockPlayers.find(p => p.id === jogadorId);
+                            if (jogador && !field.value?.find(a => a.id === jogadorId)) {
+                              const novoAgente = {
+                                id: jogador.id,
+                                nome: jogador.name,
+                                tipo: "jogador" as const
+                              };
+                              field.onChange([...(field.value || []), novoAgente]);
+                            }
+                          }}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Adicionar jogador" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {mockPlayers
+                                .filter(jogador => !field.value?.find(a => a.id === jogador.id))
+                                .map((jogador) => (
+                                <SelectItem key={jogador.id} value={jogador.id}>
+                                  <div className="flex items-center gap-2">
+                                    <User className="h-4 w-4" />
+                                    {jogador.name} - #{jogador.number}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-                        <Select onValueChange={(agenteId) => {
-                          const tipoSelect = document.getElementById('tipo-select') as HTMLSelectElement;
-                          const tipoSelecionado = tipoSelect?.getAttribute('data-value');
-                          
-                          if (!tipoSelecionado || !agenteId) return;
-
-                          let agenteSelecionado;
-                          if (tipoSelecionado === 'jogador') {
-                            agenteSelecionado = mockPlayers.find(p => p.id === agenteId);
-                          } else {
-                            agenteSelecionado = mockTeams.find(t => t.id === agenteId);
-                          }
-
-                          if (agenteSelecionado && !field.value?.find(a => a.id === agenteId)) {
-                            const novoAgente = {
-                              id: agenteSelecionado.id,
-                              nome: agenteSelecionado.name,
-                              tipo: tipoSelecionado as "jogador" | "time"
-                            };
-                            field.onChange([...(field.value || []), novoAgente]);
-                          }
-                        }}>
-                          <SelectTrigger id="agente-select">
-                            <SelectValue placeholder="Selecionar agente" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {(() => {
-                              const tipoSelect = document.getElementById('tipo-select') as HTMLSelectElement;
-                              const tipo = tipoSelect?.getAttribute('data-value');
-                              
-                              if (tipo === 'jogador') {
-                                return mockPlayers.map((jogador) => (
-                                  <SelectItem key={jogador.id} value={jogador.id}>
-                                    <div className="flex items-center gap-2">
-                                      <User className="h-4 w-4" />
-                                      {jogador.name} - #{jogador.number}
-                                    </div>
-                                  </SelectItem>
-                                ));
-                              } else if (tipo === 'time') {
-                                return mockTeams.map((time) => (
-                                  <SelectItem key={time.id} value={time.id}>
-                                    <div className="flex items-center gap-2">
-                                      <Users className="h-4 w-4" />
-                                      {time.name}
-                                    </div>
-                                  </SelectItem>
-                                ));
-                              }
-                              return null;
-                            })()}
-                          </SelectContent>
-                        </Select>
-
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            const tipoSelect = document.getElementById('tipo-select') as HTMLSelectElement;
-                            const agenteSelect = document.getElementById('agente-select') as HTMLSelectElement;
-                            tipoSelect.value = '';
-                            agenteSelect.value = '';
-                          }}
-                        >
-                          Limpar
-                        </Button>
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Times</label>
+                          <Select onValueChange={(timeId) => {
+                            const time = mockTeams.find(t => t.id === timeId);
+                            if (time && !field.value?.find(a => a.id === timeId)) {
+                              const novoAgente = {
+                                id: time.id,
+                                nome: time.name,
+                                tipo: "time" as const
+                              };
+                              field.onChange([...(field.value || []), novoAgente]);
+                            }
+                          }}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Adicionar time" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {mockTeams
+                                .filter(time => !field.value?.find(a => a.id === time.id))
+                                .map((time) => (
+                                <SelectItem key={time.id} value={time.id}>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    {time.name}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
 
-                      {/* Agentes selecionados */}
+                      {/* Lista dos agentes selecionados */}
                       {field.value && field.value.length > 0 && (
-                        <div className="space-y-2">
-                          <p className="text-sm font-medium">Agentes selecionados:</p>
-                          <div className="flex flex-wrap gap-2">
+                        <div className="border rounded-lg p-4 bg-muted/50">
+                          <div className="flex items-center justify-between mb-3">
+                            <p className="text-sm font-medium">Agentes Selecionados ({field.value.length})</p>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => field.onChange([])}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              Limpar todos
+                            </Button>
+                          </div>
+                          <div className="space-y-2">
                             {field.value.map((agente, index) => (
-                              <Badge key={`${agente.id}-${index}`} variant="secondary" className="flex items-center gap-1">
-                                {agente.tipo === 'jogador' ? <User className="h-3 w-3" /> : <Users className="h-3 w-3" />}
-                                {agente.nome}
+                              <div 
+                                key={`${agente.id}-${index}`} 
+                                className="flex items-center justify-between p-2 bg-background border rounded-md"
+                              >
+                                <div className="flex items-center gap-2">
+                                  {agente.tipo === 'jogador' ? (
+                                    <User className="h-4 w-4 text-blue-500" />
+                                  ) : (
+                                    <Users className="h-4 w-4 text-green-500" />
+                                  )}
+                                  <span className="text-sm font-medium">{agente.nome}</span>
+                                  <Badge variant="outline" className="text-xs">
+                                    {agente.tipo === 'jogador' ? 'Jogador' : 'Time'}
+                                  </Badge>
+                                </div>
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="sm"
-                                  className="h-auto p-0 ml-1"
                                   onClick={() => {
                                     const novosAgentes = field.value?.filter((_, i) => i !== index) || [];
                                     field.onChange(novosAgentes);
                                   }}
+                                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                                 >
-                                  <X className="h-3 w-3" />
+                                  <X className="h-4 w-4" />
                                 </Button>
-                              </Badge>
+                              </div>
                             ))}
                           </div>
                         </div>
