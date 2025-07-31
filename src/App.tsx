@@ -22,6 +22,7 @@ import CustomizationPage from "./pages/customization/CustomizationPage";
 import AdsPage from "./pages/ads/AdsPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
 import AuthPage from "./pages/AuthPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,8 +35,9 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Public route for authentication */}
+            {/* Public routes for authentication */}
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             
             {/* Protected routes */}
             <Route path="/" element={

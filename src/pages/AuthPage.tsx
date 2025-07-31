@@ -246,22 +246,13 @@ export default function AuthPage() {
       {/* Right Side - Auth Forms */}
       <div className="flex items-center justify-center p-6 lg:p-12 bg-background">
         <div className="w-full max-w-md space-y-6">
-          {/* Mobile Logo */}
-          <div className="lg:hidden text-center">
-            <img 
-              src="/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png" 
-              alt="Logo" 
-              className="h-16 mx-auto mb-8"
-            />
-          </div>
 
           {/* Auth Forms - Sem Card */}
           <div className="space-y-6">
             <Tabs defaultValue="signin" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">Entrar</TabsTrigger>
                 <TabsTrigger value="signup">Cadastrar</TabsTrigger>
-                <TabsTrigger value="reset">Recuperar</TabsTrigger>
               </TabsList>
 
               {/* Sign In Tab */}
@@ -317,19 +308,6 @@ export default function AuthPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 mb-4">
-                      <input
-                        type="checkbox"
-                        id="rememberMe"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="h-4 w-4 text-primary"
-                      />
-                      <Label htmlFor="rememberMe" className="text-sm text-muted-foreground">
-                        Manter-me conectado
-                      </Label>
-                    </div>
-
                     <Button 
                       type="submit" 
                       className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
@@ -339,14 +317,14 @@ export default function AuthPage() {
                     </Button>
 
                     <div className="text-center">
-                      <button
+                      <Button
                         type="button"
-                        onClick={handlePasswordReset}
-                        disabled={resetLoading}
-                        className="text-sm text-primary hover:underline"
+                        variant="link"
+                        onClick={() => navigate('/forgot-password')}
+                        className="text-sm text-primary hover:underline p-0 h-auto"
                       >
-                        {resetLoading ? "Enviando..." : "Esqueceu sua senha?"}
-                      </button>
+                        Esqueceu sua senha?
+                      </Button>
                     </div>
                   </div>
                 </form>
@@ -430,46 +408,6 @@ export default function AuthPage() {
                     </Button>
                   </div>
                 </form>
-              </TabsContent>
-
-              {/* Password Reset Tab */}
-              <TabsContent value="reset">
-                <div className="space-y-4">
-                  <div className="space-y-2 pb-4">
-                    <h2 className="text-2xl font-semibold flex items-center gap-2">
-                      <KeyRound className="h-5 w-5" />
-                      Recuperar Senha
-                    </h2>
-                    <p className="text-muted-foreground">
-                      Digite seu email para receber instruções de recuperação
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="resetEmail">Email</Label>
-                      <Input
-                        id="resetEmail"
-                        type="email"
-                        placeholder="seu@email.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={resetLoading}
-                        className="h-12"
-                      />
-                    </div>
-
-                    <Button 
-                      type="button"
-                      onClick={handlePasswordReset}
-                      className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
-                      disabled={resetLoading || !email}
-                    >
-                      {resetLoading ? "Enviando..." : "Enviar Email de Recuperação"}
-                    </Button>
-                  </div>
-                </div>
               </TabsContent>
             </Tabs>
           </div>
