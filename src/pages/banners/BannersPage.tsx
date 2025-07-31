@@ -353,43 +353,87 @@ export default function BannersPage() {
               <CarouselContent>
                 {activeBanners.map((banner, index) => (
                   <CarouselItem key={banner.id}>
-                    <div className="relative">
-                      <div className="relative rounded-lg overflow-hidden border bg-gradient-to-br from-primary/5 to-secondary/5 h-64">
-                        {/* Sempre usar placeholder */}
-                        <div className="w-full h-full bg-muted flex items-center justify-center">
-                          <div className="text-center">
-                            <Image className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-lg font-bold mb-2">{banner.titulo}</h3>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              {getTipoConteudoLabel(banner.tipo_conteudo)} • {getLayoutLabel(banner.layout_banner)}
-                            </p>
-                            {banner.exibir_botao && banner.texto_botao && (
-                              <Button 
-                                size="sm"
-                                variant={banner.layout_banner === 'hero_cta' ? 'default' : 'secondary'}
-                              >
-                                {banner.texto_botao}
-                              </Button>
+                    <div className="relative h-[400px] rounded-lg overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
+                      {/* Background com overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
+                      
+                      {/* Logo no canto superior esquerdo */}
+                      <div className="absolute top-6 left-6 z-10">
+                        <div className="flex items-center gap-2 text-white">
+                          <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
+                            <Play className="h-4 w-4 text-black" />
+                          </div>
+                          <span className="text-sm font-medium uppercase tracking-wider">B-LEAGUE ORIGINALS</span>
+                        </div>
+                      </div>
+
+                      {/* Conteúdo principal */}
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="flex w-full h-full">
+                          {/* Lado esquerdo - Texto e botões */}
+                          <div className="flex-1 flex items-center">
+                            <div className="pl-6 max-w-lg">
+                              <h1 className="text-5xl font-bold text-white mb-4 leading-tight uppercase tracking-wide">
+                                {banner.titulo}
+                              </h1>
+                              <p className="text-lg text-gray-300 mb-8 leading-relaxed">
+                                {banner.tipo_conteudo === 'vod' ? 'Cooper Flagg struggles shooting in his Summer League debut, but shows plenty of everything he\'s waiting to unleash on the NBA.' : 
+                                 banner.tipo_conteudo === 'live_agora' ? 'Assista ao vivo este emocionante confronto com os melhores atletas.' :
+                                 'Conteúdo exclusivo disponível para você.'}
+                              </p>
+                              <div className="flex gap-4">
+                                <Button 
+                                  size="lg" 
+                                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base font-medium"
+                                >
+                                  {banner.texto_botao || 'Assistir'}
+                                </Button>
+                                <Button 
+                                  size="lg" 
+                                  variant="secondary"
+                                  className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 text-base font-medium"
+                                >
+                                  Definir Lembrete
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Lado direito - Imagem */}
+                          <div className="flex-1 relative">
+                            {banner.midia_url ? (
+                              <img 
+                                src={banner.midia_url} 
+                                alt={banner.titulo}
+                                className="absolute right-0 top-0 h-full w-full object-cover object-center"
+                              />
+                            ) : (
+                              <div className="absolute right-0 top-0 h-full w-full bg-gradient-to-l from-slate-700 to-transparent flex items-center justify-center">
+                                <div className="text-center text-white/50">
+                                  <Image className="h-20 w-20 mx-auto mb-4" />
+                                  <p className="text-sm">Imagem do banner</p>
+                                </div>
+                              </div>
                             )}
                           </div>
                         </div>
-                        
-                        {/* Badge de ordem */}
-                        <div className="absolute top-4 left-4">
-                          <Badge variant="secondary" className="text-xs">
-                            #{banner.ordem}
-                          </Badge>
-                        </div>
+                      </div>
+                      
+                      {/* Badge de ordem */}
+                      <div className="absolute top-6 right-6 z-10">
+                        <Badge variant="secondary" className="text-xs bg-black/50 text-white border-white/20">
+                          #{banner.ordem}
+                        </Badge>
                       </div>
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious data-carousel="prev" />
-              <CarouselNext data-carousel="next" />
+              <CarouselPrevious className="left-4" />
+              <CarouselNext className="right-4" />
             </Carousel>
           ) : (
-            <div className="text-center py-8">
+            <div className="text-center py-12">
               <div className="text-muted-foreground">
                 Nenhum banner ativo encontrado para o plano {selectedPlan}.
               </div>
