@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { useGuestMode } from "@/hooks/useGuestMode"
-import { Eye, EyeOff, UserPlus, Users } from "lucide-react"
+import { Eye, EyeOff, UserPlus, Users, KeyRound } from "lucide-react"
 
 export default function AuthPage() {
   const [email, setEmail] = useState("")
@@ -15,6 +15,8 @@ export default function AuthPage() {
   const [fullName, setFullName] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(true)
   const { enableGuestMode } = useGuestMode()
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -41,11 +43,37 @@ export default function AuthPage() {
     return () => subscription.unsubscribe()
   }, [navigate])
 
+  const cleanupAuthState = () => {
+    // Remove standard auth tokens
+    localStorage.removeItem('supabase.auth.token');
+    // Remove all Supabase auth keys from localStorage
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+      }
+    });
+    // Remove from sessionStorage if in use
+    Object.keys(sessionStorage || {}).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
+      // Clean up existing state
+      cleanupAuthState();
+      // Attempt global sign out
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -70,6 +98,13 @@ export default function AuthPage() {
           title: "Login realizado com sucesso!",
           description: "Você será redirecionado em instantes.",
         })
+        // Force page reload for clean state
+        if (rememberMe) {
+          window.location.href = '/';
+        } else {
+          // For non-persistent sessions, just navigate
+          navigate('/');
+        }
       }
     } catch (error: any) {
       toast({
@@ -133,6 +168,46 @@ export default function AuthPage() {
     }
   }
 
+  const handlePasswordReset = async () => {
+    if (!email) {
+      toast({
+        title: "Email necessário",
+        description: "Digite seu email para recuperar a senha.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setResetLoading(true)
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?reset=true`,
+      })
+
+      if (error) {
+        toast({
+          title: "Erro",
+          description: error.message,
+          variant: "destructive",
+        })
+      } else {
+        toast({
+          title: "Email enviado!",
+          description: "Verifique sua caixa de entrada para redefinir sua senha.",
+        })
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setResetLoading(false)
+    }
+  }
+
   const handleGuestAccess = () => {
     enableGuestMode()
     navigate("/")
@@ -183,9 +258,10 @@ export default function AuthPage() {
           {/* Auth Forms - Sem Card */}
           <div className="space-y-6">
             <Tabs defaultValue="signin" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="signin">Entrar</TabsTrigger>
                 <TabsTrigger value="signup">Cadastrar</TabsTrigger>
+                <TabsTrigger value="reset">Recuperar</TabsTrigger>
               </TabsList>
 
               {/* Sign In Tab */}
@@ -241,6 +317,19 @@ export default function AuthPage() {
                       </div>
                     </div>
 
+                    <div className="flex items-center space-x-2 mb-4">
+                      <input
+                        type="checkbox"
+                        id="rememberMe"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="h-4 w-4 text-primary"
+                      />
+                      <Label htmlFor="rememberMe" className="text-sm text-muted-foreground">
+                        Manter-me conectado
+                      </Label>
+                    </div>
+
                     <Button 
                       type="submit" 
                       className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
@@ -248,6 +337,17 @@ export default function AuthPage() {
                     >
                       {loading ? "Entrando..." : "Entrar"}
                     </Button>
+
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={handlePasswordReset}
+                        disabled={resetLoading}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        {resetLoading ? "Enviando..." : "Esqueceu sua senha?"}
+                      </button>
+                    </div>
                   </div>
                 </form>
               </TabsContent>
@@ -330,6 +430,46 @@ export default function AuthPage() {
                     </Button>
                   </div>
                 </form>
+              </TabsContent>
+
+              {/* Password Reset Tab */}
+              <TabsContent value="reset">
+                <div className="space-y-4">
+                  <div className="space-y-2 pb-4">
+                    <h2 className="text-2xl font-semibold flex items-center gap-2">
+                      <KeyRound className="h-5 w-5" />
+                      Recuperar Senha
+                    </h2>
+                    <p className="text-muted-foreground">
+                      Digite seu email para receber instruções de recuperação
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="resetEmail">Email</Label>
+                      <Input
+                        id="resetEmail"
+                        type="email"
+                        placeholder="seu@email.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        disabled={resetLoading}
+                        className="h-12"
+                      />
+                    </div>
+
+                    <Button 
+                      type="button"
+                      onClick={handlePasswordReset}
+                      className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
+                      disabled={resetLoading || !email}
+                    >
+                      {resetLoading ? "Enviando..." : "Enviar Email de Recuperação"}
+                    </Button>
+                  </div>
+                </div>
               </TabsContent>
             </Tabs>
           </div>
