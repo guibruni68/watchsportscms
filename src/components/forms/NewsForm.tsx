@@ -7,7 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowLeft, Upload, Bold, Italic, List, Link } from "lucide-react"
+import { ArrowLeft, Upload, Bold, Italic, List, Link, X } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { useState } from "react"
@@ -99,20 +99,46 @@ export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
                   <FormItem>
                     <FormLabel>Imagem de Capa</FormLabel>
                     <FormControl>
-                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
-                        <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground mb-1">
-                          Clique para fazer upload da imagem de capa
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Formatos aceitos: JPG, PNG (máx. 2MB)
-                        </p>
-                        <Input 
-                          type="file" 
-                          accept="image/*" 
-                          className="hidden" 
-                          onChange={(e) => field.onChange(e.target.files?.[0]?.name || "")}
-                        />
+                      <div className="space-y-4">
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
+                          <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground mb-1">
+                            Clique para fazer upload da imagem de capa
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Formatos aceitos: JPG, PNG (máx. 2MB)
+                          </p>
+                          <Input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const url = URL.createObjectURL(file);
+                                field.onChange(url);
+                              }
+                            }}
+                          />
+                        </div>
+                        {field.value && (
+                          <div className="relative">
+                            <img 
+                              src={field.value} 
+                              alt="Capa da notícia" 
+                              className="w-full h-32 object-cover rounded-lg border"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={() => field.onChange("")}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </FormControl>
                     <FormMessage />

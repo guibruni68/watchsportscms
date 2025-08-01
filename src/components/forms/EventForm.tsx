@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ArrowLeft, Save, AlertCircle, CalendarIcon, Clock } from "lucide-react"
+import { ArrowLeft, Save, AlertCircle, CalendarIcon, Clock, Upload, X } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -20,6 +20,7 @@ interface EventFormData {
   time: string
   description: string
   status: "planejado" | "concluido"
+  imagemCapa: string
 }
 
 interface EventFormProps {
@@ -30,6 +31,7 @@ interface EventFormProps {
     datetime: string
     description: string
     status: "planejado" | "concluido"
+    imagemCapa?: string
   } | null
   isEdit?: boolean
   onClose: () => void
@@ -46,7 +48,8 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
     date: initialDate,
     time: initialTime,
     description: initialData?.description || "",
-    status: initialData?.status || "planejado"
+    status: initialData?.status || "planejado",
+    imagemCapa: initialData?.imagemCapa || ""
   })
   
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -252,6 +255,51 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
                   <div className="flex items-center gap-1 text-sm text-destructive">
                     <AlertCircle className="h-4 w-4" />
                     {errors.time}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="imagemCapa">Imagem de Capa</Label>
+              <div className="space-y-4">
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-muted-foreground/50 transition-colors">
+                  <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground mb-1">
+                    Clique para fazer upload da capa
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    PNG, JPG até 5MB
+                  </p>
+                  <Input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const url = URL.createObjectURL(file);
+                        setFormData(prev => ({ ...prev, imagemCapa: url }));
+                      }
+                    }}
+                  />
+                </div>
+                {formData.imagemCapa && (
+                  <div className="relative">
+                    <img 
+                      src={formData.imagemCapa} 
+                      alt="Capa do evento" 
+                      className="w-full h-32 object-cover rounded-lg border"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={() => setFormData(prev => ({ ...prev, imagemCapa: "" }))}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
                 )}
               </div>
