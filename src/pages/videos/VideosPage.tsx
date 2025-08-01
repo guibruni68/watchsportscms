@@ -293,7 +293,8 @@ export default function VideosPage() {
         initialData={editingVideo ? {
           titulo: editingVideo.titulo,
           descricao: editingVideo.descricao,
-          categoria: editingVideo.categoria,
+          generos: [editingVideo.categoria],
+          tag: "Destaque",
           tags: editingVideo.tags.join(", "),
           dataPublicacao: new Date(editingVideo.dataPublicacao),
         } : undefined}

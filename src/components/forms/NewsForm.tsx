@@ -7,6 +7,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Upload, Bold, Italic, List, Link, X } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
@@ -17,6 +19,8 @@ const newsSchema = z.object({
   conteudo: z.string().min(1, "Conteúdo é obrigatório"),
   destaque: z.boolean(),
   imagemCapa: z.string().optional(),
+  generos: z.array(z.string()).min(1, "Pelo menos um gênero é obrigatório"),
+  tag: z.string().min(1, "Tag é obrigatória"),
 })
 
 type NewsFormData = z.infer<typeof newsSchema>
@@ -38,6 +42,8 @@ export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
       conteudo: initialData?.conteudo || "",
       destaque: initialData?.destaque || false,
       imagemCapa: initialData?.imagemCapa || "",
+      generos: initialData?.generos || [],
+      tag: initialData?.tag || "",
     },
   })
 
@@ -52,6 +58,25 @@ export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
     
     navigate("/news")
   }
+
+  const generos = [
+    "Notícias Gerais",
+    "Transferências",
+    "Resultados",
+    "Análises",
+    "Entrevistas",
+    "Bastidores",
+    "Mercado da Bola"
+  ]
+
+  const tagsPreConfiguradas = [
+    "Destaque",
+    "Exclusivo",
+    "Urgente",
+    "Breaking News",
+    "Análise",
+    "Opinião"
+  ]
 
   const formatText = (command: string) => {
     document.execCommand(command, false)
@@ -91,6 +116,79 @@ export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
                   </FormItem>
                 )}
               />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="generos"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gêneros *</FormLabel>
+                      <div className="space-y-4">
+                        <Select onValueChange={(value) => {
+                          if (!field.value?.includes(value)) {
+                            field.onChange([...(field.value || []), value]);
+                          }
+                        }}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecionar gêneros" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {generos
+                              .filter(genero => !field.value?.includes(genero))
+                              .map((genero) => (
+                              <SelectItem key={genero} value={genero}>
+                                {genero}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {field.value && field.value.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {field.value.map((genero) => (
+                              <Badge key={genero} variant="secondary" className="flex items-center gap-1">
+                                {genero}
+                                <X 
+                                  className="h-3 w-3 cursor-pointer" 
+                                  onClick={() => {
+                                    field.onChange(field.value?.filter(g => g !== genero) || []);
+                                  }}
+                                />
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="tag"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tag *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione uma tag" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {tagsPreConfiguradas.map((tag) => (
+                            <SelectItem key={tag} value={tag}>
+                              {tag}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}

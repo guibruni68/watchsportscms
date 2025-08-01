@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ArrowLeft, Save, AlertCircle, CalendarIcon, Clock, Upload, X } from "lucide-react"
@@ -21,6 +22,8 @@ interface EventFormData {
   description: string
   status: "planejado" | "concluido"
   imagemCapa: string
+  generos: string[]
+  tag: string
 }
 
 interface EventFormProps {
@@ -32,6 +35,8 @@ interface EventFormProps {
     description: string
     status: "planejado" | "concluido"
     imagemCapa?: string
+    generos?: string[]
+    tag?: string
   } | null
   isEdit?: boolean
   onClose: () => void
@@ -49,7 +54,9 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
     time: initialTime,
     description: initialData?.description || "",
     status: initialData?.status || "planejado",
-    imagemCapa: initialData?.imagemCapa || ""
+    imagemCapa: initialData?.imagemCapa || "",
+    generos: initialData?.generos || [],
+    tag: initialData?.tag || ""
   })
   
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -111,6 +118,24 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
       setIsSubmitting(false)
     }
   }
+
+  const generos = [
+    "Futebol Profissional",
+    "Categorias de Base",
+    "Futebol Feminino",
+    "Eventos Especiais",
+    "Amistosos",
+    "Competições Oficiais"
+  ]
+
+  const tagsPreConfiguradas = [
+    "Destaque",
+    "Importante",
+    "Oficial",
+    "Especial",
+    "Clássico",
+    "Derby"
+  ]
 
   return (
     <div className="space-y-6">
@@ -179,37 +204,64 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="date">Data</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "justify-start text-left font-normal w-full",
-                        !formData.date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.date ? format(formData.date, "PPP", { locale: ptBR }) : <span>Selecione a data</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={formData.date}
-                      onSelect={(date) => setFormData(prev => ({ ...prev, date }))}
-                      initialFocus
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-                {errors.date && (
-                  <div className="flex items-center gap-1 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.date}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="generos">Gêneros</Label>
+                  <div className="space-y-4">
+                    <Select onValueChange={(value) => {
+                      if (!formData.generos?.includes(value)) {
+                        setFormData(prev => ({ ...prev, generos: [...(prev.generos || []), value] }));
+                      }
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar gêneros" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {generos
+                          .filter(genero => !formData.generos?.includes(genero))
+                          .map((genero) => (
+                          <SelectItem key={genero} value={genero}>
+                            {genero}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {formData.generos && formData.generos.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {formData.generos.map((genero) => (
+                          <Badge key={genero} variant="secondary" className="flex items-center gap-1">
+                            {genero}
+                            <X 
+                              className="h-3 w-3 cursor-pointer" 
+                              onClick={() => {
+                                setFormData(prev => ({ 
+                                  ...prev, 
+                                  generos: prev.generos?.filter(g => g !== genero) || [] 
+                                }));
+                              }}
+                            />
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="tag">Tag</Label>
+                  <Select value={formData.tag} onValueChange={(value) => setFormData(prev => ({ ...prev, tag: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma tag" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tagsPreConfiguradas.map((tag) => (
+                        <SelectItem key={tag} value={tag}>
+                          {tag}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="space-y-2">

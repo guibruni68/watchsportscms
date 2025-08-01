@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Upload, CalendarIcon, X, User, Users } from "lucide-react"
+import { ArrowLeft, Upload, CalendarIcon, X, User, Users, Check } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -21,7 +21,8 @@ const videoSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
   descricao: z.string().min(1, "Descrição é obrigatória"),
   tags: z.string(),
-  categoria: z.string().min(1, "Categoria é obrigatória"),
+  generos: z.array(z.string()).min(1, "Pelo menos um gênero é obrigatório"),
+  tag: z.string().min(1, "Tag é obrigatória"),
   dataPublicacao: z.date(),
   videoFile: z.string().optional(),
   imagemCapa: z.string().optional(),
@@ -49,7 +50,8 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
       titulo: initialData?.titulo || "",
       descricao: initialData?.descricao || "",
       tags: initialData?.tags || "",
-      categoria: initialData?.categoria || "",
+      generos: initialData?.generos || [],
+      tag: initialData?.tag || "",
       dataPublicacao: initialData?.dataPublicacao || new Date(),
       videoFile: initialData?.videoFile || "",
       imagemCapa: initialData?.imagemCapa || "",
@@ -69,12 +71,24 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
     navigate("/videos")
   }
 
-  const categorias = [
+  const generos = [
     "Gols e Melhores Momentos",
     "Entrevistas",
     "Bastidores",
     "Treinos",
-    "Histórico do Clube"
+    "Histórico do Clube",
+    "Análises Táticas",
+    "Documentários",
+    "Transmissões"
+  ]
+
+  const tagsPreConfiguradas = [
+    "Destaque",
+    "Exclusivo",
+    "Ao Vivo",
+    "Premium",
+    "Educativo",
+    "Entretenimento"
   ]
 
   return (
@@ -116,20 +130,66 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
 
                   <FormField
                     control={form.control}
-                    name="categoria"
+                    name="generos"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Categoria *</FormLabel>
+                        <FormLabel>Gêneros *</FormLabel>
+                        <div className="space-y-4">
+                          <Select onValueChange={(value) => {
+                            if (!field.value?.includes(value)) {
+                              field.onChange([...(field.value || []), value]);
+                            }
+                          }}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecionar gêneros" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {generos
+                                .filter(genero => !field.value?.includes(genero))
+                                .map((genero) => (
+                                <SelectItem key={genero} value={genero}>
+                                  {genero}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {field.value && field.value.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {field.value.map((genero) => (
+                                <Badge key={genero} variant="secondary" className="flex items-center gap-1">
+                                  {genero}
+                                  <X 
+                                    className="h-3 w-3 cursor-pointer" 
+                                    onClick={() => {
+                                      field.onChange(field.value?.filter(g => g !== genero) || []);
+                                    }}
+                                  />
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="tag"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tag *</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecione uma categoria" />
+                              <SelectValue placeholder="Selecione uma tag" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {categorias.map((categoria) => (
-                              <SelectItem key={categoria} value={categoria}>
-                                {categoria}
+                            {tagsPreConfiguradas.map((tag) => (
+                              <SelectItem key={tag} value={tag}>
+                                {tag}
                               </SelectItem>
                             ))}
                           </SelectContent>
