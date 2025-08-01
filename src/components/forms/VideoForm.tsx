@@ -24,6 +24,7 @@ const videoSchema = z.object({
   categoria: z.string().min(1, "Categoria é obrigatória"),
   dataPublicacao: z.date(),
   videoFile: z.string().optional(),
+  imagemCapa: z.string().optional(),
   agentesRelacionados: z.array(z.object({
     id: z.string(),
     nome: z.string(),
@@ -51,6 +52,7 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
       categoria: initialData?.categoria || "",
       dataPublicacao: initialData?.dataPublicacao || new Date(),
       videoFile: initialData?.videoFile || "",
+      imagemCapa: initialData?.imagemCapa || "",
       agentesRelacionados: initialData?.agentesRelacionados || [],
     },
   })
@@ -97,40 +99,96 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="titulo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Título *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ex: Gols da vitória contra o rival" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="titulo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Título *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: Gols da vitória contra o rival" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="categoria"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Categoria *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione uma categoria" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {categorias.map((categoria) => (
+                              <SelectItem key={categoria} value={categoria}>
+                                {categoria}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
-                  name="categoria"
+                  name="imagemCapa"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Categoria *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione uma categoria" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categorias.map((categoria) => (
-                            <SelectItem key={categoria} value={categoria}>
-                              {categoria}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Imagem de Capa</FormLabel>
+                      <FormControl>
+                        <div className="space-y-4">
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-muted-foreground/50 transition-colors">
+                            <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground mb-1">
+                              Clique para fazer upload da capa
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              PNG, JPG até 5MB
+                            </p>
+                            <Input 
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const url = URL.createObjectURL(file);
+                                  field.onChange(url);
+                                }
+                              }}
+                            />
+                          </div>
+                          {field.value && (
+                            <div className="relative">
+                              <img 
+                                src={field.value} 
+                                alt="Capa do vídeo" 
+                                className="w-full h-32 object-cover rounded-lg border"
+                              />
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                className="absolute top-2 right-2"
+                                onClick={() => field.onChange("")}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
