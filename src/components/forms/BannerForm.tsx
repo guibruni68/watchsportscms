@@ -34,6 +34,7 @@ const bannerSchema = z.object({
   data_fim: z.string().min(1, "Data de fim é obrigatória"),
   status: z.boolean(),
   ordem: z.number().min(0),
+  algoritmo_recomendacao: z.string().optional(),
   conteudo_vinculado_id: z.string().optional(),
   planos_permitidos: z.array(z.string()),
 });
@@ -501,12 +502,40 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                 </div>
               </div>
 
-              {/* Conteúdo Vinculado */}
+              {/* Algoritmo de Recomendação - apenas para tipo recomendado */}
+              {form.watch('tipo_conteudo') === 'recomendado' && (
+                <FormField
+                  control={form.control}
+                  name="algoritmo_recomendacao"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Algoritmo de Recomendação</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o algoritmo..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="colaborativo">Filtragem Colaborativa</SelectItem>
+                          <SelectItem value="conteudo_similar">Conteúdo Similar</SelectItem>
+                          <SelectItem value="tendencias">Baseado em Tendências</SelectItem>
+                          <SelectItem value="historico_usuario">Histórico do Usuário</SelectItem>
+                          <SelectItem value="mais_assistidos">Mais Assistidos</SelectItem>
+                          <SelectItem value="recentes">Recentes</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Conteúdo Vinculado - apenas para tipos específicos, exceto recomendado */}
               {(form.watch('tipo_conteudo') === 'vod' || 
                 form.watch('tipo_conteudo') === 'live_agora' || 
                 form.watch('tipo_conteudo') === 'live_programado' || 
-                form.watch('tipo_conteudo') === 'campanha' ||
-                form.watch('tipo_conteudo') === 'recomendado') && (
+                form.watch('tipo_conteudo') === 'campanha') && (
                 <FormField
                   control={form.control}
                   name="conteudo_vinculado_id"
@@ -515,7 +544,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                       <FormLabel>
                         {form.watch('tipo_conteudo') === 'campanha' && 'Campanha Vinculada'}
                         {(form.watch('tipo_conteudo') === 'live_agora' || form.watch('tipo_conteudo') === 'live_programado') && 'Evento ao Vivo'}
-                        {(form.watch('tipo_conteudo') === 'vod' || form.watch('tipo_conteudo') === 'recomendado') && 'Vídeo/Conteúdo'}
+                        {form.watch('tipo_conteudo') === 'vod' && 'Vídeo/Conteúdo'}
                       </FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
@@ -538,7 +567,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                               </SelectItem>
                             ))
                           }
-                          {(form.watch('tipo_conteudo') === 'vod' || form.watch('tipo_conteudo') === 'recomendado') && 
+                          {form.watch('tipo_conteudo') === 'vod' && 
                             mockVideos.map((video) => (
                               <SelectItem key={video.id} value={video.id}>
                                 {video.name}
@@ -547,9 +576,6 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                           }
                         </SelectContent>
                       </Select>
-                      <FormDescription>
-                        Selecione o conteúdo que será destacado por este banner
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
