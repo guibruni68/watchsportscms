@@ -337,8 +337,7 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                     <FormLabel>Agentes Relacionados</FormLabel>
                     <div className="space-y-4">
                       {/* Select unificado para todos os agentes */}
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Adicionar Agentes</label>
+                       <div>
                          <Select onValueChange={(agenteId) => {
                            // Procurar primeiro nos jogadores
                            let agenteSelecionado: any = mockPlayers.find(p => p.id === agenteId);
