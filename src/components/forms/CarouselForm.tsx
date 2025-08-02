@@ -150,9 +150,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                   {...field} 
                 />
               </FormControl>
-              <FormDescription>
-                Nome que será exibido para identificar o carrossel
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -180,9 +177,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                       <SelectItem value="store">Loja</SelectItem>
                     </SelectContent>
                   </Select>
-                <FormDescription>
-                  Define o tipo de conteúdo do carrossel
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -209,9 +203,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                     )}
                   </SelectContent>
                 </Select>
-                <FormDescription>
-                  Layout visual que será utilizado para exibir o carrossel
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -241,9 +232,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                       <SelectItem value="newest">Mais Recentes</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>
-                    Como os conteúdos serão ordenados
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -270,9 +258,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                       onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
                     />
                   </FormControl>
-                  <FormDescription>
-                    {carouselType === "lives" ? "Número máximo de canais a exibir" : "Número máximo de conteúdos a exibir"}
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -298,9 +283,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                     <SelectItem value="vip">Apenas VIP</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormDescription>
-                  Para quais planos o carrossel será exibido
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -343,9 +325,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                       )}
                     </SelectContent>
                   </Select>
-                  <FormDescription>
-                    Define que tipo de conteúdo será exibido no carrossel
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -408,9 +387,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                       </div>
                     </div>
                   )}
-                  <FormDescription>
-                    Selecione quais canais serão exibidos no carrossel
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -438,9 +414,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                       <SelectItem value="specific">Times Específicos</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>
-                    Como filtrar os jogadores por time
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -499,9 +472,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                         </div>
                       </div>
                     )}
-                    <FormDescription>
-                      Selecione de quais times mostrar os jogadores
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -532,9 +502,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                       <SelectItem value="ad4">Anúncio Parceiro Oficial</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>
-                    Selecione qual anúncio será exibido no carrossel
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -739,9 +706,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                     <SelectItem value="behind-scenes">Bastidores</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormDescription>
-                  Tipo de conteúdo que será exibido no carrossel
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -768,9 +732,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                     <SelectItem value="recent">Mais Recentes</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormDescription>
-                  Algoritmo usado para gerar as recomendações
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -794,9 +755,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                     </Button>
                   </div>
                 </FormControl>
-                <FormDescription>
-                  Selecione manualmente os conteúdos que aparecerão no carrossel
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -818,9 +776,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                   onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
                 />
               </FormControl>
-              <FormDescription>
-                Define a posição do carrossel na página (1 = primeiro, 2 = segundo, etc.)
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -834,9 +789,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base">Status</FormLabel>
-                  <FormDescription>
-                    Carrossel ativo será exibido na plataforma
-                  </FormDescription>
                 </div>
                 <FormControl>
                   <Switch
@@ -855,9 +807,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base">Exibir botão "Ver mais"</FormLabel>
-                  <FormDescription>
-                    Adiciona botão para expandir o carrossel
-                  </FormDescription>
                 </div>
                 <FormControl>
                   <Switch
