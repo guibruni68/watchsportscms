@@ -279,7 +279,7 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                   name="tags"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tags</FormLabel>
+                      <FormLabel>Palavras-chave</FormLabel>
                       <FormControl>
                         <Input placeholder="Ex: gols, vitória, campeonato (separadas por vírgula)" {...field} />
                       </FormControl>
