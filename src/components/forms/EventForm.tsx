@@ -227,7 +227,7 @@ export function EventForm({ initialData, isEdit, onClose }: EventFormProps) {
                       </SelectContent>
                     </Select>
                     {formData.generos && formData.generos.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 items-center">
                         {formData.generos.map((genero) => (
                           <Badge key={genero} variant="secondary" className="flex items-center gap-1">
                             {genero}
