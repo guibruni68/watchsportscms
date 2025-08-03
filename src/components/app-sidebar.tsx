@@ -15,6 +15,10 @@ const mainNavItems = [{
   url: "/lives",
   icon: Radio
 }, {
+  title: "Times & Elencos",
+  url: "/teams",
+  icon: Users
+}, {
   title: "Agenda",
   url: "/schedule",
   icon: Calendar
@@ -49,8 +53,8 @@ const settingsNavItems = [{
   url: "/settings",
   icon: Settings
 }, {
-  title: "Times & Elencos",
-  url: "/teams",
+  title: "Acesso de Contas",
+  url: "/accounts",
   icon: Users
 }];
 export function AppSidebar() {
