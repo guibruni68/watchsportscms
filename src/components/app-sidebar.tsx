@@ -173,7 +173,6 @@ export function AppSidebar() {
                           <SidebarMenuSubItem>
                             <SidebarMenuSubButton asChild>
                               <NavLink to="/profile">
-                                <User className="h-4 w-4" />
                                 <span>Perfil</span>
                               </NavLink>
                             </SidebarMenuSubButton>
@@ -181,14 +180,12 @@ export function AppSidebar() {
                           <SidebarMenuSubItem>
                             <SidebarMenuSubButton asChild>
                               <NavLink to="/accounts">
-                                <Users className="h-4 w-4" />
                                 <span>Acesso de Conta</span>
                               </NavLink>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                           <SidebarMenuSubItem>
                             <SidebarMenuSubButton onClick={handleGuestLogout}>
-                              <LogOut className="h-4 w-4" />
                               <span>Desligar</span>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
