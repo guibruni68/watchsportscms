@@ -1,8 +1,11 @@
-import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck } from "lucide-react";
+import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown } from "lucide-react";
 import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
-import { NavLink, useLocation } from "react-router-dom";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, useSidebar } from "@/components/ui/sidebar";
 import { useGuestMode } from "@/hooks/useGuestMode";
+import { useToast } from "@/hooks/use-toast";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from "react";
 const mainNavItems = [{
   title: "Dashboard",
   url: "/",
@@ -64,7 +67,10 @@ export function AppSidebar() {
   } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
-  const { isGuest } = useGuestMode();
+  const { isGuest, disableGuestMode } = useGuestMode();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isGuestMenuOpen, setIsGuestMenuOpen] = useState(false);
   const isActive = (path: string) => {
     if (path === "/") {
       return currentPath === "/";
@@ -75,26 +81,14 @@ export function AppSidebar() {
     return isActive(path) ? "bg-primary text-white font-medium" : "hover:bg-muted/60 transition-colors";
   };
 
-  // Dynamic settings items based on guest mode
-  const dynamicSettingsItems = isGuest 
-    ? [
-        {
-          title: "Personalização",
-          url: "/customization",
-          icon: Palette
-        },
-        {
-          title: "Configurações", 
-          url: "/settings",
-          icon: Settings
-        },
-        {
-          title: "Visitante",
-          url: "#",
-          icon: UserCheck
-        }
-      ]
-    : settingsNavItems;
+  const handleGuestLogout = () => {
+    disableGuestMode();
+    toast({
+      title: "Modo visitante finalizado",
+      description: "Você saiu do modo visitante.",
+    });
+    navigate("/auth");
+  };
   return <Sidebar className={state === "collapsed" ? "w-16" : "w-64"} collapsible="icon">
       <SidebarContent className="bg-gradient-to-b from-card to-muted/20">
         {/* Logo Section */}
@@ -149,21 +143,61 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">
-              {dynamicSettingsItems.map(item => <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild={item.url !== "#"} className={`h-11 px-4 ${item.url !== "#" ? getNavClassName(item.url) : "cursor-default opacity-70"}`}>
-                    {item.url !== "#" ? (
-                      <NavLink to={item.url}>
-                        <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : 'text-muted-foreground'}`} />
-                        {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
-                      </NavLink>
-                    ) : (
-                      <div className="flex items-center">
-                        <item.icon className="h-4 w-4 text-muted-foreground" />
-                        {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
-                      </div>
-                    )}
+              {settingsNavItems.map(item => <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild className={`h-11 px-4 ${getNavClassName(item.url)}`}>
+                    <NavLink to={item.url}>
+                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : 'text-muted-foreground'}`} />
+                      {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>)}
+              
+              {/* Guest Mode Section */}
+              {isGuest && (
+                <SidebarMenuItem>
+                  <Collapsible open={isGuestMenuOpen} onOpenChange={setIsGuestMenuOpen}>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton className="h-11 px-4 hover:bg-muted/60 transition-colors">
+                        <UserCheck className="h-4 w-4 text-muted-foreground" />
+                        {state !== "collapsed" && (
+                          <>
+                            <span className="ml-3">Visitante</span>
+                            <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${isGuestMenuOpen ? 'rotate-180' : ''}`} />
+                          </>
+                        )}
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    {state !== "collapsed" && (
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton asChild>
+                              <NavLink to="/profile">
+                                <User className="h-4 w-4" />
+                                <span>Perfil</span>
+                              </NavLink>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton asChild>
+                              <NavLink to="/accounts">
+                                <Users className="h-4 w-4" />
+                                <span>Acesso de Conta</span>
+                              </NavLink>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton onClick={handleGuestLogout}>
+                              <LogOut className="h-4 w-4" />
+                              <span>Desligar</span>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    )}
+                  </Collapsible>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
