@@ -341,52 +341,56 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Canais Selecionados</FormLabel>
-                  <div className="space-y-2">
-                    {channels.map((channel) => (
-                      <div key={channel.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={channel.id}
-                          checked={field.value?.includes(channel.id)}
-                          onCheckedChange={(checked) => {
-                            const currentValues = field.value || [];
-                            if (checked) {
-                              field.onChange([...currentValues, channel.id]);
-                            } else {
-                              field.onChange(currentValues.filter(id => id !== channel.id));
-                            }
-                          }}
-                        />
-                        <label
-                          htmlFor={channel.id}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {channel.name}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                  {field.value && field.value.length > 0 && (
-                    <div className="mt-2">
-                      <p className="text-sm text-muted-foreground mb-2">Canais selecionados:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {field.value.map((channelId) => {
-                          const channel = channels.find(c => c.id === channelId);
-                          return channel ? (
-                            <Badge key={channelId} variant="secondary" className="flex items-center gap-1">
+                  <div className="space-y-3">
+                    {/* Multi-select input */}
+                    <Select 
+                      onValueChange={(value) => {
+                        const currentValues = field.value || [];
+                        if (!currentValues.includes(value)) {
+                          field.onChange([...currentValues, value]);
+                        }
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione os canais..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {channels
+                          .filter(channel => !field.value?.includes(channel.id))
+                          .map((channel) => (
+                            <SelectItem key={channel.id} value={channel.id}>
                               {channel.name}
-                              <X 
-                                className="h-3 w-3 cursor-pointer" 
-                                onClick={() => {
-                                  const newValues = field.value?.filter(id => id !== channelId) || [];
-                                  field.onChange(newValues);
-                                }}
-                              />
-                            </Badge>
-                          ) : null;
-                        })}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    {/* Selected channels display */}
+                    {field.value && field.value.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Canais selecionados:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {field.value.map((channelId) => {
+                            const channel = channels.find(c => c.id === channelId);
+                            return channel ? (
+                              <Badge key={channelId} variant="secondary" className="flex items-center gap-2 px-3 py-1">
+                                {channel.name}
+                                <X 
+                                  className="h-3 w-3 cursor-pointer hover:bg-destructive/20 rounded-full p-0.5" 
+                                  onClick={() => {
+                                    const newValues = field.value?.filter(id => id !== channelId) || [];
+                                    field.onChange(newValues);
+                                  }}
+                                />
+                              </Badge>
+                            ) : null;
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
