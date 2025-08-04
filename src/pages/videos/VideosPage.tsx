@@ -373,7 +373,11 @@ export default function VideosPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{video.categoria}</Badge>
+                  <Badge variant="secondary">
+                    <span className="truncate max-w-[100px]">
+                      {video.categoria}
+                    </span>
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
