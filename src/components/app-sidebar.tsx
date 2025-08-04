@@ -56,10 +56,6 @@ const settingsNavItems = [{
   title: "Configurações",
   url: "/settings",
   icon: Settings
-}, {
-  title: "Acesso de Contas",
-  url: "/accounts",
-  icon: Users
 }];
 export function AppSidebar() {
   const {
