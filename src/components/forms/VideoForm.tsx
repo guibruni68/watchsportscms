@@ -83,12 +83,11 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
   ]
 
   const tagsPreConfiguradas = [
+    "Novidade",
+    "Novo Episódio",
     "Destaque",
-    "Exclusivo",
     "Ao Vivo",
-    "Premium",
-    "Educativo",
-    "Entretenimento"
+    "Exclusivo"
   ]
 
   return (
