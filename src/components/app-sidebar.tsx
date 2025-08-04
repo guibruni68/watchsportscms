@@ -147,50 +147,6 @@ export function AppSidebar() {
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>)}
-              
-              {/* Guest Mode Section */}
-              {isGuest && (
-                <SidebarMenuItem>
-                  <Collapsible open={isGuestMenuOpen} onOpenChange={setIsGuestMenuOpen}>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton className="h-11 px-4 hover:bg-muted/60 transition-colors">
-                        <UserCheck className="h-4 w-4 text-muted-foreground" />
-                        {state !== "collapsed" && (
-                          <>
-                            <span className="ml-3">Visitante</span>
-                            <ChevronDown className={`h-4 w-4 ml-auto transition-transform ${isGuestMenuOpen ? 'rotate-180' : ''}`} />
-                          </>
-                        )}
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    {state !== "collapsed" && (
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          <SidebarMenuSubItem>
-                            <SidebarMenuSubButton asChild>
-                              <NavLink to="/profile">
-                                <span>Perfil</span>
-                              </NavLink>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                          <SidebarMenuSubItem>
-                            <SidebarMenuSubButton asChild>
-                              <NavLink to="/accounts">
-                                <span>Acesso de Conta</span>
-                              </NavLink>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                          <SidebarMenuSubItem>
-                            <SidebarMenuSubButton onClick={handleGuestLogout}>
-                              <span>Desligar</span>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
-                    )}
-                  </Collapsible>
-                </SidebarMenuItem>
-              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
