@@ -73,25 +73,6 @@ export function ListControls({
     <div className="space-y-4">
       {/* Top controls */}
       <div className="flex items-center gap-4">
-        {/* View Mode Toggle */}
-        <div className="flex border rounded-md">
-          <Button
-            variant={viewMode === "list" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => onViewModeChange("list")}
-            className="rounded-r-none"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === "grid" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => onViewModeChange("grid")}
-            className="rounded-l-none border-l"
-          >
-            <Grid className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
 
       {/* Bottom controls - only show if pagination props are provided */}
