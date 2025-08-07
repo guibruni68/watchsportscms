@@ -25,6 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, Search } from "lucide-react";
+import { ContentSelector } from "@/components/ui/content-selector";
 import { getAgentsByType } from "@/data/mockData";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -750,14 +751,11 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
               <FormItem>
                 <FormLabel>Conteúdos Selecionados</FormLabel>
                 <FormControl>
-                  <div className="space-y-2">
-                    <div className="text-sm text-muted-foreground">
-                      {field.value?.length || 0} conteúdos selecionados
-                    </div>
-                    <Button type="button" variant="outline" className="w-full">
-                      + Adicionar Conteúdos
-                    </Button>
-                  </div>
+                  <ContentSelector 
+                    carouselType={carouselType}
+                    selectedContent={field.value || []}
+                    onContentChange={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
