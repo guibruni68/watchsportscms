@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Edit, Eye, Trash2, Grid3X3, List, GripVertical } from "lucide-react";
+import { Plus, Edit, Eye, Trash2, Grid3X3, List, GripVertical, Save, X } from "lucide-react";
 import { CarouselForm } from "@/components/forms/CarouselForm";
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
@@ -209,9 +209,10 @@ const getAgentNames = (carousel: Carousel) => {
 };
 
 // Componente para linha sortável
-function SortableRow({ carousel, children }: { 
+function SortableRow({ carousel, children, isEditingOrder }: { 
   carousel: Carousel; 
   children: React.ReactNode;
+  isEditingOrder: boolean;
 }) {
   const {
     attributes,
@@ -228,13 +229,21 @@ function SortableRow({ carousel, children }: {
 
   return (
     <TableRow ref={setNodeRef} style={style} {...attributes}>
-      <TableCell>
-        <div 
-          className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-muted"
-          {...listeners}
-        >
-          <GripVertical className="h-4 w-4 text-muted-foreground" />
-        </div>
+      <TableCell className="w-8">
+        {isEditingOrder ? (
+          <div 
+            className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-muted"
+            {...listeners}
+          >
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
+          </div>
+        ) : (
+          <div className="p-1">
+            <span className="text-xs text-muted-foreground font-mono">
+              {carousel.order}
+            </span>
+          </div>
+        )}
       </TableCell>
       {children}
     </TableRow>
@@ -243,6 +252,7 @@ function SortableRow({ carousel, children }: {
 
 export default function CarouselsPage() {
   const [carousels, setCarousels] = useState<Carousel[]>(mockCarousels);
+  const [originalCarousels, setOriginalCarousels] = useState<Carousel[]>(mockCarousels);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCarousel, setEditingCarousel] = useState<Carousel | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
@@ -252,6 +262,8 @@ export default function CarouselsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
+  const [isEditingOrder, setIsEditingOrder] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -301,14 +313,33 @@ export default function CarouselsPage() {
           order: index + 1
         }));
         
+        setHasUnsavedChanges(true);
         return updatedCarousels;
       });
-      
-      toast({
-        title: "Ordem atualizada",
-        description: "A ordem dos carrosséis foi atualizada com sucesso.",
-      });
     }
+  };
+
+  const handleToggleEditOrder = () => {
+    if (isEditingOrder) {
+      // Cancelar edição - voltar ao estado original
+      setCarousels(originalCarousels);
+      setHasUnsavedChanges(false);
+    } else {
+      // Iniciar edição - salvar estado atual
+      setOriginalCarousels([...carousels]);
+    }
+    setIsEditingOrder(!isEditingOrder);
+  };
+
+  const handleSaveOrder = () => {
+    setOriginalCarousels([...carousels]);
+    setIsEditingOrder(false);
+    setHasUnsavedChanges(false);
+    
+    toast({
+      title: "Ordem salva com sucesso!",
+      description: "A nova ordem dos carrosséis foi confirmada.",
+    });
   };
 
   const handleCreateCarousel = (data: any) => {
@@ -458,15 +489,68 @@ export default function CarouselsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {viewMode === "list" ? <List className="h-5 w-5" /> : <Grid3X3 className="h-5 w-5" />}
-            Carrosséis Cadastrados
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              {viewMode === "list" ? <List className="h-5 w-5" /> : <Grid3X3 className="h-5 w-5" />}
+              Carrosséis Cadastrados
+            </CardTitle>
+            
+            {viewMode === "list" && !isEditingOrder && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleToggleEditOrder}
+                className="gap-2"
+              >
+                <Edit className="h-4 w-4" />
+                Editar Ordenação
+              </Button>
+            )}
+          </div>
+          
+          {/* CTA de confirmação quando estiver editando */}
+          {isEditingOrder && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg animate-fade-in">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="text-sm text-blue-700">
+                    <p className="font-medium">Modo de edição ativo</p>
+                    <p className="text-blue-600">Arraste os carrosséis para reordenar</p>
+                  </div>
+                  {hasUnsavedChanges && (
+                    <Badge variant="secondary" className="bg-orange-100 text-orange-700">
+                      Alterações não salvas
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleToggleEditOrder}
+                    className="gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    Cancelar
+                  </Button>
+                  <Button 
+                    size="sm"
+                    onClick={handleSaveOrder}
+                    disabled={!hasUnsavedChanges}
+                    className="gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    Salvar Ordem
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           {viewMode === "list" ? (
             <DndContext
-              sensors={sensors}
+              sensors={isEditingOrder ? sensors : []}
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
@@ -490,7 +574,7 @@ export default function CarouselsPage() {
                       strategy={verticalListSortingStrategy}
                     >
                       {currentCarousels.map((carousel) => (
-                        <SortableRow key={carousel.id} carousel={carousel}>
+                        <SortableRow key={carousel.id} carousel={carousel} isEditingOrder={isEditingOrder}>
                           <TableCell className="font-medium">{carousel.title}</TableCell>
                           <TableCell>
                             <Badge variant="outline">{getCarouselTypeLabel(carousel.carouselType)}</Badge>
