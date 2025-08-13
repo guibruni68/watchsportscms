@@ -361,16 +361,12 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                             <SelectValue placeholder="Buscar e selecionar agentes (jogadores e times)" />
                           </SelectTrigger>
                           <SelectContent>
-                            {/* Jogadores disponíveis */}
+                             {/* Jogadores disponíveis */}
                             {mockPlayers
                               .filter(jogador => !field.value?.find(a => a.id === jogador.id))
                               .map((jogador) => (
                               <SelectItem key={`jogador-${jogador.id}`} value={jogador.id}>
-                                <div className="flex items-center gap-2">
-                                  <User className="h-4 w-4 text-blue-500" />
-                                  <span>{jogador.name} - #{jogador.number}</span>
-                                  <Badge variant="outline" className="text-xs">Jogador</Badge>
-                                </div>
+                                {jogador.name} - #{jogador.number}
                               </SelectItem>
                             ))}
                             
@@ -379,11 +375,7 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                               .filter(time => !field.value?.find(a => a.id === time.id))
                               .map((time) => (
                               <SelectItem key={`time-${time.id}`} value={time.id}>
-                                <div className="flex items-center gap-2">
-                                  <Users className="h-4 w-4 text-green-500" />
-                                  <span>{time.name}</span>
-                                  <Badge variant="outline" className="text-xs">Time</Badge>
-                                </div>
+                                {time.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -412,15 +404,7 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                                 className="flex items-center justify-between p-2 bg-background border rounded-md"
                               >
                                 <div className="flex items-center gap-2">
-                                  {agente.tipo === 'jogador' ? (
-                                    <User className="h-4 w-4 text-blue-500" />
-                                  ) : (
-                                    <Users className="h-4 w-4 text-green-500" />
-                                  )}
                                   <span className="text-sm font-medium">{agente.nome}</span>
-                                  <Badge variant="outline" className="text-xs">
-                                    {agente.tipo === 'jogador' ? 'Jogador' : 'Time'}
-                                  </Badge>
                                 </div>
                                 <Button
                                   type="button"
