@@ -175,9 +175,6 @@ export default function DashboardIndex() {
                     <span className="text-xs text-muted-foreground">{video.publishedAt}</span>
                   </div>
                 </div>
-                <Badge variant="outline" className="text-xs">
-                  Publicado
-                </Badge>
               </div>
             ))}
           </CardContent>
