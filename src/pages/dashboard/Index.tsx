@@ -205,12 +205,6 @@ export default function DashboardIndex() {
                   <h4 className="font-medium text-sm text-foreground">{event.title}</h4>
                   <p className="text-xs text-muted-foreground mt-1">{event.date}</p>
                 </div>
-                <Badge 
-                  variant={event.type === 'live' ? 'default' : 'outline'}
-                  className={event.type === 'live' ? 'bg-warning text-warning-foreground' : ''}
-                >
-                  {event.type === 'live' ? 'AO VIVO' : 'Agendado'}
-                </Badge>
               </div>
             ))}
           </CardContent>
