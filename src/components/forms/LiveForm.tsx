@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, CalendarIcon, Clock, Upload, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +20,7 @@ import { mockPlayers, mockTeams } from "@/data/mockData";
 const liveSchema = z.object({
   nomeEvento: z.string().min(1, "Nome do evento é obrigatório"),
   descricao: z.string().min(1, "Descrição é obrigatória"),
+  generos: z.array(z.string()).min(1, "Pelo menos um gênero é obrigatório"),
   data: z.date(),
   hora: z.string().min(1, "Hora é obrigatória"),
   status: z.string().min(1, "Status é obrigatório"),
@@ -35,6 +37,7 @@ interface LiveFormProps {
   initialData?: {
     nomeEvento?: string;
     descricao?: string;
+    generos?: string[];
     dataHora?: string;
     status?: string;
     playerEmbed?: string;
@@ -64,6 +67,7 @@ export function LiveForm({
     defaultValues: {
       nomeEvento: initialData?.nomeEvento || "",
       descricao: initialData?.descricao || "",
+      generos: initialData?.generos || [],
       data: initialDate,
       hora: initialTime,
       status: initialData?.status || "",
@@ -90,6 +94,17 @@ export function LiveForm({
     value: "encerrado",
     label: "Encerrado"
   }];
+
+  const generos = [
+    "Gols e Melhores Momentos",
+    "Entrevistas", 
+    "Bastidores",
+    "Treinos",
+    "Histórico do Clube",
+    "Análises Táticas",
+    "Documentários",
+    "Transmissões"
+  ];
   return <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => navigate("/lives")} className="text-muted-foreground hover:text-foreground">
@@ -114,6 +129,48 @@ export function LiveForm({
                         <FormControl>
                           <Input placeholder="Ex: Final do Campeonato Estadual" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>} />
+
+                  <FormField control={form.control} name="generos" render={({
+                  field
+                }) => <FormItem>
+                        <FormLabel>Gêneros *</FormLabel>
+                        <div className="space-y-4">
+                          <Select onValueChange={(value) => {
+                            if (!field.value?.includes(value)) {
+                              field.onChange([...(field.value || []), value]);
+                            }
+                          }}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecionar gêneros" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {generos
+                                .filter(genero => !field.value?.includes(genero))
+                                .map((genero) => (
+                                <SelectItem key={genero} value={genero}>
+                                  {genero}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {field.value && field.value.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {field.value.map((genero) => (
+                                <Badge key={genero} variant="secondary" className="flex items-center gap-1">
+                                  {genero}
+                                  <X 
+                                    className="h-3 w-3 cursor-pointer" 
+                                    onClick={() => {
+                                      field.onChange(field.value?.filter(g => g !== genero) || []);
+                                    }}
+                                  />
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                         <FormMessage />
                       </FormItem>} />
 
