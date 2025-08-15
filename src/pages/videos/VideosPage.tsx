@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Search, Edit, Trash2, Eye, Calendar, Play, Filter } from "lucide-react"
+import { ImportButton } from "@/components/ui/import-button"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { VideoForm } from "@/components/forms/VideoForm"
@@ -310,10 +311,13 @@ export default function VideosPage() {
           <h1 className="text-3xl font-bold">Vídeos VOD</h1>
           <p className="text-muted-foreground">Gerencie o conteúdo de vídeos do clube</p>
         </div>
-        <Button onClick={handleNewVideo} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Novo Vídeo
-        </Button>
+        <div className="flex gap-2">
+          <ImportButton entityName="vídeos" />
+          <Button onClick={handleNewVideo} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Novo Vídeo
+          </Button>
+        </div>
       </div>
 
       {/* Filtros */}

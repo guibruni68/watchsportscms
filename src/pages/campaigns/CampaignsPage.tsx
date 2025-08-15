@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Plus, Search, Edit, Trash2, Calendar, Target } from "lucide-react"
+import { ImportButton } from "@/components/ui/import-button"
 import { CampaignForm } from "@/components/forms/CampaignForm"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
@@ -130,10 +131,13 @@ export default function CampaignsPage() {
           <h1 className="text-3xl font-bold">Campanhas</h1>
           <p className="text-muted-foreground">Gerencie campanhas e promoções do clube</p>
         </div>
-        <Button onClick={handleNewCampaign} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Nova Campanha
-        </Button>
+        <div className="flex gap-2">
+          <ImportButton entityName="campanhas" />
+          <Button onClick={handleNewCampaign} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Nova Campanha
+          </Button>
+        </div>
       </div>
 
       <SearchFilters

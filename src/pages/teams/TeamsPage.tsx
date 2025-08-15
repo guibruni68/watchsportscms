@@ -24,6 +24,7 @@ import {
   RefreshCw
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ImportButton } from "@/components/ui/import-button"
 import { ListControls, ListPagination } from "@/components/ui/list-controls"
 import { useToast } from "@/hooks/use-toast"
 import { getTeams, getPlayers, getChampionships, initializeSampleData, type Team, type Player, type Championship } from "@/lib/supabase-helpers"
@@ -125,33 +126,36 @@ export default function TeamsPage() {
           <h1 className="text-3xl font-bold text-foreground">Times & Elencos</h1>
           <p className="text-muted-foreground">Gerencie times, jogadores e campeonatos</p>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="bg-gradient-primary transition-all" disabled={loading}>
-              {loading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
+        <div className="flex gap-2">
+          <ImportButton entityName="times e jogadores" />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="bg-gradient-primary transition-all" disabled={loading}>
+                {loading ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4 mr-2" />
+                )}
+                Ações
+                <ChevronDown className="h-4 w-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => {}}>
                 <Plus className="h-4 w-4 mr-2" />
-              )}
-              Ações
-              <ChevronDown className="h-4 w-4 ml-2" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => {}}>
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Time
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}}>
-              <User className="h-4 w-4 mr-2" />
-              Novo Jogador
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={loadData} disabled={loading}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Recarregar Dados
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                Novo Time
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {}}>
+                <User className="h-4 w-4 mr-2" />
+                Novo Jogador
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={loadData} disabled={loading}>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Atualizar Dados
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Stats Cards */}

@@ -11,6 +11,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { toast } from "@/hooks/use-toast";
 import { mockBanners, Banner } from "@/data/mockData";
 import { Plus, Edit, Trash2, Eye, BarChart3, Activity, MousePointer, Clock, Play, Image, GripVertical } from "lucide-react";
+import { ImportButton } from "@/components/ui/import-button";
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { format } from "date-fns";
@@ -244,12 +245,15 @@ export default function BannersPage() {
             Gerencie banners promocionais e de destaque
           </p>
         </div>
-        <Button asChild>
-          <Link to="/banners/novo">
-            <Plus className="mr-2 h-4 w-4" />
-            Novo Banner
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <ImportButton entityName="banners" />
+          <Button asChild>
+            <Link to="/banners/novo">
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Banner
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Filtros */}

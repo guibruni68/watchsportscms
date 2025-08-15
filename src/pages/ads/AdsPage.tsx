@@ -19,6 +19,7 @@ import {
   Settings,
   ExternalLink
 } from "lucide-react"
+import { ImportButton } from "@/components/ui/import-button"
 
 export default function AdsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -163,10 +164,13 @@ export default function AdsPage() {
           <h1 className="text-3xl font-bold text-foreground">Gestão de Anúncios</h1>
           <p className="text-muted-foreground">Monitore e gerencie campanhas publicitárias</p>
         </div>
-        <Button className="bg-gradient-primary transition-all">
-          <Plus className="h-4 w-4 mr-2" />
-          Nova Campanha
-        </Button>
+        <div className="flex gap-2">
+          <ImportButton entityName="campanhas publicitárias" />
+          <Button className="bg-gradient-primary transition-all">
+            <Plus className="h-4 w-4 mr-2" />
+            Nova Campanha
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}

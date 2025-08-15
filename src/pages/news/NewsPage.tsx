@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Plus, Search, Edit, Trash2, Star, Eye } from "lucide-react"
+import { ImportButton } from "@/components/ui/import-button"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { NewsForm } from "@/components/forms/NewsForm"
@@ -135,10 +136,13 @@ export default function NewsPage() {
           <h1 className="text-3xl font-bold">Notícias</h1>
           <p className="text-muted-foreground">Gerencie as notícias e artigos do clube</p>
         </div>
-        <Button onClick={handleNewNews} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Nova Notícia
-        </Button>
+        <div className="flex gap-2">
+          <ImportButton entityName="notícias" />
+          <Button onClick={handleNewNews} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Nova Notícia
+          </Button>
+        </div>
       </div>
 
       <SearchFilters

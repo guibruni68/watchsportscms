@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Edit, Eye, Trash2, Grid3X3, List, GripVertical, Save, X } from "lucide-react";
+import { ImportButton } from "@/components/ui/import-button";
 import { CarouselForm } from "@/components/forms/CarouselForm";
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
@@ -443,26 +444,29 @@ export default function CarouselsPage() {
           </p>
         </div>
         
-        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={openCreateForm} className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Criar Carrossel
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>
-                {editingCarousel ? "Editar Carrossel" : "Criar Novo Carrossel"}
-              </DialogTitle>
-            </DialogHeader>
-            <CarouselForm
-              initialData={editingCarousel}
-              onSubmit={editingCarousel ? handleEditCarousel : handleCreateCarousel}
-              onCancel={() => setIsFormOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <ImportButton entityName="carrosséis" />
+          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={openCreateForm} className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Criar Carrossel
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingCarousel ? "Editar Carrossel" : "Criar Novo Carrossel"}
+                </DialogTitle>
+              </DialogHeader>
+              <CarouselForm
+                initialData={editingCarousel}
+                onSubmit={editingCarousel ? handleEditCarousel : handleCreateCarousel}
+                onCancel={() => setIsFormOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <SearchFilters

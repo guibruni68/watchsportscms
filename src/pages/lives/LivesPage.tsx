@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Plus, Search, Edit, Trash2, Play, Users } from "lucide-react"
+import { ImportButton } from "@/components/ui/import-button"
 import { LiveForm } from "@/components/forms/LiveForm"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
@@ -141,10 +142,13 @@ export default function LivesPage() {
           <h1 className="text-3xl font-bold">Transmissões ao Vivo</h1>
           <p className="text-muted-foreground">Gerencie as lives e eventos do clube</p>
         </div>
-        <Button onClick={handleNewLive} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Nova Live
-        </Button>
+        <div className="flex gap-2">
+          <ImportButton entityName="transmissões" />
+          <Button onClick={handleNewLive} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Nova Live
+          </Button>
+        </div>
       </div>
 
       <SearchFilters
