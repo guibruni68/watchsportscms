@@ -144,8 +144,7 @@ export default function BannersPage() {
   const statuses = [
     { value: "all", label: "Todos os status" },
     { value: "active", label: "Ativo" },
-    { value: "inactive", label: "Inativo" },
-    { value: "expired", label: "Expirado" }
+    { value: "inactive", label: "Inativo" }
   ];
 
   const filteredBanners = banners.filter(banner => {
