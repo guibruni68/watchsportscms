@@ -124,13 +124,7 @@ export default function DashboardIndex() {
                   <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
                   <p className="text-2xl font-bold text-foreground">{stat.value}</p>
                   <div className="flex items-center gap-1 mt-1">
-                    <Badge 
-                      variant={stat.changeType === "positive" ? "default" : "destructive"} 
-                      className="text-xs px-2 py-0 bg-secondary text-secondary-foreground"
-                    >
-                      {stat.change}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">vs. mês anterior</span>
+                   
                   </div>
                 </div>
                 <div className={`p-3 rounded-lg bg-muted/50 ${stat.color}`}>
