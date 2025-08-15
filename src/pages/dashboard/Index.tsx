@@ -55,7 +55,6 @@ export default function DashboardIndex() {
       id: 1,
       title: "Treino da Semana - Preparação para o Clássico",
       thumbnail: "/placeholder.svg",
-      views: 1250,
       duration: "8:45",
       status: "published",
       publishedAt: "Há 2 horas"
@@ -64,7 +63,6 @@ export default function DashboardIndex() {
       id: 2,
       title: "Entrevista: Novo Reforço do Time",
       thumbnail: "/placeholder.svg",
-      views: 890,
       duration: "15:30",
       status: "published",
       publishedAt: "Há 1 dia"
@@ -73,7 +71,6 @@ export default function DashboardIndex() {
       id: 3,
       title: "Bastidores: Concentração antes do Jogo",
       thumbnail: "/placeholder.svg",
-      views: 2140,
       duration: "12:15",
       status: "published",
       publishedAt: "Há 2 dias"
