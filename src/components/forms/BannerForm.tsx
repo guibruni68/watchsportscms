@@ -281,7 +281,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <FormField
                   control={form.control}
                   name="tipo_conteudo"
@@ -298,31 +298,6 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                           {tiposConteudo.map((tipo) => (
                             <SelectItem key={tipo.value} value={tipo.value}>
                               {tipo.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="layout_banner"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Layout do Banner</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o layout..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {layoutsDisponiveis.map((layout) => (
-                            <SelectItem key={layout.value} value={layout.value}>
-                              {layout.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
