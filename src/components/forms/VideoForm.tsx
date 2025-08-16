@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Upload, CalendarIcon, X, User, Users, Check } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
@@ -34,15 +34,6 @@ const videoSchema = z.object({
     nome: z.string(),
     tipo: z.enum(["jogador", "time"]),
   })).optional(),
-}).refine((data) => {
-  // Se agendamento estiver habilitado, data de publicação é obrigatória
-  if (data.agendarPublicacao && !data.dataPublicacao) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Data de publicação é obrigatória quando agendamento está habilitado",
-  path: ["dataPublicacao"],
 })
 
 type VideoFormData = z.infer<typeof videoSchema>
@@ -343,26 +334,26 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
               </div>
 
               {/* Agendamento de Publicação */}
-              <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
+              <div className="space-y-4 border rounded-lg p-4">
                 <FormField
                   control={form.control}
                   name="agendarPublicacao"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormItem className="flex flex-row items-center justify-between">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">
+                          Agendar publicação
+                        </FormLabel>
+                        <p className="text-sm text-muted-foreground">
+                          Se desabilitado, o conteúdo será publicado imediatamente
+                        </p>
+                      </div>
                       <FormControl>
-                        <Checkbox
+                        <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
-                          Agendar publicação
-                        </FormLabel>
-                        <p className="text-sm text-muted-foreground">
-                          Se desmarcado, o conteúdo será publicado imediatamente
-                        </p>
-                      </div>
                     </FormItem>
                   )}
                 />
@@ -373,7 +364,7 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                     name="dataPublicacao"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Data de Publicação *</FormLabel>
+                        <FormLabel>Data de Publicação</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
