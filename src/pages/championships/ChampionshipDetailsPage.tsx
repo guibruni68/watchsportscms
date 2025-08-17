@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams, Link, useNavigate } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +22,7 @@ import {
 
 export default function ChampionshipDetailsPage() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("overview")
 
   // Mock data - seria obtido via API usando o ID
@@ -102,11 +103,9 @@ export default function ChampionshipDetailsPage() {
     <div className="space-y-6 animate-fade-in">
       {/* Back Button */}
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" asChild>
-          <Link to="/teams">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar para Times
-          </Link>
+        <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar para Times
         </Button>
       </div>
 

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -27,6 +28,7 @@ interface TeamFormProps {
 }
 
 export function TeamForm({ initialData, isEdit, onClose }: TeamFormProps) {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState<TeamFormData>({
     name: initialData?.name || "",
     logo: null,
@@ -99,7 +101,7 @@ export function TeamForm({ initialData, isEdit, onClose }: TeamFormProps) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={onClose}
+          onClick={() => navigate(-1)}
           className="gap-2"
         >
           <ArrowLeft className="h-4 w-4" />

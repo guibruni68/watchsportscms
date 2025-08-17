@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -34,6 +35,7 @@ interface PlayerFormProps {
 }
 
 export function PlayerForm({ initialData, isEdit, onClose }: PlayerFormProps) {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState<PlayerFormData>({
     name: initialData?.name || "",
     position: initialData?.position || "",
@@ -122,7 +124,7 @@ export function PlayerForm({ initialData, isEdit, onClose }: PlayerFormProps) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={onClose}
+          onClick={() => navigate(-1)}
           className="gap-2"
         >
           <ArrowLeft className="h-4 w-4" />

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast"
 import { KeyRound, ArrowLeft } from "lucide-react"
 
 export default function ForgotPasswordPage() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
@@ -86,11 +87,9 @@ export default function ForgotPasswordPage() {
         <div className="w-full max-w-md space-y-6">
           {/* Back Button */}
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/auth" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Voltar ao login
-              </Link>
+            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Voltar ao login
             </Button>
           </div>
 

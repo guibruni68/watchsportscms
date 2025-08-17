@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -34,6 +35,7 @@ interface CampaignFormProps {
 }
 
 export function CampaignForm({ initialData, isEdit, onClose }: CampaignFormProps) {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState<CampaignFormData>({
     name: initialData?.name || "",
     type: initialData?.type || "",
@@ -128,7 +130,7 @@ export function CampaignForm({ initialData, isEdit, onClose }: CampaignFormProps
         <Button
           variant="ghost"
           size="sm"
-          onClick={onClose}
+          onClick={() => navigate(-1)}
           className="gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
