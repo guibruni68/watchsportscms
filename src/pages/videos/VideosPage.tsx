@@ -370,10 +370,6 @@ export default function VideosPage() {
                   <div className="max-w-xs">
                     <div className="font-medium truncate">{video.titulo}</div>
                     <div className="text-sm text-muted-foreground truncate">{video.descricao}</div>
-                    <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                      <Eye className="h-3 w-3" />
-                      {video.views.toLocaleString()} views
-                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
