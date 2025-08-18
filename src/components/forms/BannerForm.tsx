@@ -8,33 +8,30 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
-import { mockCampaigns, mockLives, mockVideos, mockContents } from "@/data/mockData";
+import { mockLives, mockVideos } from "@/data/mockData";
 import { ArrowLeft, Upload, X, Image, Monitor, Smartphone, CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const bannerSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
-  tipo_conteudo: z.enum(["vod", "live_agora", "live_programado", "campanha", "recomendado", "institucional"]),
+  tipo_conteudo: z.enum(["live", "vod", "personalizado"]),
   layout_banner: z.enum(["imagem_botao", "video_texto", "hero_cta", "mini_card"]),
   midia_web_url: z.string().optional(),
   midia_web_tipo: z.enum(["imagem", "video"]).optional(),
   midia_mobile_url: z.string().optional(),
   midia_mobile_tipo: z.enum(["imagem", "video"]).optional(),
-  texto_botao: z.string().optional(),
-  exibir_botao: z.boolean(),
-  url_acao: z.string().optional(),
-  data_inicio: z.string().min(1, "Data de início é obrigatória"),
-  data_fim: z.string().min(1, "Data de fim é obrigatória"),
+  texto_cta: z.string().optional(),
+  url: z.string().optional(),
+  data_exibicao: z.date().optional(),
+  url_redirecionamento: z.string().optional(),
   status: z.boolean(),
   ordem: z.number().min(0),
-  algoritmo_recomendacao: z.string().optional(),
   conteudo_vinculado_id: z.string().optional(),
   planos_permitidos: z.array(z.string()),
 });
@@ -62,8 +59,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
       titulo: "",
       tipo_conteudo: "vod",
       layout_banner: "imagem_botao",
-      texto_botao: "Saiba mais",
-      exibir_botao: true,
+      texto_cta: "Saiba mais",
       status: true,
       ordem: 0,
       planos_permitidos: [],
@@ -72,12 +68,9 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
   });
 
   const tiposConteudo = [
-    { value: "vod", label: "Destaque de Vídeo sob demanda (VOD)" },
-    { value: "live_agora", label: "Transmissão ao vivo (ao vivo agora)" },
-    { value: "live_programado", label: "Evento ao vivo programado (em breve)" },
-    { value: "campanha", label: "Campanha publicitária" },
-    { value: "recomendado", label: "Conteúdo recomendado" },
-    { value: "institucional", label: "Banner institucional personalizado" },
+    { value: "live", label: "Ao Vivo" },
+    { value: "vod", label: "VOD (Vídeo sob Demanda)" },
+    { value: "personalizado", label: "Personalizado" },
   ];
 
   const layoutsDisponiveis = [
@@ -189,17 +182,6 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
       return;
     }
 
-    // Validar datas
-    if (new Date(data.data_inicio) >= new Date(data.data_fim)) {
-      toast({
-        title: "Erro",
-        description: "A data de início deve ser anterior à data de fim.",
-        variant: "destructive",
-      });
-      setLoading(false);
-      return;
-    }
-
     // Simular salvamento
     setTimeout(() => {
       toast({
@@ -222,7 +204,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => navigate('/banners')}>
+        <Button variant="ghost" onClick={() => navigate(-1)}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Voltar
         </Button>
@@ -281,13 +263,13 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                 />
               </div>
 
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="tipo_conteudo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo de Conteúdo Destacado</FormLabel>
+                      <FormLabel>Tipo de Banner</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -306,7 +288,74 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="layout_banner"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Layout do Banner</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o layout..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {layoutsDisponiveis.map((layout) => (
+                            <SelectItem key={layout.value} value={layout.value}>
+                              {layout.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
+
+              {/* Conteúdo Vinculado - apenas para Live e VOD */}
+              {(form.watch('tipo_conteudo') === 'live' || form.watch('tipo_conteudo') === 'vod') && (
+                <FormField
+                  control={form.control}
+                  name="conteudo_vinculado_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {form.watch('tipo_conteudo') === 'live' ? 'Evento ao Vivo' : 'Vídeo VOD'}
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o conteúdo..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {form.watch('tipo_conteudo') === 'live' && 
+                            mockLives.map((live) => (
+                              <SelectItem key={live.id} value={live.id}>
+                                {live.name}
+                              </SelectItem>
+                            ))
+                          }
+                          {form.watch('tipo_conteudo') === 'vod' && 
+                            mockVideos.map((video) => (
+                              <SelectItem key={video.id} value={video.id}>
+                                {video.name}
+                              </SelectItem>
+                            ))
+                          }
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Deixe vazio para usar configurações padrão do tipo {form.watch('tipo_conteudo') === 'live' ? 'ao vivo' : 'VOD'}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               {/* Upload de Mídia - Web e Mobile lado a lado */}
               <div className="space-y-4">
@@ -314,7 +363,6 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                   Mídia ({getRequiredMediaType(form.watch('layout_banner')) === 'video' ? 'Vídeo' : 'Imagem'})
                 </FormLabel>
                 
-
                 {/* Container dos dois uploads lado a lado */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Upload Web */}
@@ -477,181 +525,20 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                 </div>
               </div>
 
-              {/* Algoritmo de Recomendação - apenas para tipo recomendado */}
-              {form.watch('tipo_conteudo') === 'recomendado' && (
-                <FormField
-                  control={form.control}
-                  name="algoritmo_recomendacao"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Algoritmo de Recomendação</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o algoritmo..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="colaborativo">Filtragem Colaborativa</SelectItem>
-                          <SelectItem value="conteudo_similar">Conteúdo Similar</SelectItem>
-                          <SelectItem value="tendencias">Baseado em Tendências</SelectItem>
-                          <SelectItem value="historico_usuario">Histórico do Usuário</SelectItem>
-                          <SelectItem value="mais_assistidos">Mais Assistidos</SelectItem>
-                          <SelectItem value="recentes">Recentes</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Conteúdo Vinculado - apenas para tipos específicos, exceto recomendado */}
-              {(form.watch('tipo_conteudo') === 'vod' || 
-                form.watch('tipo_conteudo') === 'live_agora' || 
-                form.watch('tipo_conteudo') === 'live_programado' || 
-                form.watch('tipo_conteudo') === 'campanha') && (
-                <FormField
-                  control={form.control}
-                  name="conteudo_vinculado_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {form.watch('tipo_conteudo') === 'campanha' && 'Campanha Vinculada'}
-                        {(form.watch('tipo_conteudo') === 'live_agora' || form.watch('tipo_conteudo') === 'live_programado') && 'Evento ao Vivo'}
-                        {form.watch('tipo_conteudo') === 'vod' && 'Vídeo/Conteúdo'}
-                      </FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o conteúdo..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {form.watch('tipo_conteudo') === 'campanha' && 
-                            mockCampaigns.map((campaign) => (
-                              <SelectItem key={campaign.id} value={campaign.id}>
-                                {campaign.name}
-                              </SelectItem>
-                            ))
-                          }
-                          {(form.watch('tipo_conteudo') === 'live_agora' || form.watch('tipo_conteudo') === 'live_programado') && 
-                            mockLives.map((live) => (
-                              <SelectItem key={live.id} value={live.id}>
-                                {live.name}
-                              </SelectItem>
-                            ))
-                          }
-                          {form.watch('tipo_conteudo') === 'vod' && 
-                            mockVideos.map((video) => (
-                              <SelectItem key={video.id} value={video.id}>
-                                {video.name}
-                              </SelectItem>
-                            ))
-                          }
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* CTA e URL */}
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="exibir_botao"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">
-                          Exibir Botão
-                        </FormLabel>
-                        <FormDescription>
-                          Mostrar botão de ação no banner
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {form.watch('exibir_botao') && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="texto_botao"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Texto do Botão (CTA)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ex: Saiba mais, Assista agora..." {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="url_acao"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>URL de Ação/Redirecionamento</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://..." {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Período de Exibição */}
+              {/* Campos de personalização (para todos os tipos) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
-                  name="data_inicio"
+                  name="texto_cta"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Data de Início da Exibição</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), "PPP")
-                              ) : (
-                                <span>Selecione uma data</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date?.toISOString())}
-                            initialFocus
-                            className={cn("p-3 pointer-events-auto")}
-                          />
-                        </PopoverContent>
-                      </Popover>
+                    <FormItem>
+                      <FormLabel>Texto do CTA</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: Assista agora, Saiba mais..." {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Deixe vazio para usar texto padrão do tipo de banner
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -659,10 +546,29 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
 
                 <FormField
                   control={form.control}
-                  name="data_fim"
+                  name="url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://..." {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Deixe vazio para usar URL padrão do conteúdo vinculado
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="data_exibicao"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Data de Fim da Exibição</FormLabel>
+                      <FormLabel>Data de Exibição</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -674,7 +580,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                               )}
                             >
                               {field.value ? (
-                                format(new Date(field.value), "PPP")
+                                format(field.value, "PPP")
                               ) : (
                                 <span>Selecione uma data</span>
                               )}
@@ -685,13 +591,33 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date?.toISOString())}
+                            selected={field.value}
+                            onSelect={field.onChange}
                             initialFocus
                             className={cn("p-3 pointer-events-auto")}
                           />
                         </PopoverContent>
                       </Popover>
+                      <FormDescription>
+                        Deixe vazio para exibir imediatamente
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="url_redirecionamento"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL de Redirecionamento</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://..." {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        URL personalizada para onde o banner deve redirecionar
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -775,7 +701,7 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
               />
 
               <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={() => navigate('/banners')}>
+                <Button type="button" variant="outline" onClick={() => navigate(-1)}>
                   Cancelar
                 </Button>
                 <Button type="submit" disabled={loading}>
