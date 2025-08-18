@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       banners: {
         Row: {
+          catalogue_id: string | null
           cliques: number | null
           conteudo_vinculado_id: string | null
           created_at: string
@@ -38,6 +39,7 @@ export type Database = {
           visualizacoes: number | null
         }
         Insert: {
+          catalogue_id?: string | null
           cliques?: number | null
           conteudo_vinculado_id?: string | null
           created_at?: string
@@ -60,6 +62,7 @@ export type Database = {
           visualizacoes?: number | null
         }
         Update: {
+          catalogue_id?: string | null
           cliques?: number | null
           conteudo_vinculado_id?: string | null
           created_at?: string
@@ -80,6 +83,47 @@ export type Database = {
           updated_at?: string
           url_acao?: string | null
           visualizacoes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "banners_catalogue_id_fkey"
+            columns: ["catalogue_id"]
+            isOneToOne: false
+            referencedRelation: "catalogues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalogues: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          ordem_exibicao: number
+          status: boolean
+          tipo_catalogo: Database["public"]["Enums"]["catalogue_type"]
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          ordem_exibicao?: number
+          status?: boolean
+          tipo_catalogo?: Database["public"]["Enums"]["catalogue_type"]
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          ordem_exibicao?: number
+          status?: boolean
+          tipo_catalogo?: Database["public"]["Enums"]["catalogue_type"]
+          titulo?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -276,10 +320,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_catalogue_content_count: {
+        Args: { catalogue_uuid: string }
+        Returns: number
+      }
     }
     Enums: {
-      [_ in never]: never
+      catalogue_type: "serie" | "colecao" | "playlist" | "outro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -406,6 +453,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      catalogue_type: ["serie", "colecao", "playlist", "outro"],
+    },
   },
 } as const

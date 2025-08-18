@@ -21,6 +21,10 @@ import EditBannerPage from "./pages/banners/EditBannerPage";
 import CustomizationPage from "./pages/customization/CustomizationPage";
 import AdsPage from "./pages/ads/AdsPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
+import CataloguesPage from "./pages/catalogues/CataloguesPage";
+import NewCataloguePage from "./pages/catalogues/NewCataloguePage";
+import EditCataloguePage from "./pages/catalogues/EditCataloguePage";
+import CatalogueDetailsPage from "./pages/catalogues/CatalogueDetailsPage";
 import AuthPage from "./pages/AuthPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import NotFound from "./pages/NotFound";
@@ -118,6 +122,26 @@ const App = () => (
             <Route path="/analytics" element={
               <ProtectedRoute>
                 <AnalyticsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/catalogues" element={
+              <ProtectedRoute>
+                <CataloguesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/catalogues/novo" element={
+              <ProtectedRoute>
+                <NewCataloguePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/catalogues/:id" element={
+              <ProtectedRoute>
+                <CatalogueDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/catalogues/edit/:id" element={
+              <ProtectedRoute>
+                <EditCataloguePage />
               </ProtectedRoute>
             } />
             

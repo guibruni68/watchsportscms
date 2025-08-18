@@ -17,6 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import { mockLives, mockVideos } from "@/data/mockData";
 import { ArrowLeft, Upload, X, Image, Monitor, Smartphone, CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CatalogueSelector } from "@/components/ui/catalogue-selector";
 
 const bannerSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
@@ -33,6 +34,7 @@ const bannerSchema = z.object({
   status: z.boolean(),
   ordem: z.number().min(0),
   conteudo_vinculado_id: z.string().optional(),
+  catalogue_id: z.string().optional(),
   planos_permitidos: z.array(z.string()),
 });
 
@@ -623,6 +625,28 @@ export default function BannerForm({ bannerId, initialData }: BannerFormProps) {
                   )}
                 />
               </div>
+
+              {/* Seletor de Catálogo */}
+              <FormField
+                control={form.control}
+                name="catalogue_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Catálogo</FormLabel>
+                    <FormControl>
+                      <CatalogueSelector
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Selecionar catálogo (opcional)..."
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Associe este banner a um catálogo para organizar o conteúdo
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               {/* Planos Permitidos */}
               <FormField
