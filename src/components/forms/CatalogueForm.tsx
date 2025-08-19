@@ -11,8 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ContentSelector } from "@/components/ui/content-selector";
 
 const catalogueSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
@@ -20,6 +23,7 @@ const catalogueSchema = z.object({
   tipo_catalogo: z.enum(["serie", "colecao", "playlist", "outro"]),
   status: z.boolean(),
   ordem_exibicao: z.number().min(0),
+  conteudos: z.array(z.string()).optional(),
 });
 
 type CatalogueFormData = z.infer<typeof catalogueSchema>;
@@ -50,6 +54,7 @@ export default function CatalogueForm({ catalogueId, initialData, onSuccess, isI
       tipo_catalogo: "colecao",
       status: true,
       ordem_exibicao: 0,
+      conteudos: [],
       ...initialData,
     },
   });
@@ -241,6 +246,65 @@ export default function CatalogueForm({ catalogueId, initialData, onSuccess, isI
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Seção de Conteúdos Manuais */}
+              <div className="space-y-4 border rounded-lg p-4">
+                <h3 className="text-lg font-medium">Conteúdos do Catálogo</h3>
+                <p className="text-sm text-muted-foreground">
+                  Adicione conteúdos manualmente a este catálogo. Você pode buscar por vídeos, lives ou notícias existentes.
+                </p>
+                
+                <FormField
+                  control={form.control}
+                  name="conteudos"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Adicionar Conteúdos</FormLabel>
+                      <FormControl>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2">
+                            <Search className="h-4 w-4 text-muted-foreground" />
+                            <Input 
+                              placeholder="Buscar conteúdos para adicionar..."
+                              className="flex-1"
+                            />
+                            <Button type="button" size="sm" variant="outline">
+                              <Plus className="h-4 w-4 mr-1" />
+                              Adicionar Manual
+                            </Button>
+                          </div>
+                          
+                          {/* Lista de conteúdos selecionados */}
+                          {field.value && field.value.length > 0 && (
+                            <div className="space-y-2">
+                              <p className="text-sm font-medium">Conteúdos selecionados ({field.value.length})</p>
+                              <div className="flex flex-wrap gap-2">
+                                {field.value.map((contentId, index) => (
+                                  <Badge key={`content-${index}`} variant="secondary" className="flex items-center gap-1">
+                                    Conteúdo {index + 1}
+                                    <X 
+                                      className="h-3 w-3 cursor-pointer" 
+                                      onClick={() => {
+                                        const newValue = field.value?.filter((_, i) => i !== index) || [];
+                                        field.onChange(newValue);
+                                      }}
+                                    />
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          <p className="text-xs text-muted-foreground">
+                            Funcionalidade de busca será implementada em breve. Por ora, use o botão "Adicionar Manual" para simular a adição de conteúdos.
+                          </p>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

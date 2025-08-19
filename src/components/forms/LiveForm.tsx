@@ -17,6 +17,8 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { mockPlayers, mockTeams } from "@/data/mockData";
+import { CatalogueSelector } from "@/components/ui/catalogue-selector";
+
 const liveSchema = z.object({
   nomeEvento: z.string().min(1, "Nome do evento é obrigatório"),
   descricao: z.string().min(1, "Descrição é obrigatória"),
@@ -26,6 +28,7 @@ const liveSchema = z.object({
   status: z.string().min(1, "Status é obrigatório"),
   playerEmbed: z.string().optional(),
   imagemCapa: z.string().optional(),
+  catalogueId: z.string().optional(),
   agentesRelacionados: z.array(z.object({
     id: z.string(),
     nome: z.string(),
@@ -42,6 +45,7 @@ interface LiveFormProps {
     status?: string;
     playerEmbed?: string;
     imagemCapa?: string;
+    catalogueId?: string;
     agentesRelacionados?: Array<{
       id: string;
       nome: string;
@@ -73,6 +77,7 @@ export function LiveForm({
       status: initialData?.status || "",
       playerEmbed: initialData?.playerEmbed || "",
       imagemCapa: initialData?.imagemCapa || "",
+      catalogueId: initialData?.catalogueId,
       agentesRelacionados: initialData?.agentesRelacionados || [],
     }
   });
@@ -192,6 +197,24 @@ export function LiveForm({
                         </Select>
                         <FormMessage />
                       </FormItem>} />
+
+                  <FormField
+                    control={form.control}
+                    name="catalogueId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Catálogo</FormLabel>
+                        <FormControl>
+                          <CatalogueSelector 
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            placeholder="Selecionar catálogo..."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 <FormField control={form.control} name="imagemCapa" render={({

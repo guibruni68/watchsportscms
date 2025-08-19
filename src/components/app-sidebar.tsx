@@ -1,4 +1,4 @@
-import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag } from "lucide-react";
+import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight } from "lucide-react";
 import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, useSidebar } from "@/components/ui/sidebar";
@@ -11,13 +11,37 @@ const mainNavItems = [{
   url: "/",
   icon: Home
 }, {
-  title: "Vídeos VOD",
-  url: "/videos",
-  icon: Video
+  title: "Banners",
+  url: "/banners",
+  icon: MonitorSpeaker
 }, {
-  title: "Lives",
-  url: "/lives",
-  icon: Radio
+  title: "Carrosséis",
+  url: "/carousels",
+  icon: Layout
+}, {
+  title: "Conteúdos",
+  icon: Folder,
+  items: [
+    {
+      title: "Vídeos (VOD)",
+      url: "/videos",
+      icon: Video,
+    },
+    {
+      title: "Lives",
+      url: "/lives",
+      icon: Radio,
+    },
+    {
+      title: "Catálogos",
+      url: "/catalogues",
+      icon: Tag,
+    },
+  ],
+}, {
+  title: "Notícias",
+  url: "/news",
+  icon: Newspaper
 }, {
   title: "Times & Elencos",
   url: "/teams",
@@ -26,22 +50,6 @@ const mainNavItems = [{
   title: "Agenda",
   url: "/schedule",
   icon: Calendar
-}, {
-  title: "Notícias",
-  url: "/news",
-  icon: Newspaper
-}, {
-  title: "Carrosséis",
-  url: "/carousels",
-  icon: Layout
-}, {
-  title: "Banners",
-  url: "/banners",
-  icon: MonitorSpeaker
-}, {
-  title: "Catálogos", 
-  url: "/catalogues",
-  icon: Tag
 }];
 const businessNavItems = [{
   title: "Anúncios",
@@ -105,14 +113,52 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">
-              {mainNavItems.map(item => <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={`h-11 px-4 ${getNavClassName(item.url)}`}>
-                    <NavLink to={item.url} end={item.url === "/"}>
-                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : 'text-muted-foreground'}`} />
-                      {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>)}
+              {mainNavItems.map(item => {
+                if (item.items) {
+                  // Item com sub-itens
+                  return (
+                    <Collapsible key={item.title} asChild defaultOpen={item.items.some(subItem => isActive(subItem.url))}>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <CollapsibleTrigger className={`h-11 px-4 w-full hover:bg-muted/60 transition-colors flex items-center justify-between`}>
+                            <div className="flex items-center">
+                              <item.icon className="h-4 w-4 text-muted-foreground" />
+                              {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
+                            </div>
+                            {state !== "collapsed" && <ChevronRight className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />}
+                          </CollapsibleTrigger>
+                        </SidebarMenuButton>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.items.map((subItem) => (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarMenuSubButton asChild className={getNavClassName(subItem.url)}>
+                                  <NavLink to={subItem.url}>
+                                    <subItem.icon className={`h-4 w-4 ${isActive(subItem.url) ? 'text-white' : 'text-muted-foreground'}`} />
+                                    <span>{subItem.title}</span>
+                                  </NavLink>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  );
+                }
+                
+                // Item normal
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild className={`h-11 px-4 ${getNavClassName(item.url!)}`}>
+                      <NavLink to={item.url!} end={item.url === "/"}>
+                        <item.icon className={`h-4 w-4 ${isActive(item.url!) ? 'text-white' : 'text-muted-foreground'}`} />
+                        {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

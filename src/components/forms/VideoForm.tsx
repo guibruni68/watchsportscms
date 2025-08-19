@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { mockPlayers, mockTeams } from "@/data/mockData"
+import { CatalogueSelector } from "@/components/ui/catalogue-selector"
 
 const videoSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
@@ -29,6 +30,7 @@ const videoSchema = z.object({
   dataPublicacao: z.date().optional(),
   videoFile: z.string().optional(),
   imagemCapa: z.string().optional(),
+  catalogueId: z.string().optional(),
   agentesRelacionados: z.array(z.object({
     id: z.string(),
     nome: z.string(),
@@ -60,6 +62,7 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
       dataPublicacao: initialData?.dataPublicacao,
       videoFile: initialData?.videoFile || "",
       imagemCapa: initialData?.imagemCapa || "",
+      catalogueId: initialData?.catalogueId,
       agentesRelacionados: initialData?.agentesRelacionados || [],
     },
   })
@@ -175,10 +178,28 @@ export function VideoForm({ initialData, isEdit = false }: VideoFormProps) {
                         </div>
                         <FormMessage />
                       </FormItem>
-                    )}
-                  />
+                  )}
+                />
 
-                  <FormField
+                <FormField
+                  control={form.control}
+                  name="catalogueId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Catálogo</FormLabel>
+                      <FormControl>
+                        <CatalogueSelector 
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder="Selecionar catálogo..."
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
                     control={form.control}
                     name="tag"
                     render={({ field }) => (
