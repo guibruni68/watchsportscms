@@ -86,7 +86,7 @@ export function AppSidebar() {
     return currentPath.startsWith(path);
   };
   const getNavClassName = (path: string) => {
-    return isActive(path) ? "bg-primary text-white font-medium" : "hover:bg-muted/60 transition-colors";
+    return isActive(path) ? "bg-primary text-white font-medium" : "hover:bg-muted/60 transition-colors font-medium";
   };
 
   const handleGuestLogout = () => {
@@ -112,7 +112,7 @@ export function AppSidebar() {
             Conteúdo
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-2">
+            <SidebarMenu className="space-y-3">
               {mainNavItems.map(item => {
                 if (item.items) {
                   // Item com sub-itens
@@ -120,21 +120,19 @@ export function AppSidebar() {
                     <Collapsible key={item.title} asChild defaultOpen={item.items.some(subItem => isActive(subItem.url))}>
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                          <CollapsibleTrigger className={`h-11 px-4 w-full hover:bg-muted/60 transition-colors flex items-center justify-between`}>
+                          <CollapsibleTrigger className={`h-12 px-6 w-full hover:bg-muted/60 transition-colors flex items-center justify-between font-medium`}>
                             <div className="flex items-center">
-                              <item.icon className="h-4 w-4 text-muted-foreground" />
-                              {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
+                              {state !== "collapsed" && <span>{item.title}</span>}
                             </div>
                             {state !== "collapsed" && <ChevronRight className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />}
                           </CollapsibleTrigger>
                         </SidebarMenuButton>
                         <CollapsibleContent>
-                          <SidebarMenuSub>
+                          <SidebarMenuSub className="ml-4 mt-2 space-y-2">
                             {item.items.map((subItem) => (
                               <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton asChild className={getNavClassName(subItem.url)}>
+                                <SidebarMenuSubButton asChild className={`h-10 px-4 ${getNavClassName(subItem.url)}`}>
                                   <NavLink to={subItem.url}>
-                                    <subItem.icon className={`h-4 w-4 ${isActive(subItem.url) ? 'text-white' : 'text-muted-foreground'}`} />
                                     <span>{subItem.title}</span>
                                   </NavLink>
                                 </SidebarMenuSubButton>
@@ -150,10 +148,9 @@ export function AppSidebar() {
                 // Item normal
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild className={`h-11 px-4 ${getNavClassName(item.url!)}`}>
+                    <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url!)}`}>
                       <NavLink to={item.url!} end={item.url === "/"}>
-                        <item.icon className={`h-4 w-4 ${isActive(item.url!) ? 'text-white' : 'text-muted-foreground'}`} />
-                        {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
+                        {state !== "collapsed" && <span>{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -169,12 +166,11 @@ export function AppSidebar() {
             Monetização
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-2">
+            <SidebarMenu className="space-y-3">
               {businessNavItems.map(item => <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={`h-11 px-4 ${getNavClassName(item.url)}`}>
+                  <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url)}`}>
                     <NavLink to={item.url}>
-                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : 'text-muted-foreground'}`} />
-                      {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
+                      {state !== "collapsed" && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>)}
@@ -188,12 +184,11 @@ export function AppSidebar() {
             Sistema
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-2">
+            <SidebarMenu className="space-y-3">
               {settingsNavItems.map(item => <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={`h-11 px-4 ${getNavClassName(item.url)}`}>
+                  <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url)}`}>
                     <NavLink to={item.url}>
-                      <item.icon className={`h-4 w-4 ${isActive(item.url) ? 'text-white' : 'text-muted-foreground'}`} />
-                      {state !== "collapsed" && <span className="ml-3">{item.title}</span>}
+                      {state !== "collapsed" && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>)}
