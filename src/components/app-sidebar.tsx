@@ -122,6 +122,7 @@ export function AppSidebar() {
                         <SidebarMenuButton asChild>
                           <CollapsibleTrigger className={`h-12 px-6 w-full hover:bg-muted/60 transition-colors flex items-center justify-between font-medium`}>
                             <div className="flex items-center">
+                              <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
                               {state !== "collapsed" && <span>{item.title}</span>}
                             </div>
                             {state !== "collapsed" && <ChevronRight className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />}
@@ -150,6 +151,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url!)}`}>
                       <NavLink to={item.url!} end={item.url === "/"}>
+                        <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
                         {state !== "collapsed" && <span>{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
@@ -170,6 +172,7 @@ export function AppSidebar() {
               {businessNavItems.map(item => <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url)}`}>
                     <NavLink to={item.url}>
+                      <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
                       {state !== "collapsed" && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -188,6 +191,7 @@ export function AppSidebar() {
               {settingsNavItems.map(item => <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url)}`}>
                     <NavLink to={item.url}>
+                      <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
                       {state !== "collapsed" && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
