@@ -122,8 +122,8 @@ export function AppSidebar() {
                 // Item com sub-itens
                 return <Collapsible key={item.title} asChild defaultOpen={item.items.some(subItem => isActive(subItem.url))}>
                       <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                          <CollapsibleTrigger className={`h-12 px-6 w-full flex items-center justify-between ${getCollapsibleNavClassName(item.items)}`}>
+                        <SidebarMenuButton className={`h-12 px-6 ${getCollapsibleNavClassName(item.items)}`}>
+                          <CollapsibleTrigger className="w-full flex items-center justify-between">
                             <div className="flex items-center">
                               <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
                               {state !== "collapsed" && <span className="mx-[6px]">{item.title}</span>}
