@@ -93,6 +93,10 @@ export function AppSidebar() {
     const hasActiveChild = items.some(subItem => isActive(subItem.url));
     return hasActiveChild ? "bg-primary text-white font-medium" : "hover:bg-muted/60 transition-colors font-medium";
   };
+
+  const getSubNavClassName = (path: string) => {
+    return isActive(path) ? "font-bold transition-colors" : "hover:bg-muted/60 transition-colors font-medium";
+  };
   const handleGuestLogout = () => {
     disableGuestMode();
     toast({
@@ -134,7 +138,7 @@ export function AppSidebar() {
                         <CollapsibleContent>
                           <SidebarMenuSub className="ml-4 mt-2 space-y-2">
                             {item.items.map(subItem => <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton asChild className={`h-10 px-4 ${getNavClassName(subItem.url)}`}>
+                                <SidebarMenuSubButton asChild className={`h-10 px-4 ${getSubNavClassName(subItem.url)}`}>
                                   <NavLink to={subItem.url}>
                                     <span>{subItem.title}</span>
                                   </NavLink>

@@ -135,10 +135,6 @@ export function VideoForm({
                         <FormMessage />
                       </FormItem>} />
 
-                <FormField control={form.control} name="catalogueId" render={({
-                  field
-                }) => {}} />
-
                 <FormField control={form.control} name="tag" render={({
                   field
                 }) => <FormItem>
