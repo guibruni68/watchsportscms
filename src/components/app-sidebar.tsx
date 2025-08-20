@@ -95,7 +95,7 @@ export function AppSidebar() {
   };
 
   const getSubNavClassName = (path: string) => {
-    return isActive(path) ? "font-bold transition-colors" : "hover:bg-muted/60 transition-colors font-medium";
+    return isActive(path) ? "bg-muted/50 font-bold transition-colors" : "hover:bg-muted/60 transition-colors font-medium";
   };
   const handleGuestLogout = () => {
     disableGuestMode();
