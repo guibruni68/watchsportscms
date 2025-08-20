@@ -1,4 +1,5 @@
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -247,6 +248,7 @@ const mockVideos: Video[] = [
 ]
 
 export default function VideosPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [videos, setVideos] = useState<Video[]>(mockVideos)
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
@@ -255,6 +257,17 @@ export default function VideosPage() {
   const [editingVideo, setEditingVideo] = useState<Video | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+
+  // Check for new param on mount
+  useEffect(() => {
+    if (searchParams.get('new') === 'true') {
+      setShowForm(true)
+      setEditingVideo(null)
+      // Remove the param from URL
+      searchParams.delete('new')
+      setSearchParams(searchParams)
+    }
+  }, [searchParams, setSearchParams])
 
   const categories = Array.from(new Set(videos.map(v => v.categoria)))
   const statuses = Array.from(new Set(videos.map(v => v.status)))

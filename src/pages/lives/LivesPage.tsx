@@ -1,4 +1,5 @@
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -73,6 +74,7 @@ const statusLabels = {
 }
 
 export default function LivesPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [lives, setLives] = useState<Live[]>(mockLives)
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
@@ -81,6 +83,17 @@ export default function LivesPage() {
   const [editingLive, setEditingLive] = useState<Live | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+
+  // Check for new param on mount
+  useEffect(() => {
+    if (searchParams.get('new') === 'true') {
+      setShowForm(true)
+      setEditingLive(null)
+      // Remove the param from URL
+      searchParams.delete('new')
+      setSearchParams(searchParams)
+    }
+  }, [searchParams, setSearchParams])
 
   const categories = [{ value: "all", label: "Todas as categorias" }]
   const statuses = [

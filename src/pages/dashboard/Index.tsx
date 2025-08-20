@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useNavigate } from "react-router-dom"
 import { 
   Video, 
   Radio, 
@@ -15,6 +16,7 @@ import {
 } from "lucide-react"
 
 export default function DashboardIndex() {
+  const navigate = useNavigate()
   const stats = [
     {
       title: "Vídeos VOD",
@@ -141,7 +143,7 @@ export default function DashboardIndex() {
               <CardTitle className="text-lg">Vídeos Recentes</CardTitle>
               <CardDescription>Últimos conteúdos publicados</CardDescription>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => navigate('/videos')}>
               Ver Todos
             </Button>
           </CardHeader>
@@ -172,7 +174,7 @@ export default function DashboardIndex() {
               <CardTitle className="text-lg">Próximos Eventos</CardTitle>
               <CardDescription>Agenda e transmissões</CardDescription>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => navigate('/schedule')}>
               <Calendar className="h-4 w-4 mr-2" />
               Agenda
             </Button>
@@ -204,19 +206,19 @@ export default function DashboardIndex() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <Button variant="outline" className="h-20 flex-col gap-2">
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/videos?new=true')}>
               <Video className="h-6 w-6" />
               <span className="text-sm">Upload Vídeo</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2">
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/lives?new=true')}>
               <Radio className="h-6 w-6" />
               <span className="text-sm">Nova Live</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2">
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/news?new=true')}>
               <Newspaper className="h-6 w-6" />
               <span className="text-sm">Criar Notícia</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2">
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/teams')}>
               <Users className="h-6 w-6" />
               <span className="text-sm">Gerir Times</span>
             </Button>

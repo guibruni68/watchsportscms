@@ -1,4 +1,5 @@
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -67,6 +68,7 @@ const mockNews: News[] = [
 ]
 
 export default function NewsPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [news, setNews] = useState<News[]>(mockNews)
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState<string>("all") 
@@ -75,6 +77,17 @@ export default function NewsPage() {
   const [editingNews, setEditingNews] = useState<News | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+
+  // Check for new param on mount
+  useEffect(() => {
+    if (searchParams.get('new') === 'true') {
+      setShowForm(true)
+      setEditingNews(null)
+      // Remove the param from URL
+      searchParams.delete('new')
+      setSearchParams(searchParams)
+    }
+  }, [searchParams, setSearchParams])
 
   const categories = [{ value: "all", label: "Todas as categorias" }]
   const statuses = [
