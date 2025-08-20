@@ -55,28 +55,25 @@ export default function DashboardIndex() {
       id: 1,
       title: "Treino da Semana - Preparação para o Clássico",
       thumbnail: "/placeholder.svg",
-      views: 1250,
       duration: "8:45",
       status: "published",
-      publishedAt: "Há 2 horas"
+      publishedAt: "18/01/2025"
     },
     {
       id: 2,
       title: "Entrevista: Novo Reforço do Time",
       thumbnail: "/placeholder.svg",
-      views: 890,
       duration: "15:30",
       status: "published",
-      publishedAt: "Há 1 dia"
+      publishedAt: "17/01/2025"
     },
     {
       id: 3,
       title: "Bastidores: Concentração antes do Jogo",
       thumbnail: "/placeholder.svg",
-      views: 2140,
       duration: "12:15",
       status: "published",
-      publishedAt: "Há 2 dias"
+      publishedAt: "16/01/2025"
     }
   ]
 
@@ -161,13 +158,7 @@ export default function DashboardIndex() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm text-foreground truncate">{video.title}</h4>
-                  <div className="flex items-center gap-4 mt-1">
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Eye className="h-3 w-3" />
-                      {video.views.toLocaleString()}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{video.publishedAt}</span>
-                  </div>
+                  <span className="text-xs text-muted-foreground">{video.publishedAt}</span>
                 </div>
               </div>
             ))}
