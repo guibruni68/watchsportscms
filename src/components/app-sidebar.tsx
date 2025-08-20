@@ -89,6 +89,11 @@ export function AppSidebar() {
     return isActive(path) ? "bg-primary text-white font-medium" : "hover:bg-muted/60 transition-colors font-medium";
   };
 
+  const getCollapsibleNavClassName = (items: any[]) => {
+    const hasActiveChild = items.some(subItem => isActive(subItem.url));
+    return hasActiveChild ? "bg-primary text-white font-medium" : "hover:bg-muted/60 transition-colors font-medium";
+  };
+
   const handleGuestLogout = () => {
     disableGuestMode();
     toast({
@@ -120,7 +125,7 @@ export function AppSidebar() {
                     <Collapsible key={item.title} asChild defaultOpen={item.items.some(subItem => isActive(subItem.url))}>
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                          <CollapsibleTrigger className={`h-12 px-6 w-full hover:bg-muted/60 transition-colors flex items-center justify-between font-medium`}>
+                          <CollapsibleTrigger className={`h-12 px-6 w-full flex items-center justify-between ${getCollapsibleNavClassName(item.items)}`}>
                             <div className="flex items-center">
                               <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
                               {state !== "collapsed" && <span>{item.title}</span>}
