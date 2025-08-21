@@ -11,14 +11,6 @@ const mainNavItems = [{
   url: "/",
   icon: Home
 }, {
-  title: "Banners",
-  url: "/banners",
-  icon: MonitorSpeaker
-}, {
-  title: "Carrosséis",
-  url: "/carousels",
-  icon: Layout
-}, {
   title: "Conteúdos",
   icon: Folder,
   items: [{
@@ -34,6 +26,14 @@ const mainNavItems = [{
     url: "/catalogues",
     icon: Tag
   }]
+}, {
+  title: "Banners",
+  url: "/banners",
+  icon: MonitorSpeaker
+}, {
+  title: "Carrosséis",
+  url: "/carousels",
+  icon: Layout
 }, {
   title: "Notícias",
   url: "/news",
