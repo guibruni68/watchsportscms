@@ -42,8 +42,8 @@ import {
 interface Carousel {
   id: string;
   title: string;
-  carouselType: "vod" | "lives" | "news" | "ads" | "players" | "store" | "top5";
-  layout: "horizontal" | "grid" | "slider";
+  layout: "default" | "highlight" | "hero_banner" | "mid_banner" | "game_result";
+  carouselType: "manual" | "personalized" | "automatic";
   order: number;
   status: "active" | "inactive";
   showMoreButton: boolean;
@@ -52,25 +52,18 @@ interface Carousel {
   contentLimit?: number;
   planType: "all" | "free" | "premium" | "vip";
   // Campos específicos por tipo
-  contentSource?: "agent" | "genre" | "recommendations" | "manual";
-  agentType?: string;
-  agentIds?: string[];
-  genreType?: string;
-  algorithmType?: string;
-  manualContent?: string[];
-  adCategory?: string;
-  adPosition?: string;
-  productCategory?: string;
-  priceRange?: string;
+  domain?: "collection" | "content" | "group" | "agent" | "agenda" | "news";
+  manualSelection?: string[];
+  personalizedAlgorithm?: "because_you_watched" | "suggestions_for_you";
+  domainValue?: string;
 }
 
 const mockCarousels: Carousel[] = [
   {
     id: "1",
-    title: "VOD - Melhores Momentos Marcus Johnson",
-    carouselType: "vod",
-    layout: "horizontal",
-    contentSource: "agent",
+    title: "Melhores Momentos Marcus Johnson",
+    carouselType: "manual",
+    layout: "default",
     order: 1,
     status: "active",
     showMoreButton: true,
@@ -78,15 +71,14 @@ const mockCarousels: Carousel[] = [
     sortType: "mostWatched",
     contentLimit: 15,
     planType: "all",
-    agentType: "player",
-    agentIds: ["player1"],
+    domain: "agent",
+    manualSelection: ["player1"],
   },
   {
     id: "2", 
     title: "Notícias - Gols Históricos",
-    carouselType: "news",
-    layout: "grid",
-    contentSource: "genre",
+    carouselType: "personalized",
+    layout: "highlight",
     order: 2,
     status: "active",
     showMoreButton: false,
@@ -94,70 +86,41 @@ const mockCarousels: Carousel[] = [
     sortType: "alphabetical",
     contentLimit: 20,
     planType: "premium",
-    genreType: "goals",
+    domain: "news",
+    personalizedAlgorithm: "because_you_watched",
   },
   {
     id: "3",
-    title: "TOP 5 - Melhores Jogadas",
-    carouselType: "top5",
-    layout: "slider",
+    title: "Conteúdos Automáticos",
+    carouselType: "automatic",
+    layout: "hero_banner",
     order: 3,
     status: "inactive",
     showMoreButton: true,
     createdAt: "2024-01-05",
     sortType: "random",
     planType: "vip",
-  },
-  {
-    id: "4",
-    title: "ADS - Banners Promocionais",
-    carouselType: "ads",
-    layout: "horizontal",
-    order: 4,
-    status: "active",
-    showMoreButton: false,
-    createdAt: "2024-01-20",
-    sortType: "newest",
-    contentLimit: 8,
-    planType: "all",
-    adCategory: "banner",
-    adPosition: "top",
-  },
-  {
-    id: "5",
-    title: "Loja - Camisas Premium",
-    carouselType: "store",
-    layout: "grid",
-    order: 5,
-    status: "active",
-    showMoreButton: true,
-    createdAt: "2024-01-18",
-    sortType: "newest",
-    contentLimit: 12,
-    planType: "premium",
-    productCategory: "jerseys",
-    priceRange: "100-200",
+    domain: "content",
+    domainValue: "content1",
   },
 ];
 
 const getCarouselTypeLabel = (type: string) => {
   const labels = {
-    vod: "VOD",
-    lives: "Canais ao Vivo",
-    news: "Notícias",
-    ads: "Anúncios/ADS",
-    players: "Jogadores",
-    store: "Loja",
-    top5: "TOP 5"
+    manual: "Manual",
+    personalized: "Personalizado", 
+    automatic: "Automático"
   };
   return labels[type as keyof typeof labels];
 };
 
 const getLayoutLabel = (layout: string) => {
   const labels = {
-    horizontal: "Horizontal Scroll",
-    grid: "Grade com Destaques", 
-    slider: "Slider com Fundo"
+    default: "Default",
+    highlight: "Highlight Content",
+    hero_banner: "Hero Banner",
+    mid_banner: "Mid Banner",
+    game_result: "Game Result"
   };
   return labels[layout as keyof typeof labels];
 };
@@ -194,19 +157,14 @@ const getPlanTypeBadgeVariant = (planType: string) => {
 
 const getContentSourceLabel = (source: string) => {
   const labels = {
-    agent: "Agente",
-    genre: "Gênero",
-    recommendations: "Recomendação Personalizada",
-    manual: "Manual"
+    collection: "Collection",
+    content: "Content", 
+    group: "Group",
+    agent: "Agent",
+    agenda: "Agenda",
+    news: "News"
   };
   return labels[source as keyof typeof labels];
-};
-
-const getAgentNames = (carousel: Carousel) => {
-  if (!carousel.agentType || !carousel.agentIds?.length) return "Nenhum agente selecionado";
-  const agents = getAgentsByType(carousel.agentType);
-  const selectedAgents = agents.filter(agent => carousel.agentIds!.includes(agent.id));
-  return selectedAgents.map(agent => agent.name).join(", ");
 };
 
 // Componente para linha sortável
@@ -276,13 +234,9 @@ export default function CarouselsPage() {
 
   const categories = [
     { value: "all", label: "Todos os tipos" },
-    { value: "vod", label: "VOD" },
-    { value: "lives", label: "Canais ao Vivo" },
-    { value: "news", label: "Notícias" },
-    { value: "ads", label: "Anúncios/ADS" },
-    { value: "players", label: "Jogadores" },
-    { value: "store", label: "Loja" },
-    { value: "top5", label: "TOP 5" }
+    { value: "manual", label: "Manual" },
+    { value: "personalized", label: "Personalizado" },
+    { value: "automatic", label: "Automático" }
   ];
 
   const statuses = [
@@ -349,7 +303,6 @@ export default function CarouselsPage() {
       title: data.title,
       carouselType: data.carouselType,
       layout: data.layout,
-      contentSource: data.contentSource,
       order: data.order,
       status: data.status ? "active" : "inactive",
       showMoreButton: data.showMoreButton,
@@ -357,15 +310,10 @@ export default function CarouselsPage() {
       sortType: data.sortType,
       contentLimit: data.contentLimit,
       planType: data.planType,
-      agentType: data.agentType,
-      agentIds: data.agentIds,
-      genreType: data.genreType,
-      algorithmType: data.algorithmType,
-      manualContent: data.manualContent,
-      adCategory: data.adCategory,
-      adPosition: data.adPosition,
-      productCategory: data.productCategory,
-      priceRange: data.priceRange,
+      domain: data.domain,
+      manualSelection: data.manualSelection,
+      personalizedAlgorithm: data.personalizedAlgorithm,
+      domainValue: data.domainValue,
     };
     
     setCarousels([...carousels, newCarousel]);
@@ -384,22 +332,16 @@ export default function CarouselsPage() {
       title: data.title,
       carouselType: data.carouselType,
       layout: data.layout,
-      contentSource: data.contentSource,
       order: data.order,
       status: data.status ? "active" : "inactive",
       showMoreButton: data.showMoreButton,
       sortType: data.sortType,
       contentLimit: data.contentLimit,
       planType: data.planType,
-      agentType: data.agentType,
-      agentIds: data.agentIds,
-      genreType: data.genreType,
-      algorithmType: data.algorithmType,
-      manualContent: data.manualContent,
-      adCategory: data.adCategory,
-      adPosition: data.adPosition,
-      productCategory: data.productCategory,
-      priceRange: data.priceRange,
+      domain: data.domain,
+      manualSelection: data.manualSelection,
+      personalizedAlgorithm: data.personalizedAlgorithm,
+      domainValue: data.domainValue,
     };
     
     setCarousels(carousels.map(c => c.id === editingCarousel.id ? updatedCarousel : c));
@@ -585,7 +527,7 @@ export default function CarouselsPage() {
                           </TableCell>
                           <TableCell>{getLayoutLabel(carousel.layout)}</TableCell>
                           <TableCell>{getSortTypeLabel(carousel.sortType)}</TableCell>
-                          <TableCell>{carousel.carouselType === "top5" ? "5" : carousel.contentLimit}</TableCell>
+                          <TableCell>{carousel.contentLimit}</TableCell>
                           <TableCell>
                             <Badge variant={carousel.status === "active" ? "default" : "secondary"}>
                               {carousel.status === "active" ? "Ativo" : "Inativo"}
@@ -630,7 +572,7 @@ export default function CarouselsPage() {
                         <span className="font-medium">Ordenação:</span> {getSortTypeLabel(carousel.sortType)}
                       </div>
                       <div>
-                        <span className="font-medium">Limite:</span> {carousel.carouselType === "top5" ? "5" : carousel.contentLimit} conteúdos
+                        <span className="font-medium">Limite:</span> {carousel.contentLimit} conteúdos
                       </div>
                     </div>
                   </CardContent>
@@ -669,7 +611,7 @@ export default function CarouselsPage() {
                     </div>
                     <div><span className="font-medium">Layout:</span> {getLayoutLabel(viewingCarousel.layout)}</div>
                     <div><span className="font-medium">Ordenação:</span> {getSortTypeLabel(viewingCarousel.sortType)}</div>
-                    <div><span className="font-medium">Limite:</span> {viewingCarousel.carouselType === "top5" ? "5" : viewingCarousel.contentLimit} conteúdos</div>
+                    <div><span className="font-medium">Limite:</span> {viewingCarousel.contentLimit} conteúdos</div>
                     <div><span className="font-medium">Ordem:</span> {viewingCarousel.order}</div>
                     <div><span className="font-medium">Status:</span> 
                       <Badge variant={viewingCarousel.status === "active" ? "default" : "secondary"} className="ml-2">
@@ -687,18 +629,7 @@ export default function CarouselsPage() {
                         {getPlanTypeLabel(viewingCarousel.planType)}
                       </Badge>
                     </div>
-                    {viewingCarousel.contentSource === "agent" && (
-                      <>
-                        <div><span className="font-medium">Tipo de Agente:</span> {viewingCarousel.agentType}</div>
-                        <div><span className="font-medium">Agentes:</span> {getAgentNames(viewingCarousel)}</div>
-                      </>
-                    )}
-                    {viewingCarousel.contentSource === "genre" && (
-                      <div><span className="font-medium">Gênero:</span> {viewingCarousel.genreType}</div>
-                    )}
-                    {viewingCarousel.contentSource === "recommendations" && (
-                      <div><span className="font-medium">Algoritmo:</span> {viewingCarousel.algorithmType}</div>
-                    )}
+                    <div><span className="font-medium">Domínio:</span> {viewingCarousel.domain ? getContentSourceLabel(viewingCarousel.domain) : "Não definido"}</div>
                     <div><span className="font-medium">Botão "Ver mais":</span> {viewingCarousel.showMoreButton ? "Sim" : "Não"}</div>
                   </div>
                 </div>
@@ -709,10 +640,7 @@ export default function CarouselsPage() {
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold">Conteúdos do Carrossel</h3>
                   <Badge variant="outline">
-                    {viewingCarousel.contentSource === "manual" 
-                      ? `${viewingCarousel.manualContent?.length || 0} conteúdos`
-                      : "12 conteúdos"
-                    } total
+                    {viewingCarousel.manualSelection?.length || 12} conteúdos total
                   </Badge>
                 </div>
                 
@@ -731,9 +659,9 @@ export default function CarouselsPage() {
                       {[1, 2, 3, 4, 5].map((item) => (
                         <TableRow key={item}>
                           <TableCell className="font-medium">
-                            {viewingCarousel.contentSource === "manual" 
+                            {viewingCarousel.carouselType === "manual" 
                               ? `Conteúdo Manual ${item}`
-                              : `Conteúdo Automático ${item}`
+                              : `Conteúdo ${viewingCarousel.carouselType} ${item}`
                             }
                           </TableCell>
                           <TableCell>Vídeo</TableCell>
