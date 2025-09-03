@@ -10,15 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Edit, Eye, Trash2, Grid3X3, List, GripVertical, Save, X } from "lucide-react";
 import { ImportButton } from "@/components/ui/import-button";
-import { CarouselForm } from "@/components/forms/CarouselForm";
-import { ActionDropdown } from "@/components/ui/action-dropdown"
-import { SearchFilters } from "@/components/ui/search-filters"
+import { ActionDropdown } from "@/components/ui/action-dropdown";
+import { SearchFilters } from "@/components/ui/search-filters";
 import { ListControls, ListPagination } from "@/components/ui/list-controls";
 import { useToast } from "@/hooks/use-toast";
-import { getAgentsByType } from "@/data/mockData";
+import { Link } from "react-router-dom";
 import {
   DndContext,
   closestCenter,
@@ -212,15 +211,13 @@ function SortableRow({ carousel, children, isEditingOrder }: {
 export default function CarouselsPage() {
   const [carousels, setCarousels] = useState<Carousel[]>(mockCarousels);
   const [originalCarousels, setOriginalCarousels] = useState<Carousel[]>(mockCarousels);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingCarousel, setEditingCarousel] = useState<Carousel | null>(null);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [viewingCarousel, setViewingCarousel] = useState<Carousel | null>(null);
-  const [searchTerm, setSearchTerm] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState<string>("all")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isEditingOrder, setIsEditingOrder] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { toast } = useToast();
@@ -297,62 +294,6 @@ export default function CarouselsPage() {
     });
   };
 
-  const handleCreateCarousel = (data: any) => {
-    const newCarousel: Carousel = {
-      id: String(Date.now()),
-      title: data.title,
-      carouselType: data.carouselType,
-      layout: data.layout,
-      order: data.order,
-      status: data.status ? "active" : "inactive",
-      showMoreButton: data.showMoreButton,
-      createdAt: new Date().toISOString().split('T')[0],
-      sortType: data.sortType,
-      contentLimit: data.contentLimit,
-      planType: data.planType,
-      domain: data.domain,
-      manualSelection: data.manualSelection,
-      personalizedAlgorithm: data.personalizedAlgorithm,
-      domainValue: data.domainValue,
-    };
-    
-    setCarousels([...carousels, newCarousel]);
-    setIsFormOpen(false);
-    toast({
-      title: "Carrossel criado com sucesso!",
-      description: `O carrossel "${data.title}" foi adicionado.`,
-    });
-  };
-
-  const handleEditCarousel = (data: any) => {
-    if (!editingCarousel) return;
-    
-    const updatedCarousel: Carousel = {
-      ...editingCarousel,
-      title: data.title,
-      carouselType: data.carouselType,
-      layout: data.layout,
-      order: data.order,
-      status: data.status ? "active" : "inactive",
-      showMoreButton: data.showMoreButton,
-      sortType: data.sortType,
-      contentLimit: data.contentLimit,
-      planType: data.planType,
-      domain: data.domain,
-      manualSelection: data.manualSelection,
-      personalizedAlgorithm: data.personalizedAlgorithm,
-      domainValue: data.domainValue,
-    };
-    
-    setCarousels(carousels.map(c => c.id === editingCarousel.id ? updatedCarousel : c));
-    setEditingCarousel(null);
-    setIsFormOpen(false);
-    toast({
-      title: "Carrossel atualizado com sucesso!",
-      description: `O carrossel "${data.title}" foi modificado.`,
-    });
-  };
-
   const handleDeleteCarousel = (id: string) => {
     setCarousels(carousels.filter(c => c.id !== id));
     toast({
@@ -361,14 +302,18 @@ export default function CarouselsPage() {
     });
   };
 
-  const openEditForm = (carousel: Carousel) => {
-    setEditingCarousel(carousel);
-    setIsFormOpen(true);
-  };
-
-  const openCreateForm = () => {
-    setEditingCarousel(null);
-    setIsFormOpen(true);
+  const handleDuplicateCarousel = (carousel: Carousel) => {
+    const duplicatedCarousel = {
+      ...carousel,
+      id: Date.now().toString(),
+      title: `${carousel.title} (Cópia)`,
+      order: carousels.length + 1
+    };
+    setCarousels([...carousels, duplicatedCarousel]);
+    toast({
+      title: "Carrossel duplicado",
+      description: "Uma cópia do carrossel foi criada com sucesso.",
+    });
   };
 
   const totalPages = Math.ceil(filteredCarousels.length / itemsPerPage);
@@ -388,26 +333,12 @@ export default function CarouselsPage() {
         
         <div className="flex gap-2">
           <ImportButton entityName="carrosséis" />
-          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={openCreateForm} className="bg-primary hover:bg-primary/90">
-                <Plus className="h-4 w-4 mr-2" />
-                Criar Carrossel
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingCarousel ? "Editar Carrossel" : "Criar Novo Carrossel"}
-                </DialogTitle>
-              </DialogHeader>
-              <CarouselForm
-                initialData={editingCarousel}
-                onSubmit={editingCarousel ? handleEditCarousel : handleCreateCarousel}
-                onCancel={() => setIsFormOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
+          <Link to="/carousels/novo">
+            <Button className="bg-primary hover:bg-primary/90">
+              <Plus className="h-4 w-4 mr-2" />
+              Criar Carrossel
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -536,7 +467,7 @@ export default function CarouselsPage() {
                           <TableCell className="text-right">
                             <ActionDropdown
                               onView={() => setViewingCarousel(carousel)}
-                              onEdit={() => openEditForm(carousel)}
+                              onEdit={() => window.location.href = `/carousels/${carousel.id}/editar`}
                               onDelete={() => handleDeleteCarousel(carousel.id)}
                             />
                           </TableCell>
@@ -554,9 +485,14 @@ export default function CarouselsPage() {
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg line-clamp-2">{carousel.title}</CardTitle>
-                      <Button variant="ghost" size="sm" onClick={() => openEditForm(carousel)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      <Link 
+                        to={`/carousels/${carousel.id}/editar`}
+                        className="inline-flex"
+                      >
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </Link>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -583,14 +519,14 @@ export default function CarouselsPage() {
         </CardContent>
       </Card>
 
-        <ListPagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(filteredCarousels.length / itemsPerPage)}
-          onPageChange={setCurrentPage}
-          itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={setItemsPerPage}
-          totalItems={filteredCarousels.length}
-        />
+      <ListPagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filteredCarousels.length / itemsPerPage)}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={setItemsPerPage}
+        totalItems={filteredCarousels.length}
+      />
 
       {/* Modal de Visualização do Carrossel */}
       <Dialog open={!!viewingCarousel} onOpenChange={() => setViewingCarousel(null)}>
