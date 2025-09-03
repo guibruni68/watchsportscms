@@ -227,143 +227,6 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
             />
           </div>
 
-          {/* Configurações universais - sempre habilitadas */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormField
-              control={form.control}
-              name="sortType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo de Ordenação</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a ordenação" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="alphabetical">Alfabética</SelectItem>
-                      <SelectItem value="random">Aleatória</SelectItem>
-                      <SelectItem value="mostWatched">Mais Assistidos</SelectItem>
-                      <SelectItem value="newest">Mais Recentes</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="contentLimit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantidade de Conteúdos</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      min="1" 
-                      max="50"
-                      placeholder="10"
-                      value={field.value || ""}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="planType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Plano de Exibição</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o plano" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="all">Todos os Planos</SelectItem>
-                      <SelectItem value="free">Apenas Gratuito</SelectItem>
-                      <SelectItem value="premium">Apenas Premium</SelectItem>
-                      <SelectItem value="vip">Apenas VIP</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Status</FormLabel>
-                    <FormDescription>
-                      Carrossel ativo na plataforma
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="showMoreButton"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Botão "Ver Mais"</FormLabel>
-                    <FormDescription>
-                      Exibir botão para ver mais conteúdos
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="order"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ordem de Exibição</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      min="1" 
-                      max="100"
-                      placeholder="1"
-                      value={field.value || ""}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
           {/* Configurações condicionais baseadas no tipo de carrossel */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Configurações Específicas</h3>
@@ -512,6 +375,143 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                 )}
               />
             )}
+          </div>
+
+          {/* Configurações universais - sempre habilitadas */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="sortType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Ordenação</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a ordenação" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="alphabetical">Alfabética</SelectItem>
+                      <SelectItem value="random">Aleatória</SelectItem>
+                      <SelectItem value="mostWatched">Mais Assistidos</SelectItem>
+                      <SelectItem value="newest">Mais Recentes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="contentLimit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantidade de Conteúdos</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      min="1" 
+                      max="50"
+                      placeholder="10"
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="planType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plano de Exibição</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o plano" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os Planos</SelectItem>
+                      <SelectItem value="free">Apenas Gratuito</SelectItem>
+                      <SelectItem value="premium">Apenas Premium</SelectItem>
+                      <SelectItem value="vip">Apenas VIP</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Status</FormLabel>
+                    <FormDescription>
+                      Carrossel ativo na plataforma
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="showMoreButton"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Botão "Ver Mais"</FormLabel>
+                    <FormDescription>
+                      Exibir botão para ver mais conteúdos
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="order"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ordem de Exibição</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      min="1" 
+                      max="100"
+                      placeholder="1"
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
