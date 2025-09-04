@@ -1,29 +1,16 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ArrowLeft, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CarouselContentSelector } from "@/components/ui/carousel-content-selector";
 
@@ -56,6 +43,7 @@ interface CarouselFormProps {
 }
 
 export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormProps) {
+  const navigate = useNavigate();
   const [teams, setTeams] = useState<any[]>([]);
   const [catalogues, setCatalogues] = useState<any[]>([]);
   const [players, setPlayers] = useState<any[]>([]);
@@ -158,75 +146,121 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
   };
 
   return (
-    <ScrollArea className="h-[80vh] w-full">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 p-6">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Título do Carrossel</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Ex: Melhores Momentos - Jogador Estrela" 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" onClick={() => navigate(-1)}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Voltar
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {initialData ? 'Editar Carrossel' : 'Novo Carrossel'}
+          </h1>
+          <p className="text-muted-foreground">
+            {initialData ? 'Edite as informações do carrossel' : 'Crie um novo carrossel de conteúdo'}
+          </p>
+        </div>
+      </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="layout"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Layout do Carrossel</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o layout" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="default">Default</SelectItem>
-                      <SelectItem value="highlight">Highlight Content</SelectItem>
-                      <SelectItem value="hero_banner">Hero Banner</SelectItem>
-                      <SelectItem value="mid_banner">Mid Banner</SelectItem>
-                      <SelectItem value="game_result">Game Result</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <Card>
+        <CardHeader>
+          <CardTitle>Informações do Carrossel</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Título do Carrossel</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Ex: Melhores Momentos - Jogador Estrela" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="carouselType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo de Carrossel</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tipo" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="manual">Manual</SelectItem>
-                      <SelectItem value="personalized">Personalizado</SelectItem>
-                      <SelectItem value="automatic">Automático</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+                <FormField
+                  control={form.control}
+                  name="order"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ordem de Exibição</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          min="1" 
+                          max="100"
+                          placeholder="1"
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Ordem de exibição (menor número = maior prioridade)
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="layout"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Layout do Carrossel</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o layout" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="default">Default</SelectItem>
+                          <SelectItem value="highlight">Highlight Content</SelectItem>
+                          <SelectItem value="hero_banner">Hero Banner</SelectItem>
+                          <SelectItem value="mid_banner">Mid Banner</SelectItem>
+                          <SelectItem value="game_result">Game Result</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="carouselType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Carrossel</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="manual">Manual</SelectItem>
+                          <SelectItem value="personalized">Personalizado</SelectItem>
+                          <SelectItem value="automatic">Automático</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
           {/* Configurações condicionais baseadas no tipo de carrossel */}
           <div className="space-y-4">
@@ -378,8 +412,8 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
             )}
           </div>
 
-          {/* Configurações universais - sempre habilitadas */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Configurações universais */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="sortType"
@@ -424,33 +458,33 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="planType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Plano de Exibição</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o plano" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="all">Todos os Planos</SelectItem>
-                      <SelectItem value="free">Apenas Gratuito</SelectItem>
-                      <SelectItem value="premium">Apenas Premium</SelectItem>
-                      <SelectItem value="vip">Apenas VIP</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="planType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Plano de Exibição</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o plano" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os Planos</SelectItem>
+                    <SelectItem value="free">Apenas Gratuito</SelectItem>
+                    <SelectItem value="premium">Apenas Premium</SelectItem>
+                    <SelectItem value="vip">Apenas VIP</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="status"
@@ -492,39 +526,25 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="order"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ordem de Exibição</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      min="1" 
-                      max="100"
-                      placeholder="1"
-                      value={field.value || ""}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancelar
-            </Button>
-            <Button type="submit">
-              {initialData ? "Atualizar Carrossel" : "Criar Carrossel"}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </ScrollArea>
+              <div className="flex gap-3 pt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel || (() => navigate(-1))}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" className="flex-1">
+                  {initialData ? "Atualizar" : "Criar"} Carrossel
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
