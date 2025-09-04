@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CarouselContentSelector } from "@/components/ui/carousel-content-selector";
+import { CarouselManualSelector } from "@/components/ui/carousel-manual-selector";
 
 const formSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(100, "Título deve ter no máximo 100 caracteres"),
@@ -300,55 +301,11 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                 name="manualSelection"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Seleção Manual de Conteúdos</FormLabel>
-                    <div className="space-y-3">
-                      <Select 
-                        onValueChange={(value) => {
-                          const currentValues = field.value || [];
-                          if (!currentValues.includes(value)) {
-                            field.onChange([...currentValues, value]);
-                          }
-                        }}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione os conteúdos..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {getAvailableContent()
-                            .filter(item => !field.value?.includes(item.id))
-                            .map((item) => (
-                              <SelectItem key={item.id} value={item.id}>
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                      
-                      {field.value && field.value.length > 0 && (
-                        <div className="space-y-2">
-                          <p className="text-sm text-muted-foreground">Conteúdos selecionados:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {field.value.map((itemId) => {
-                              const item = getAvailableContent().find(c => c.id === itemId);
-                              return item ? (
-                                <Badge key={itemId} variant="secondary" className="flex items-center gap-2 px-3 py-1">
-                                  {item.name}
-                                  <X 
-                                    className="h-3 w-3 cursor-pointer hover:bg-destructive/20 rounded-full p-0.5" 
-                                    onClick={() => {
-                                      const newValues = field.value?.filter(id => id !== itemId) || [];
-                                      field.onChange(newValues);
-                                    }}
-                                  />
-                                </Badge>
-                              ) : null;
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <CarouselManualSelector
+                      domain={domain}
+                      selectedContent={field.value || []}
+                      onContentChange={field.onChange}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
