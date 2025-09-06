@@ -18,12 +18,12 @@ import { CarouselManualSelector } from "@/components/ui/carousel-manual-selector
 const formSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(100, "Título deve ter no máximo 100 caracteres"),
   layout: z.enum(["default", "highlight", "hero_banner", "mid_banner", "game_result"]),
-  carouselType: z.enum(["manual", "personalized", "automatic"]),
-  sortType: z.enum(["alphabetical", "random", "mostWatched", "newest"]),
-  contentLimit: z.number().min(1, "Deve exibir pelo menos 1 conteúdo").max(50, "Máximo 50 conteúdos"),
-  planType: z.enum(["all", "free", "premium", "vip"]),
+  carouselType: z.enum(["manual", "personalized", "automatic"]).optional(),
+  sortType: z.enum(["alphabetical", "random", "mostWatched", "newest"]).optional(),
+  contentLimit: z.number().min(1, "Deve exibir pelo menos 1 conteúdo").max(50, "Máximo 50 conteúdos").optional(),
+  planType: z.enum(["all", "free", "premium", "vip"]).optional(),
   status: z.boolean(),
-  showMoreButton: z.boolean(),
+  showMoreButton: z.boolean().optional(),
   order: z.number().min(1, "Ordem deve ser maior que 0").max(100, "Ordem deve ser menor que 100"),
   // Campos condicionais baseados no tipo
   domain: z.enum(["collection", "content", "group", "agent", "agenda", "news"]).optional(),
@@ -33,6 +33,9 @@ const formSchema = z.object({
   personalizedAlgorithm: z.enum(["because_you_watched", "suggestions_for_you"]).optional(),
   // Para Automatic - valor do domínio (seleção agrupada)
   domainValue: z.string().optional(),
+  // Para layouts específicos
+  selectedGame: z.string().optional(), // Para game_result
+  selectedHeroContent: z.string().optional(), // Para hero_banner
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -49,6 +52,8 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
   const [catalogues, setCatalogues] = useState<any[]>([]);
   const [players, setPlayers] = useState<any[]>([]);
   const [news, setNews] = useState<any[]>([]);
+  const [championships, setChampionships] = useState<any[]>([]);
+  const [banners, setBanners] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,6 +80,22 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
         .order('name');
       
       if (playersData) setPlayers(playersData);
+
+      // Buscar championships
+      const { data: championshipsData } = await supabase
+        .from('championships')
+        .select('id, name')
+        .order('name');
+      
+      if (championshipsData) setChampionships(championshipsData);
+
+      // Buscar banners
+      const { data: bannersData } = await supabase
+        .from('banners')
+        .select('id, titulo')
+        .order('titulo');
+      
+      if (bannersData) setBanners(bannersData);
 
       // Mock news data (não temos tabela ainda)
       setNews([
@@ -103,11 +124,17 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
       manualSelection: initialData?.manualSelection || [],
       personalizedAlgorithm: initialData?.personalizedAlgorithm,
       domainValue: initialData?.domainValue,
+      selectedGame: initialData?.selectedGame,
+      selectedHeroContent: initialData?.selectedHeroContent,
     },
   });
 
   const carouselType = form.watch("carouselType");
   const domain = form.watch("domain");
+  const layout = form.watch("layout");
+
+  // Verificar se é um layout simplificado
+  const isSimplifiedLayout = layout === "game_result" || layout === "hero_banner";
 
   // Obter conteúdos disponíveis baseado no domínio selecionado
   const getAvailableContent = () => {
@@ -239,208 +266,278 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                   )}
                 />
 
+                {!isSimplifiedLayout && (
+                  <FormField
+                    control={form.control}
+                    name="carouselType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tipo de Carrossel</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o tipo" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="manual">Manual</SelectItem>
+                            <SelectItem value="personalized">Personalizado</SelectItem>
+                            <SelectItem value="automatic">Automático</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </div>
+
+          {/* Configurações específicas para layouts simplificados */}
+          {layout === "game_result" && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Configurações do Game Result</h3>
+              <FormField
+                control={form.control}
+                name="selectedGame"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Selecionar Jogo</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um jogo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {championships.map((championship) => (
+                          <SelectItem key={championship.id} value={championship.id}>
+                            {championship.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+
+          {layout === "hero_banner" && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Configurações do Hero Banner</h3>
+              <FormField
+                control={form.control}
+                name="selectedHeroContent"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Selecionar Conteúdo</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um conteúdo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {banners.map((banner) => (
+                          <SelectItem key={banner.id} value={banner.id}>
+                            {banner.titulo}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+
+          {/* Configurações condicionais baseadas no tipo de carrossel - apenas para layouts não simplificados */}
+          {!isSimplifiedLayout && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Configurações Específicas</h3>
+              
+              {/* Seleção de Domínio - aparece para todos os tipos */}
+              <FormField
+                control={form.control}
+                name="domain"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Domínio</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o domínio" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="collection">Collection</SelectItem>
+                        <SelectItem value="content">Content</SelectItem>
+                        <SelectItem value="group">Group</SelectItem>
+                        <SelectItem value="agent">Agent</SelectItem>
+                        <SelectItem value="agenda">Agenda</SelectItem>
+                        <SelectItem value="news">News</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Configurações para Tipo Manual */}
+              {carouselType === "manual" && domain && (
                 <FormField
                   control={form.control}
-                  name="carouselType"
+                  name="manualSelection"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo de Carrossel</FormLabel>
+                      <CarouselManualSelector
+                        domain={domain}
+                        selectedContent={field.value || []}
+                        onContentChange={field.onChange}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Configurações para Tipo Personalizado */}
+              {carouselType === "personalized" && domain && (
+                <FormField
+                  control={form.control}
+                  name="personalizedAlgorithm"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Algoritmo Personalizado</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione o tipo" />
+                            <SelectValue placeholder="Selecione o algoritmo" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="manual">Manual</SelectItem>
-                          <SelectItem value="personalized">Personalizado</SelectItem>
-                          <SelectItem value="automatic">Automático</SelectItem>
+                          <SelectItem value="because_you_watched">Because You Watched</SelectItem>
+                          <SelectItem value="suggestions_for_you">Suggestions for You</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              )}
+
+              {/* Configurações para Tipo Automático */}
+              {carouselType === "automatic" && domain && (
+                <FormField
+                  control={form.control}
+                  name="domainValue"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Valor do Domínio</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o valor agrupado" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {getAvailableContent().map((item) => (
+                            <SelectItem key={item.id} value={item.id}>
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Seleção automática de todos os conteúdos deste {domain}.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Configurações universais - ocultas para layouts simplificados */}
+          {!isSimplifiedLayout && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="sortType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Ordenação</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a ordenação" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="alphabetical">Alfabética</SelectItem>
+                          <SelectItem value="random">Aleatória</SelectItem>
+                          <SelectItem value="mostWatched">Mais Assistidos</SelectItem>
+                          <SelectItem value="newest">Mais Recentes</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="contentLimit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Quantidade de Conteúdos</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          min="1" 
+                          max="50"
+                          placeholder="10"
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-          {/* Configurações condicionais baseadas no tipo de carrossel */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Configurações Específicas</h3>
-            
-            {/* Seleção de Domínio - aparece para todos os tipos */}
-            <FormField
-              control={form.control}
-              name="domain"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Domínio</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o domínio" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="collection">Collection</SelectItem>
-                      <SelectItem value="content">Content</SelectItem>
-                      <SelectItem value="group">Group</SelectItem>
-                      <SelectItem value="agent">Agent</SelectItem>
-                      <SelectItem value="agenda">Agenda</SelectItem>
-                      <SelectItem value="news">News</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Configurações para Tipo Manual */}
-            {carouselType === "manual" && domain && (
               <FormField
                 control={form.control}
-                name="manualSelection"
+                name="planType"
                 render={({ field }) => (
                   <FormItem>
-                    <CarouselManualSelector
-                      domain={domain}
-                      selectedContent={field.value || []}
-                      onContentChange={field.onChange}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {/* Configurações para Tipo Personalizado */}
-            {carouselType === "personalized" && domain && (
-              <FormField
-                control={form.control}
-                name="personalizedAlgorithm"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Algoritmo Personalizado</FormLabel>
+                    <FormLabel>Plano de Exibição</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione o algoritmo" />
+                          <SelectValue placeholder="Selecione o plano" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="because_you_watched">Because You Watched</SelectItem>
-                        <SelectItem value="suggestions_for_you">Suggestions for You</SelectItem>
+                        <SelectItem value="all">Todos os Planos</SelectItem>
+                        <SelectItem value="free">Apenas Gratuito</SelectItem>
+                        <SelectItem value="premium">Apenas Premium</SelectItem>
+                        <SelectItem value="vip">Apenas VIP</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
+            </>
+          )}
 
-            {/* Configurações para Tipo Automático */}
-            {carouselType === "automatic" && domain && (
-              <FormField
-                control={form.control}
-                name="domainValue"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Valor do Domínio</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o valor agrupado" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {getAvailableContent().map((item) => (
-                          <SelectItem key={item.id} value={item.id}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Seleção automática de todos os conteúdos deste {domain}.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-          </div>
-
-          {/* Configurações universais */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="sortType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo de Ordenação</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a ordenação" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="alphabetical">Alfabética</SelectItem>
-                      <SelectItem value="random">Aleatória</SelectItem>
-                      <SelectItem value="mostWatched">Mais Assistidos</SelectItem>
-                      <SelectItem value="newest">Mais Recentes</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="contentLimit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantidade de Conteúdos</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      min="1" 
-                      max="50"
-                      placeholder="10"
-                      value={field.value || ""}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="planType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Plano de Exibição</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o plano" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os Planos</SelectItem>
-                    <SelectItem value="free">Apenas Gratuito</SelectItem>
-                    <SelectItem value="premium">Apenas Premium</SelectItem>
-                    <SelectItem value="vip">Apenas VIP</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
+          {/* Status sempre visível */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
@@ -463,26 +560,29 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="showMoreButton"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Botão "Ver Mais"</FormLabel>
-                    <FormDescription>
-                      Exibir botão para ver mais conteúdos
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            {/* Botão "Ver Mais" apenas para layouts não simplificados */}
+            {!isSimplifiedLayout && (
+              <FormField
+                control={form.control}
+                name="showMoreButton"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Botão "Ver Mais"</FormLabel>
+                      <FormDescription>
+                        Exibir botão para ver mais conteúdos
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
               <div className="flex gap-3 pt-6">
