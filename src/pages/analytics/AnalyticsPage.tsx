@@ -118,7 +118,7 @@ export default function AnalyticsPage() {
   }
 
   const getContentTypeIcon = (type: string) => {
-    return type === "live" ? <Play className="h-4 w-4 text-warning" /> : <Play className="h-4 w-4 text-primary" />
+    return <Play className="h-4 w-4 text-primary" />
   }
 
   const getContentTypeBadge = (type: string) => {
@@ -202,7 +202,7 @@ export default function AnalyticsPage() {
                   </span>
                 </div>
               </div>
-              <Clock className="h-6 w-6 text-secondary" />
+              <Clock className="h-6 w-6 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -222,7 +222,7 @@ export default function AnalyticsPage() {
                   </span>
                 </div>
               </div>
-              <BarChart3 className="h-6 w-6 text-warning" />
+              <BarChart3 className="h-6 w-6 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -297,8 +297,8 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-3 rounded-lg bg-secondary/10">
-                <p className="text-2xl font-bold text-secondary">
+              <div className="text-center p-3 rounded-lg bg-primary/10">
+                <p className="text-2xl font-bold text-primary">
                   {analyticsData.engagement.totalLikes.toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">Curtidas</p>
@@ -309,8 +309,8 @@ export default function AnalyticsPage() {
                 </p>
                 <p className="text-xs text-muted-foreground">Comentários</p>
               </div>
-              <div className="text-center p-3 rounded-lg bg-warning/10">
-                <p className="text-2xl font-bold text-warning">
+              <div className="text-center p-3 rounded-lg bg-primary/10">
+                <p className="text-2xl font-bold text-primary">
                   {analyticsData.engagement.totalShares.toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">Compartilhamentos</p>
@@ -387,7 +387,7 @@ export default function AnalyticsPage() {
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div 
-                    className="bg-secondary h-2 rounded-full transition-all duration-300"
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
                     style={{ width: `${device.percentage}%` }}
                   />
                 </div>
@@ -414,7 +414,7 @@ export default function AnalyticsPage() {
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div 
-                    className="bg-warning h-2 rounded-full transition-all duration-300"
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
                     style={{ width: `${location.percentage}%` }}
                   />
                 </div>

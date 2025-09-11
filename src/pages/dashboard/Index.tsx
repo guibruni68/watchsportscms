@@ -32,7 +32,7 @@ export default function DashboardIndex() {
       change: "+3",
       changeType: "positive" as const,
       icon: Radio,
-      color: "text-warning"
+      color: "text-primary"
     },
     {
       title: "Visualizações",
@@ -40,7 +40,7 @@ export default function DashboardIndex() {
       change: "+18%",
       changeType: "positive" as const,
       icon: Eye,
-      color: "text-secondary"
+      color: "text-primary"
     },
     {
       title: "Engajamento",
@@ -126,8 +126,8 @@ export default function DashboardIndex() {
                    
                   </div>
                 </div>
-                <div className={`p-3 rounded-lg bg-muted/50 ${stat.color}`}>
-                  <stat.icon className="h-6 w-6" />
+                <div className="p-3 rounded-lg bg-primary/10">
+                  <stat.icon className="h-6 w-6 text-primary" />
                 </div>
               </div>
             </CardContent>
@@ -182,10 +182,10 @@ export default function DashboardIndex() {
           <CardContent className="space-y-4">
             {upcomingEvents.map((event) => (
               <div key={event.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
-                <div className={`p-2 rounded-lg ${event.type === 'live' ? 'bg-warning/20 text-warning' : 'bg-primary/20 text-primary'}`}>
+                <div className="p-2 rounded-lg bg-primary/10">
                   {event.type === 'live' ? 
-                    <Radio className="h-4 w-4" /> : 
-                    <Calendar className="h-4 w-4" />
+                    <Radio className="h-4 w-4 text-primary" /> : 
+                    <Calendar className="h-4 w-4 text-primary" />
                   }
                 </div>
                 <div className="flex-1 min-w-0">
