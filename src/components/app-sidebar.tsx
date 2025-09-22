@@ -93,7 +93,6 @@ export function AppSidebar() {
     const hasActiveChild = items.some(subItem => isActive(subItem.url));
     return hasActiveChild ? "bg-primary text-white font-medium" : "hover:bg-muted/60 transition-colors font-medium";
   };
-
   const getSubNavClassName = (path: string) => {
     return isActive(path) ? "bg-muted/50 font-bold transition-colors" : "hover:bg-muted/60 transition-colors font-medium";
   };
@@ -185,17 +184,12 @@ export function AppSidebar() {
 
         {/* Settings Navigation */}
         <SidebarGroup className="py-4">
-          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Sistema
-          </SidebarGroupLabel>
+          
           <SidebarGroupContent>
             <SidebarMenu className="space-y-3">
               {settingsNavItems.map(item => <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url)}`}>
-                    <NavLink to={item.url}>
-                      <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
-                      {state !== "collapsed" && <span>{item.title}</span>}
-                    </NavLink>
+                    
                   </SidebarMenuButton>
                 </SidebarMenuItem>)}
             </SidebarMenu>
