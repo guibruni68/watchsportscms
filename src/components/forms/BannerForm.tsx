@@ -27,7 +27,6 @@ const bannerSchema = z.object({
   midia_mobile_url: z.string().optional(),
   midia_mobile_tipo: z.enum(["imagem", "video"]).optional(),
   texto_cta: z.string().optional(),
-  url: z.string().optional(),
   data_exibicao: z.date().optional(),
   url_redirecionamento: z.string().optional(),
   status: z.boolean(),
@@ -438,21 +437,18 @@ export default function BannerForm({
                       <FormMessage />
                     </FormItem>} />
 
-                <FormField control={form.control} name="url" render={({
+                <FormField control={form.control} name="url_redirecionamento" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>URL</FormLabel>
+                      <FormLabel>URL de Redirecionamento</FormLabel>
                       <FormControl>
                         <Input placeholder="https://..." {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Deixe vazio para usar URL padrão do conteúdo vinculado
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>} />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <FormField control={form.control} name="data_exibicao" render={({
                 field
               }) => <FormItem className="flex flex-col">
@@ -470,17 +466,6 @@ export default function BannerForm({
                           <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus className={cn("p-3 pointer-events-auto")} />
                         </PopoverContent>
                       </Popover>
-                      
-                      <FormMessage />
-                    </FormItem>} />
-
-                <FormField control={form.control} name="url_redirecionamento" render={({
-                field
-              }) => <FormItem>
-                      <FormLabel>URL de Redirecionamento</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://..." {...field} />
-                      </FormControl>
                       
                       <FormMessage />
                     </FormItem>} />
