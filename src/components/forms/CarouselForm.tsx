@@ -10,10 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, X, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CarouselContentSelector } from "@/components/ui/carousel-content-selector";
 import { CarouselManualSelector } from "@/components/ui/carousel-manual-selector";
+import { AICarouselModal } from "@/components/ui/ai-carousel-modal";
 
 const formSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(100, "Título deve ter no máximo 100 caracteres"),
@@ -54,6 +55,7 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
   const [news, setNews] = useState<any[]>([]);
   const [championships, setChampionships] = useState<any[]>([]);
   const [banners, setBanners] = useState<any[]>([]);
+  const [showAIModal, setShowAIModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -173,21 +175,51 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
     onSubmit(data);
   };
 
+  const handleAIConfigGenerated = (config: any) => {
+    console.log("Applying AI generated config:", config);
+    
+    // Aplicar todas as configurações geradas pela AI
+    if (config.title) form.setValue("title", config.title);
+    if (config.layout) form.setValue("layout", config.layout);
+    if (config.carouselType) form.setValue("carouselType", config.carouselType);
+    if (config.sortType) form.setValue("sortType", config.sortType);
+    if (config.contentLimit) form.setValue("contentLimit", config.contentLimit);
+    if (config.planType) form.setValue("planType", config.planType);
+    if (config.status !== undefined) form.setValue("status", config.status);
+    if (config.showMoreButton !== undefined) form.setValue("showMoreButton", config.showMoreButton);
+    if (config.domain) form.setValue("domain", config.domain);
+    if (config.domainValue) form.setValue("domainValue", config.domainValue);
+    if (config.manualSelection) form.setValue("manualSelection", config.manualSelection);
+    if (config.personalizedAlgorithm) form.setValue("personalizedAlgorithm", config.personalizedAlgorithm);
+    if (config.selectedGame) form.setValue("selectedGame", config.selectedGame);
+    if (config.selectedHeroContent) form.setValue("selectedHeroContent", config.selectedHeroContent);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => navigate(-1)}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {initialData ? 'Editar Carrossel' : 'Novo Carrossel'}
-          </h1>
-          <p className="text-muted-foreground">
-            {initialData ? 'Edite as informações do carrossel' : 'Crie um novo carrossel de conteúdo'}
-          </p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={() => navigate(-1)}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {initialData ? 'Editar Carrossel' : 'Novo Carrossel'}
+            </h1>
+            <p className="text-muted-foreground">
+              {initialData ? 'Edite as informações do carrossel' : 'Crie um novo carrossel de conteúdo'}
+            </p>
+          </div>
         </div>
+        <Button 
+          variant="outline" 
+          onClick={() => setShowAIModal(true)}
+          className="gap-2"
+        >
+          <Sparkles className="h-4 w-4" />
+          Ask AI
+        </Button>
       </div>
 
       <Card>
@@ -602,6 +634,17 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
           </Form>
         </CardContent>
       </Card>
+
+      <AICarouselModal
+        open={showAIModal}
+        onOpenChange={setShowAIModal}
+        onConfigGenerated={handleAIConfigGenerated}
+        availableTeams={teams}
+        availableCatalogues={catalogues}
+        availablePlayers={players}
+        availableChampionships={championships}
+        availableBanners={banners}
+      />
     </div>
   );
 }
