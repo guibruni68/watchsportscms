@@ -15,10 +15,18 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY not configured");
       throw new Error("LOVABLE_API_KEY não configurada");
     }
 
     console.log("Processing carousel config prompt:", prompt);
+    console.log("Available data:", { 
+      teams: availableTeams?.length || 0,
+      catalogues: availableCatalogues?.length || 0,
+      players: availablePlayers?.length || 0,
+      championships: availableChampionships?.length || 0,
+      banners: availableBanners?.length || 0
+    });
 
     const systemPrompt = `Você é um assistente especializado em configurar carrosséis para um CMS de esportes.
 Baseado no prompt do usuário, você deve retornar APENAS um objeto JSON válido com a configuração do carrossel.

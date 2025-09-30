@@ -1,1 +1,4 @@
 project_id = "xpwowtdxwtxtwrhkeehz"
+
+[functions.generate-carousel-config]
+verify_jwt = false

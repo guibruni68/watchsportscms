@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CarouselContentSelector } from "@/components/ui/carousel-content-selector";
 import { CarouselManualSelector } from "@/components/ui/carousel-manual-selector";
 import { AICarouselModal } from "@/components/ui/ai-carousel-modal";
+import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(100, "Título deve ter no máximo 100 caracteres"),
@@ -49,66 +50,50 @@ interface CarouselFormProps {
 
 export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormProps) {
   const navigate = useNavigate();
-  const [teams, setTeams] = useState<any[]>([]);
-  const [catalogues, setCatalogues] = useState<any[]>([]);
-  const [players, setPlayers] = useState<any[]>([]);
-  const [news, setNews] = useState<any[]>([]);
-  const [championships, setChampionships] = useState<any[]>([]);
-  const [banners, setBanners] = useState<any[]>([]);
+  
+  // Dados mockados para testes da AI
+  const mockTeams = [
+    { id: "team-1", name: "Flamengo", logo_url: "/lovable-uploads/team-logo.png" },
+    { id: "team-2", name: "Palmeiras", logo_url: "/lovable-uploads/team-logo.png" },
+    { id: "team-3", name: "Corinthians", logo_url: "/lovable-uploads/team-logo.png" },
+  ];
+
+  const mockPlayers = [
+    { id: "player-1", name: "Gabriel Barbosa", team_id: "team-1", avatar_url: "" },
+    { id: "player-2", name: "Dudu", team_id: "team-2", avatar_url: "" },
+    { id: "player-3", name: "Yuri Alberto", team_id: "team-3", avatar_url: "" },
+  ];
+
+  const mockChampionships = [
+    { id: "champ-1", name: "Brasileirão Série A" },
+    { id: "champ-2", name: "Copa do Brasil" },
+    { id: "champ-3", name: "Libertadores" },
+  ];
+
+  const mockCatalogues = [
+    { id: "cat-1", titulo: "Melhores Momentos" },
+    { id: "cat-2", titulo: "Gols da Semana" },
+    { id: "cat-3", titulo: "Entrevistas" },
+  ];
+
+  const mockBanners = [
+    { id: "banner-1", title: "Promoção Especial" },
+    { id: "banner-2", title: "Novo Patrocinador" },
+  ];
+
+  const mockNews = [
+    { id: "news-1", title: "Flamengo vence clássico" },
+    { id: "news-2", title: "Palmeiras contrata reforço" },
+    { id: "news-3", title: "Corinthians na final" },
+  ];
+
+  const [teams, setTeams] = useState<any[]>(mockTeams);
+  const [catalogues, setCatalogues] = useState<any[]>(mockCatalogues);
+  const [players, setPlayers] = useState<any[]>(mockPlayers);
+  const [news, setNews] = useState<any[]>(mockNews);
+  const [championships, setChampionships] = useState<any[]>(mockChampionships);
+  const [banners, setBanners] = useState<any[]>(mockBanners);
   const [showAIModal, setShowAIModal] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      // Buscar teams
-      const { data: teamsData } = await supabase
-        .from('teams')
-        .select('id, name')
-        .order('name');
-      
-      if (teamsData) setTeams(teamsData);
-
-      // Buscar catalogues
-      const { data: cataloguesData } = await supabase
-        .from('catalogues')
-        .select('id, titulo')
-        .order('titulo');
-      
-      if (cataloguesData) setCatalogues(cataloguesData);
-
-      // Buscar players
-      const { data: playersData } = await supabase
-        .from('players')
-        .select('id, name')
-        .order('name');
-      
-      if (playersData) setPlayers(playersData);
-
-      // Buscar championships
-      const { data: championshipsData } = await supabase
-        .from('championships')
-        .select('id, name')
-        .order('name');
-      
-      if (championshipsData) setChampionships(championshipsData);
-
-      // Buscar banners
-      const { data: bannersData } = await supabase
-        .from('banners')
-        .select('id, titulo')
-        .order('titulo');
-      
-      if (bannersData) setBanners(bannersData);
-
-      // Mock news data (não temos tabela ainda)
-      setNews([
-        { id: "news1", title: "Notícia 1" },
-        { id: "news2", title: "Notícia 2" },
-        { id: "news3", title: "Notícia 3" }
-      ]);
-    };
-    
-    fetchData();
-  }, []);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -193,6 +178,12 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
     if (config.personalizedAlgorithm) form.setValue("personalizedAlgorithm", config.personalizedAlgorithm);
     if (config.selectedGame) form.setValue("selectedGame", config.selectedGame);
     if (config.selectedHeroContent) form.setValue("selectedHeroContent", config.selectedHeroContent);
+    
+    // Mostrar toast de sucesso com explicação
+    toast({
+      title: "Configuração aplicada!",
+      description: config.explanation || "Todos os campos foram preenchidos automaticamente",
+    });
   };
 
   return (
@@ -213,7 +204,7 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
           </div>
         </div>
         <Button 
-          variant="outline" 
+          variant="gradient" 
           onClick={() => setShowAIModal(true)}
           className="gap-2"
         >
