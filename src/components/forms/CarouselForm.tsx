@@ -208,7 +208,7 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
           onClick={() => setShowAIModal(true)}
           className="gap-2"
         >
-          <Sparkles className="h-4 w-4 text-purple-600" />
+          <Sparkles className="h-4 w-4" />
           Ask AI
         </Button>
       </div>
