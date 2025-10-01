@@ -204,11 +204,11 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
           </div>
         </div>
         <Button 
-          variant="gradient" 
+          variant="gradient-outline" 
           onClick={() => setShowAIModal(true)}
           className="gap-2"
         >
-          <Sparkles className="h-4 w-4" />
+          <Sparkles className="h-4 w-4 text-purple-600" />
           Ask AI
         </Button>
       </div>
