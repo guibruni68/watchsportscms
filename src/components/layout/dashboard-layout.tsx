@@ -76,50 +76,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* Header */}
           <header className="h-16 border-b border-border/50 bg-card/50 backdrop-blur-sm flex items-center justify-between px-4 lg:px-6">
             <div className="flex items-center gap-4">
-              <SidebarTrigger className="lg:hidden" />
-              <div className="hidden md:flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Buscar conteúdo..."
-                    className="pl-10 pr-4 py-2 w-64 bg-muted/50 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Mobile search trigger */}
-              <Button variant="ghost" size="sm" className="md:hidden">
-                <Search className="h-4 w-4" />
-              </Button>
-
-
-              {/* User menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-                      <User className="h-4 w-4 text-primary-foreground" />
-                    </div>
-                    <span className="hidden sm:inline text-sm font-medium">
-                      {user?.email?.split('@')[0] || (isGuest ? 'Visitante' : 'Usuário')}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    {isGuest ? 'Sair do Modo Visitante' : 'Sair'}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Mobile menu trigger */}
-              <SidebarTrigger className="md:hidden">
-                <Menu className="h-4 w-4" />
-              </SidebarTrigger>
+              <SidebarTrigger />
             </div>
           </header>
 

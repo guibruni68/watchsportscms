@@ -1,11 +1,15 @@
-import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight } from "lucide-react";
+import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical } from "lucide-react";
 import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, useSidebar } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, useSidebar } from "@/components/ui/sidebar";
 import { useGuestMode } from "@/hooks/useGuestMode";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 const mainNavItems = [{
   title: "Dashboard",
   url: "/",
@@ -47,15 +51,6 @@ const mainNavItems = [{
   url: "/schedule",
   icon: Calendar
 }];
-const businessNavItems = [{
-  title: "Anúncios",
-  url: "/ads",
-  icon: DollarSign
-}, {
-  title: "Métricas",
-  url: "/analytics",
-  icon: BarChart3
-}];
 const settingsNavItems = [{
   title: "Personalização",
   url: "/customization",
@@ -75,6 +70,7 @@ export function AppSidebar() {
     isGuest,
     disableGuestMode
   } = useGuestMode();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const {
     toast
@@ -96,13 +92,32 @@ export function AppSidebar() {
   const getSubNavClassName = (path: string) => {
     return isActive(path) ? "bg-muted/50 font-bold transition-colors" : "hover:bg-muted/60 transition-colors font-medium";
   };
-  const handleGuestLogout = () => {
-    disableGuestMode();
-    toast({
-      title: "Modo visitante finalizado",
-      description: "Você saiu do modo visitante."
-    });
+  const handleSignOut = async () => {
+    if (isGuest) {
+      disableGuestMode();
+      toast({
+        title: "Modo visitante finalizado",
+        description: "Você saiu do modo visitante."
+      });
+    } else {
+      await signOut();
+      toast({
+        title: "Logout realizado",
+        description: "Você saiu da sua conta."
+      });
+    }
     navigate("/auth");
+  };
+
+  const getUserDisplayName = () => {
+    if (isGuest) return "Visitante";
+    if (!user?.email) return "Usuário";
+    return user.email.split("@")[0];
+  };
+
+  const getUserInitials = () => {
+    const name = getUserDisplayName();
+    return name.substring(0, 2).toUpperCase();
   };
   return <Sidebar className={state === "collapsed" ? "w-16" : "w-64"} collapsible="icon">
       <SidebarContent className="bg-gradient-to-b from-card to-muted/20">
@@ -163,38 +178,44 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Business Navigation */}
-        <SidebarGroup className="py-4">
-          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Monetização
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-3">
-              {businessNavItems.map(item => <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url)}`}>
-                    <NavLink to={item.url}>
-                      <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
-                      {state !== "collapsed" && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>)}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Settings Navigation */}
-        <SidebarGroup className="py-4">
-          
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-3">
-              {settingsNavItems.map(item => <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url)}`}>
-                    
-                  </SidebarMenuButton>
-                </SidebarMenuItem>)}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* User Profile Footer */}
+        <SidebarFooter className="mt-auto border-t border-border/50">
+          <div className="p-4">
+            <DropdownMenu>
+              <div className="flex items-center gap-3 rounded-lg p-2 hover:bg-muted/50 transition-colors">
+                <Avatar className="h-10 w-10 border-2 border-border">
+                  <AvatarImage src={user?.user_metadata?.avatar_url} />
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                {state !== "collapsed" && (
+                  <>
+                    <div className="flex-1 overflow-hidden">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {getUserDisplayName()}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {isGuest ? "Modo visitante" : user?.email}
+                      </p>
+                    </div>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </>
+                )}
+              </div>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sair</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </SidebarFooter>
       </SidebarContent>
     </Sidebar>;
 }
