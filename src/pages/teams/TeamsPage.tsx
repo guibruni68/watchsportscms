@@ -25,7 +25,7 @@ import { ImportButton } from "@/components/ui/import-button"
 import { ListPagination } from "@/components/ui/list-controls"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { useToast } from "@/hooks/use-toast"
-import { getTeams, getPlayers, getChampionships, initializeSampleData, type Team, type Player, type Championship } from "@/lib/supabase-helpers"
+import { getTeams, getPlayers, getChampionships, getLeagues, type Team, type Player, type Championship, type League } from "@/lib/supabase-helpers"
 
 export default function TeamsPage() {
   const [activeTab, setActiveTab] = useState("teams")
@@ -40,6 +40,7 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([])
   const [players, setPlayers] = useState<Player[]>([])
   const [championships, setChampionships] = useState<Championship[]>([])
+  const [leagues, setLeagues] = useState<League[]>([])
   const [loading, setLoading] = useState(true)
   
   const { toast } = useToast()
@@ -53,19 +54,18 @@ export default function TeamsPage() {
     try {
       setLoading(true)
       
-      // Initialize sample data if needed
-      await initializeSampleData()
-      
       // Load all data
-      const [teamsData, playersData, championshipsData] = await Promise.all([
+      const [teamsData, playersData, championshipsData, leaguesData] = await Promise.all([
         getTeams(),
         getPlayers(),
-        getChampionships()
+        getChampionships(),
+        getLeagues()
       ])
       
       setTeams(teamsData)
       setPlayers(playersData)
       setChampionships(championshipsData)
+      setLeagues(leaguesData)
     } catch (error) {
       console.error('Error loading data:', error)
       toast({
@@ -219,11 +219,11 @@ export default function TeamsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Logo</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Categoria</TableHead>
-                    <TableHead>Divisão</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
+                  <TableHead>Logo</TableHead>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Categoria</TableHead>
+                  <TableHead>Liga</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -240,7 +240,15 @@ export default function TeamsPage() {
                         </Link>
                       </TableCell>
                       <TableCell>{team.category}</TableCell>
-                      <TableCell>{team.division}</TableCell>
+                      <TableCell>
+                        {team.league_id ? (
+                          <Badge variant="outline">
+                            {leagues.find(l => l.id === team.league_id)?.name || 'N/A'}
+                          </Badge>
+                        ) : (
+                          'N/A'
+                        )}
+                      </TableCell>
                       <TableCell className="text-right">
                         <ActionDropdown
                           onView={() => window.location.href = `/teams/${team.id}`}
@@ -360,38 +368,48 @@ export default function TeamsPage() {
           <Card className="bg-gradient-card border-border/50">
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Período</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Logo</TableHead>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
                 <TableBody>
-                  {championships.slice((championshipsCurrentPage - 1) * championshipsItemsPerPage, championshipsCurrentPage * championshipsItemsPerPage).map((championship) => (
-                    <TableRow key={championship.id}>
-                      <TableCell className="font-medium">{championship.name}</TableCell>
-                      <TableCell>{championship.type}</TableCell>
-                      <TableCell>{getChampionshipStatusBadge(championship.status)}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span>
-                            {new Date(championship.start_date).toLocaleDateString('pt-BR')} - {new Date(championship.end_date).toLocaleDateString('pt-BR')}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <ActionDropdown
-                          onView={() => {}}
-                          showEdit={false}
-                          showDelete={false}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {championships.slice((championshipsCurrentPage - 1) * championshipsItemsPerPage, championshipsCurrentPage * championshipsItemsPerPage).map((championship) => {
+                    const league = championship.league_id 
+                      ? leagues.find(l => l.id === championship.league_id) 
+                      : null
+                    
+                    return (
+                      <TableRow key={championship.id}>
+                        <TableCell>
+                          {league?.logo_url ? (
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={league.logo_url} />
+                              <AvatarFallback>{league.name.slice(0, 2)}</AvatarFallback>
+                            </Avatar>
+                          ) : (
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback><Trophy className="h-4 w-4" /></AvatarFallback>
+                            </Avatar>
+                          )}
+                        </TableCell>
+                        <TableCell className="font-medium">{championship.name}</TableCell>
+                        <TableCell>{championship.type}</TableCell>
+                        <TableCell>{getChampionshipStatusBadge(championship.status)}</TableCell>
+                        <TableCell className="text-right">
+                          <ActionDropdown
+                            onView={() => {}}
+                            showEdit={false}
+                            showDelete={false}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </div>
