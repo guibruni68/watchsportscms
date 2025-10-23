@@ -271,12 +271,45 @@ export function LiveForm({
                 field
               }) => <FormItem>
                       <FormLabel>Hora *</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Clock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input type="time" className="pl-10" {...field} />
-                        </div>
-                      </FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              <Clock className="mr-2 h-4 w-4" />
+                              {field.value ? field.value : "Selecionar hora"}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <div className="p-3 pointer-events-auto">
+                            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                              {Array.from({ length: 24 }, (_, hour) => {
+                                return Array.from({ length: 4 }, (_, quarter) => {
+                                  const minutes = quarter * 15;
+                                  const timeString = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                                  return (
+                                    <Button
+                                      key={timeString}
+                                      variant="ghost"
+                                      size="sm"
+                                      className="justify-start"
+                                      onClick={() => field.onChange(timeString)}
+                                    >
+                                      {timeString}
+                                    </Button>
+                                  );
+                                });
+                              }).flat()}
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>} />
               </div>
