@@ -217,16 +217,9 @@ export default function CatalogueForm({
               }) => <FormItem>
                       <FormLabel>Adicionar Conteúdos</FormLabel>
                       <FormControl>
-                        <UnifiedContentSelector
-                          domain="content"
-                          value={field.value || []}
-                          onChange={(ids) => field.onChange(ids)}
-                          placeholder="Buscar conteúdos para adicionar..."
-                        />
+                        <UnifiedContentSelector domain="content" value={field.value || []} onChange={ids => field.onChange(ids)} placeholder="Buscar conteúdos para adicionar..." />
                       </FormControl>
-                      <FormDescription>
-                        Busque e adicione conteúdos a este catálogo
-                      </FormDescription>
+                      
                       <FormMessage />
                     </FormItem>} />
               </div>
