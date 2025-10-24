@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, X, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CarouselContentSelector } from "@/components/ui/carousel-content-selector";
-import { CarouselManualSelector } from "@/components/ui/carousel-manual-selector";
+import { UnifiedContentSelector } from "@/components/ui/unified-content-selector";
 import { AICarouselModal } from "@/components/ui/ai-carousel-modal";
 import { toast } from "@/hooks/use-toast";
 
@@ -415,11 +415,14 @@ export function CarouselForm({ initialData, onSubmit, onCancel }: CarouselFormPr
                   name="manualSelection"
                   render={({ field }) => (
                     <FormItem>
-                      <CarouselManualSelector
-                        domain={domain}
-                        selectedContent={field.value || []}
-                        onContentChange={field.onChange}
-                      />
+                      <FormLabel>Seleção Manual de Conteúdo</FormLabel>
+                      <FormControl>
+                        <UnifiedContentSelector
+                          domain={domain}
+                          value={field.value || []}
+                          onChange={(ids) => field.onChange(ids)}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

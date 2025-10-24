@@ -15,7 +15,7 @@ import { ArrowLeft, Plus, Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ContentSelector } from "@/components/ui/content-selector";
+import { UnifiedContentSelector } from "@/components/ui/unified-content-selector";
 const catalogueSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
   descricao: z.string().optional(),
@@ -212,39 +212,21 @@ export default function CatalogueForm({
               <div className="space-y-4 border rounded-lg p-4">
                 <h3 className="text-lg font-medium">Conteúdos do Catálogo</h3>
                 
-                
                 <FormField control={form.control} name="conteudos" render={({
                 field
               }) => <FormItem>
                       <FormLabel>Adicionar Conteúdos</FormLabel>
                       <FormControl>
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-2">
-                            <Search className="h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="Buscar conteúdos para adicionar..." className="flex-1" />
-                            <Button type="button" size="sm" variant="outline">
-                              <Plus className="h-4 w-4 mr-1" />
-                              Adicionar Manual
-                            </Button>
-                          </div>
-                          
-                          {/* Lista de conteúdos selecionados */}
-                          {field.value && field.value.length > 0 && <div className="space-y-2">
-                              <p className="text-sm font-medium">Conteúdos selecionados ({field.value.length})</p>
-                              <div className="flex flex-wrap gap-2">
-                                {field.value.map((contentId, index) => <Badge key={`content-${index}`} variant="secondary" className="flex items-center gap-1">
-                                    Conteúdo {index + 1}
-                                    <X className="h-3 w-3 cursor-pointer" onClick={() => {
-                            const newValue = field.value?.filter((_, i) => i !== index) || [];
-                            field.onChange(newValue);
-                          }} />
-                                  </Badge>)}
-                              </div>
-                            </div>}
-                          
-                          
-                        </div>
+                        <UnifiedContentSelector
+                          domain="content"
+                          value={field.value || []}
+                          onChange={(ids) => field.onChange(ids)}
+                          placeholder="Buscar conteúdos para adicionar..."
+                        />
                       </FormControl>
+                      <FormDescription>
+                        Busque e adicione conteúdos a este catálogo
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>} />
               </div>
