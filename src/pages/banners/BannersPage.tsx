@@ -12,30 +12,12 @@ import { toast } from "@/hooks/use-toast";
 import { mockBanners, Banner } from "@/data/mockData";
 import { Plus, Edit, Trash2, Eye, BarChart3, Activity, MousePointer, Clock, Play, Image, GripVertical } from "lucide-react";
 import { ImportButton } from "@/components/ui/import-button";
-import { ActionDropdown } from "@/components/ui/action-dropdown"
-import { SearchFilters } from "@/components/ui/search-filters"
+import { ActionDropdown } from "@/components/ui/action-dropdown";
+import { SearchFilters } from "@/components/ui/search-filters";
 import { format } from "date-fns";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-  useSortable,
-} from '@dnd-kit/sortable';
-import {
-  CSS,
-} from '@dnd-kit/utilities';
-
-
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 interface BannerStats {
   total_banners: number;
   banners_ativos: number;
@@ -43,11 +25,9 @@ interface BannerStats {
   total_cliques: number;
   total_tempo_reproducao: number;
 }
-
 const isExpired = (dataFim: string) => {
   return new Date(dataFim) < new Date();
 };
-
 const getTipoConteudoLabel = (tipo: string) => {
   const tipos: Record<string, string> = {
     vod: "VOD",
@@ -59,7 +39,6 @@ const getTipoConteudoLabel = (tipo: string) => {
   };
   return tipos[tipo] || tipo;
 };
-
 const getLayoutLabel = (layout: string) => {
   const layouts: Record<string, string> = {
     imagem_botao: "Imagem + Botão",
@@ -69,16 +48,18 @@ const getLayoutLabel = (layout: string) => {
   };
   return layouts[layout] || layout;
 };
-
 const formatTime = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
+  const minutes = Math.floor(seconds % 3600 / 60);
   return `${hours}h ${minutes}m`;
 };
 
 // Componente para linha sortável
-function SortableRow({ banner, children }: { 
-  banner: Banner; 
+function SortableRow({
+  banner,
+  children
+}: {
+  banner: Banner;
   children: React.ReactNode;
 }) {
   const {
@@ -86,36 +67,34 @@ function SortableRow({ banner, children }: {
     listeners,
     setNodeRef,
     transform,
-    transition,
-  } = useSortable({ id: banner.id });
-
+    transition
+  } = useSortable({
+    id: banner.id
+  });
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition
   };
-
-  return (
-    <TableRow ref={setNodeRef} style={style} {...attributes}>
+  return <TableRow ref={setNodeRef} style={style} {...attributes}>
       <TableCell>
-        <div 
-          className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-muted"
-          {...listeners}
-          {...(banner.status && !isExpired(banner.data_fim) ? {} : { style: { cursor: 'not-allowed', opacity: 0.5 } })}
-        >
+        <div className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-muted" {...listeners} {...banner.status && !isExpired(banner.data_fim) ? {} : {
+        style: {
+          cursor: 'not-allowed',
+          opacity: 0.5
+        }
+      }}>
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
       </TableCell>
       {children}
-    </TableRow>
-  );
+    </TableRow>;
 }
-
 export default function BannersPage() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string>("premium");
-  const [searchTerm, setSearchTerm] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState<string>("all")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [stats, setStats] = useState<BannerStats>({
     total_banners: 0,
     banners_ativos: 0,
@@ -124,59 +103,61 @@ export default function BannersPage() {
     total_tempo_reproducao: 0
   });
   const [loading, setLoading] = useState(true);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const categories = [
-    { value: "all", label: "Todos os tipos" },
-    { value: "vod", label: "VOD" },
-    { value: "live_agora", label: "Ao Vivo Agora" },
-    { value: "live_programado", label: "Live Programada" },
-    { value: "campanha", label: "Campanha" },
-    { value: "recomendado", label: "Recomendado" },
-    { value: "institucional", label: "Institucional" }
-  ];
-
-  const statuses = [
-    { value: "all", label: "Todos os status" },
-    { value: "active", label: "Ativo" },
-    { value: "inactive", label: "Inativo" }
-  ];
-
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, {
+    coordinateGetter: sortableKeyboardCoordinates
+  }));
+  const categories = [{
+    value: "all",
+    label: "Todos os tipos"
+  }, {
+    value: "vod",
+    label: "VOD"
+  }, {
+    value: "live_agora",
+    label: "Ao Vivo Agora"
+  }, {
+    value: "live_programado",
+    label: "Live Programada"
+  }, {
+    value: "campanha",
+    label: "Campanha"
+  }, {
+    value: "recomendado",
+    label: "Recomendado"
+  }, {
+    value: "institucional",
+    label: "Institucional"
+  }];
+  const statuses = [{
+    value: "all",
+    label: "Todos os status"
+  }, {
+    value: "active",
+    label: "Ativo"
+  }, {
+    value: "inactive",
+    label: "Inativo"
+  }];
   const filteredBanners = banners.filter(banner => {
     const matchesSearch = banner.titulo.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === "all" || banner.tipo_conteudo === categoryFilter;
-    const matchesStatus = statusFilter === "all" || 
-      (statusFilter === "active" && banner.status && !isExpired(banner.data_fim)) ||
-      (statusFilter === "inactive" && !banner.status) ||
-      (statusFilter === "expired" && isExpired(banner.data_fim));
+    const matchesStatus = statusFilter === "all" || statusFilter === "active" && banner.status && !isExpired(banner.data_fim) || statusFilter === "inactive" && !banner.status || statusFilter === "expired" && isExpired(banner.data_fim);
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
   // Filtrar banners ativos para o carrossel
-  const activeBanners = filteredBanners.filter(banner => 
-    banner.status && 
-    !isExpired(banner.data_fim) && 
-    (banner.planos_permitidos?.includes(selectedPlan) || !banner.planos_permitidos?.length)
-  ).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-
+  const activeBanners = filteredBanners.filter(banner => banner.status && !isExpired(banner.data_fim) && (banner.planos_permitidos?.includes(selectedPlan) || !banner.planos_permitidos?.length)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   const fetchBanners = () => {
     // Usar dados mockados
     const data = mockBanners;
     setBanners(data);
-    
+
     // Calcular estatísticas
     const totalBanners = data.length;
     const bannersAtivos = data.filter(b => b.status).length;
     const totalVisualizacoes = data.reduce((sum, b) => sum + (b.visualizacoes || 0), 0);
     const totalCliques = data.reduce((sum, b) => sum + (b.cliques || 0), 0);
     const totalTempoReproducao = data.reduce((sum, b) => sum + (b.tempo_total_reproducao || 0), 0);
-
     setStats({
       total_banners: totalBanners,
       banners_ativos: bannersAtivos,
@@ -184,60 +165,49 @@ export default function BannersPage() {
       total_cliques: totalCliques,
       total_tempo_reproducao: totalTempoReproducao
     });
-    
     setLoading(false);
   };
-
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
+    const {
+      active,
+      over
+    } = event;
     if (active.id !== over?.id) {
-      setBanners((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over?.id);
-        
+      setBanners(items => {
+        const oldIndex = items.findIndex(item => item.id === active.id);
+        const newIndex = items.findIndex(item => item.id === over?.id);
         const newOrder = arrayMove(items, oldIndex, newIndex);
-        
+
         // Atualizar a ordem dos banners
         const updatedBanners = newOrder.map((banner, index) => ({
           ...banner,
           ordem: index + 1
         }));
-        
         return updatedBanners;
       });
-      
       toast({
         title: "Ordem atualizada",
-        description: "A ordem dos banners foi atualizada com sucesso.",
+        description: "A ordem dos banners foi atualizada com sucesso."
       });
     }
   };
-
   const deleteBanner = (id: string) => {
     // Simular exclusão
     setBanners(banners.filter(b => b.id !== id));
-    
     toast({
       title: "Sucesso",
-      description: "Banner excluído com sucesso.",
+      description: "Banner excluído com sucesso."
     });
   };
-
   useEffect(() => {
     fetchBanners();
   }, []);
-
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
+    return <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Banners</h1>
@@ -257,72 +227,10 @@ export default function BannersPage() {
       </div>
 
       {/* Filtros */}
-      <SearchFilters
-        searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
-        categoryFilter={categoryFilter}
-        onCategoryChange={setCategoryFilter}
-        statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
-        categories={categories}
-        statuses={statuses}
-        searchPlaceholder="Buscar banners..."
-        categoryPlaceholder="Tipo de Conteúdo"
-        statusPlaceholder="Status"
-      />
+      <SearchFilters searchValue={searchTerm} onSearchChange={setSearchTerm} categoryFilter={categoryFilter} onCategoryChange={setCategoryFilter} statusFilter={statusFilter} onStatusChange={setStatusFilter} categories={categories} statuses={statuses} searchPlaceholder="Buscar banners..." categoryPlaceholder="Tipo de Conteúdo" statusPlaceholder="Status" />
 
       {/* Dashboard Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Banners</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total_banners}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Banners Ativos</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.banners_ativos}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Visualizações</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total_visualizacoes.toLocaleString()}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cliques</CardTitle>
-            <MousePointer className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total_cliques.toLocaleString()}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tempo Total</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatTime(stats.total_tempo_reproducao)}</div>
-          </CardContent>
-        </Card>
-      </div>
+      
 
 
       {/* Tabela de Banners */}
@@ -334,11 +242,7 @@ export default function BannersPage() {
           </p>
         </CardHeader>
         <CardContent>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -353,21 +257,14 @@ export default function BannersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredBanners.length === 0 ? (
-                  <TableRow>
+                {filteredBanners.length === 0 ? <TableRow>
                     <TableCell colSpan={8} className="text-center py-8">
                       <div className="text-muted-foreground">
                         Nenhum banner encontrado.
                       </div>
                     </TableCell>
-                  </TableRow>
-                ) : (
-                  <SortableContext
-                     items={filteredBanners.map(banner => banner.id)} 
-                     strategy={verticalListSortingStrategy}
-                   >
-                     {filteredBanners.map((banner) => (
-                      <SortableRow key={banner.id} banner={banner}>
+                  </TableRow> : <SortableContext items={filteredBanners.map(banner => banner.id)} strategy={verticalListSortingStrategy}>
+                     {filteredBanners.map(banner => <SortableRow key={banner.id} banner={banner}>
                         <TableCell>
                           <div className="w-16 h-10 bg-muted rounded flex items-center justify-center">
                             <Image className="h-4 w-4 text-muted-foreground" />
@@ -377,35 +274,21 @@ export default function BannersPage() {
                         <TableCell>{getTipoConteudoLabel(banner.tipo_conteudo)}</TableCell>
                         <TableCell>{getLayoutLabel(banner.layout_banner)}</TableCell>
                         <TableCell>
-                          <Badge 
-                            variant={
-                              !banner.status ? "secondary" : 
-                              isExpired(banner.data_fim) ? "outline" : 
-                              "default"
-                            }
-                          >
-                            {!banner.status ? "Inativo" : 
-                             isExpired(banner.data_fim) ? "Expirado" : 
-                             "Ativo"}
+                          <Badge variant={!banner.status ? "secondary" : isExpired(banner.data_fim) ? "outline" : "default"}>
+                            {!banner.status ? "Inativo" : isExpired(banner.data_fim) ? "Expirado" : "Ativo"}
                           </Badge>
                         </TableCell>
                         <TableCell>{banner.ordem}</TableCell>
                         <TableCell>
-                          <ActionDropdown
-                            onView={() => {}} // Dialog de preview será mostrado
-                            onEdit={() => window.location.href = `/banners/${banner.id}/editar`}
-                            onDelete={() => deleteBanner(banner.id)}
-                          />
+                          <ActionDropdown onView={() => {}} // Dialog de preview será mostrado
+                    onEdit={() => window.location.href = `/banners/${banner.id}/editar`} onDelete={() => deleteBanner(banner.id)} />
                         </TableCell>
-                      </SortableRow>
-                    ))}
-                  </SortableContext>
-                )}
+                      </SortableRow>)}
+                  </SortableContext>}
               </TableBody>
             </Table>
           </DndContext>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 }
