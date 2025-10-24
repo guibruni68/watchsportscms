@@ -1,122 +1,92 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { useNavigate } from "react-router-dom"
-import { 
-  Video, 
-  Radio, 
-  Users, 
-  Calendar, 
-  Newspaper, 
-  Eye, 
-  TrendingUp, 
-  Play,
-  Plus,
-  Activity
-} from "lucide-react"
-
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { Video, Radio, Users, Calendar, Newspaper, Eye, TrendingUp, Play, Plus, Activity } from "lucide-react";
 export default function DashboardIndex() {
-  const navigate = useNavigate()
-  const stats = [
-    {
-      title: "Vídeos VOD",
-      value: "127",
-      change: "+12%",
-      changeType: "positive" as const,
-      icon: Video,
-      color: "text-primary"
-    },
-    {
-      title: "Lives Agendadas",
-      value: "8",
-      change: "+3",
-      changeType: "positive" as const,
-      icon: Radio,
-      color: "text-primary"
-    },
-    {
-      title: "Visualizações",
-      value: "45.2K",
-      change: "+18%",
-      changeType: "positive" as const,
-      icon: Eye,
-      color: "text-primary"
-    },
-    {
-      title: "Engajamento",
-      value: "78%",
-      change: "+5%",
-      changeType: "positive" as const,
-      icon: TrendingUp,
-      color: "text-primary"
-    }
-  ]
-
-  const recentVideos = [
-    {
-      id: 1,
-      title: "Treino da Semana - Preparação para o Clássico",
-      thumbnail: "/placeholder.svg",
-      duration: "8:45",
-      status: "published",
-      publishedAt: "18/01/2025"
-    },
-    {
-      id: 2,
-      title: "Entrevista: Novo Reforço do Time",
-      thumbnail: "/placeholder.svg",
-      duration: "15:30",
-      status: "published",
-      publishedAt: "17/01/2025"
-    },
-    {
-      id: 3,
-      title: "Bastidores: Concentração antes do Jogo",
-      thumbnail: "/placeholder.svg",
-      duration: "12:15",
-      status: "published",
-      publishedAt: "16/01/2025"
-    }
-  ]
-
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Live: Transmissão do Jogo vs Rival FC",
-      type: "live",
-      date: "Hoje, 20:00",
-      status: "scheduled"
-    },
-    {
-      id: 2,
-      title: "Coletiva de Imprensa",
-      type: "event",
-      date: "Amanhã, 14:00",
-      status: "scheduled"
-    },
-    {
-      id: 3,
-      title: "Treino Aberto aos Torcedores",
-      type: "event",
-      date: "Sexta, 16:00",
-      status: "scheduled"
-    }
-  ]
-
-  return (
-    <div className="space-y-8 animate-fade-in">
+  const navigate = useNavigate();
+  const stats = [{
+    title: "Vídeos VOD",
+    value: "127",
+    change: "+12%",
+    changeType: "positive" as const,
+    icon: Video,
+    color: "text-primary"
+  }, {
+    title: "Lives Agendadas",
+    value: "8",
+    change: "+3",
+    changeType: "positive" as const,
+    icon: Radio,
+    color: "text-primary"
+  }, {
+    title: "Visualizações",
+    value: "45.2K",
+    change: "+18%",
+    changeType: "positive" as const,
+    icon: Eye,
+    color: "text-primary"
+  }, {
+    title: "Engajamento",
+    value: "78%",
+    change: "+5%",
+    changeType: "positive" as const,
+    icon: TrendingUp,
+    color: "text-primary"
+  }];
+  const recentVideos = [{
+    id: 1,
+    title: "Treino da Semana - Preparação para o Clássico",
+    thumbnail: "/placeholder.svg",
+    duration: "8:45",
+    status: "published",
+    publishedAt: "18/01/2025"
+  }, {
+    id: 2,
+    title: "Entrevista: Novo Reforço do Time",
+    thumbnail: "/placeholder.svg",
+    duration: "15:30",
+    status: "published",
+    publishedAt: "17/01/2025"
+  }, {
+    id: 3,
+    title: "Bastidores: Concentração antes do Jogo",
+    thumbnail: "/placeholder.svg",
+    duration: "12:15",
+    status: "published",
+    publishedAt: "16/01/2025"
+  }];
+  const upcomingEvents = [{
+    id: 1,
+    title: "Live: Transmissão do Jogo vs Rival FC",
+    type: "live",
+    date: "Hoje, 20:00",
+    status: "scheduled"
+  }, {
+    id: 2,
+    title: "Coletiva de Imprensa",
+    type: "event",
+    date: "Amanhã, 14:00",
+    status: "scheduled"
+  }, {
+    id: 3,
+    title: "Treino Aberto aos Torcedores",
+    type: "event",
+    date: "Sexta, 16:00",
+    status: "scheduled"
+  }];
+  return <div className="space-y-8 animate-fade-in">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-foreground">Home</h1>
           <p className="text-muted-foreground">Bem-vindo ao CMS da FNB!</p>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
-          <Card key={index} className="bg-gradient-card border-border/50 transition-all duration-300">
+        {stats.map((stat, index) => <Card key={index} className="bg-gradient-card border-border/50 transition-all duration-300">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -131,8 +101,7 @@ export default function DashboardIndex() {
                 </div>
               </div>
             </CardContent>
-          </Card>
-        ))}
+          </Card>)}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -148,8 +117,7 @@ export default function DashboardIndex() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {recentVideos.map((video) => (
-              <div key={video.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+            {recentVideos.map(video => <div key={video.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
                 <div className="relative">
                   <div className="w-16 h-12 bg-muted rounded-md flex items-center justify-center">
                     <Play className="h-4 w-4 text-muted-foreground" />
@@ -162,8 +130,7 @@ export default function DashboardIndex() {
                   <h4 className="font-medium text-sm text-foreground truncate">{video.title}</h4>
                   <span className="text-xs text-muted-foreground">{video.publishedAt}</span>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </CardContent>
         </Card>
 
@@ -180,20 +147,15 @@ export default function DashboardIndex() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {upcomingEvents.map((event) => (
-              <div key={event.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+            {upcomingEvents.map(event => <div key={event.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
                 <div className="p-2 rounded-lg bg-primary/10">
-                  {event.type === 'live' ? 
-                    <Radio className="h-4 w-4 text-primary" /> : 
-                    <Calendar className="h-4 w-4 text-primary" />
-                  }
+                  {event.type === 'live' ? <Radio className="h-4 w-4 text-primary" /> : <Calendar className="h-4 w-4 text-primary" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm text-foreground">{event.title}</h4>
                   <p className="text-xs text-muted-foreground mt-1">{event.date}</p>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </CardContent>
         </Card>
       </div>
@@ -225,6 +187,5 @@ export default function DashboardIndex() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  )
+    </div>;
 }
