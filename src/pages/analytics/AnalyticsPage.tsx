@@ -11,11 +11,11 @@ export default function AnalyticsPage() {
     overview: {
       totalViews: 156780,
       totalHours: 8932,
-      avgRetention: 68.5,
+      completionRate: 72.8,
       totalUsers: 23456,
       viewsChange: 12.5,
       hoursChange: 8.3,
-      retentionChange: -2.1,
+      completionRateChange: 5.4,
       usersChange: 15.8
     },
     topContent: [{
@@ -192,6 +192,26 @@ export default function AnalyticsPage() {
                 </div>
               </div>
               <Eye className="h-6 w-6 text-primary" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-card border-border/50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Completion Rate</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {analyticsData.overview.completionRate}%
+                </p>
+                <div className={`flex items-center gap-1 mt-1 ${getChangeColor(analyticsData.overview.completionRateChange)}`}>
+                  {getChangeIcon(analyticsData.overview.completionRateChange)}
+                  <span className="text-xs font-medium">
+                    {analyticsData.overview.completionRateChange > 0 ? '+' : ''}{analyticsData.overview.completionRateChange}%
+                  </span>
+                </div>
+              </div>
+              <BarChart3 className="h-6 w-6 text-primary" />
             </div>
           </CardContent>
         </Card>
