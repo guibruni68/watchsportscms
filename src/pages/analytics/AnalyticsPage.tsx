@@ -1,25 +1,12 @@
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { 
-  BarChart3, 
-  Calendar,
-  Eye,
-  TrendingUp,
-  TrendingDown,
-  Users,
-  Clock,
-  Play,
-  Download,
-  Filter
-} from "lucide-react"
-
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BarChart3, Calendar, Eye, TrendingUp, TrendingDown, Users, Clock, Play, Download, Filter } from "lucide-react";
 export default function AnalyticsPage() {
-  const [timeRange, setTimeRange] = useState("30d")
-  const [contentType, setContentType] = useState("all")
-
+  const [timeRange, setTimeRange] = useState("30d");
+  const [contentType, setContentType] = useState("all");
   const analyticsData = {
     overview: {
       totalViews: 156780,
@@ -31,73 +18,103 @@ export default function AnalyticsPage() {
       retentionChange: -2.1,
       usersChange: 15.8
     },
-    topContent: [
-      {
-        id: 1,
-        title: "Final do Campeonato Sub-20",
-        type: "live",
-        views: 12500,
-        retention: 85.2,
-        avgDuration: "01:45:30",
-        date: "2024-01-10"
-      },
-      {
-        id: 2,
-        title: "Treino da Semana - Preparação",
-        type: "video",
-        views: 8900,
-        retention: 72.1,
-        avgDuration: "00:06:15",
-        date: "2024-01-15"
-      },
-      {
-        id: 3,
-        title: "Entrevista: Novo Reforço",
-        type: "video",
-        views: 7650,
-        retention: 68.9,
-        avgDuration: "00:11:20",
-        date: "2024-01-12"
-      },
-      {
-        id: 4,
-        title: "Transmissão vs Rival FC",
-        type: "live",
-        views: 6800,
-        retention: 91.5,
-        avgDuration: "01:52:45",
-        date: "2024-01-08"
-      },
-      {
-        id: 5,
-        title: "Bastidores: Concentração",
-        type: "video",
-        views: 5400,
-        retention: 64.3,
-        avgDuration: "00:08:30",
-        date: "2024-01-14"
-      }
-    ],
+    topContent: [{
+      id: 1,
+      title: "Final do Campeonato Sub-20",
+      type: "live",
+      views: 12500,
+      retention: 85.2,
+      avgDuration: "01:45:30",
+      date: "2024-01-10"
+    }, {
+      id: 2,
+      title: "Treino da Semana - Preparação",
+      type: "video",
+      views: 8900,
+      retention: 72.1,
+      avgDuration: "00:06:15",
+      date: "2024-01-15"
+    }, {
+      id: 3,
+      title: "Entrevista: Novo Reforço",
+      type: "video",
+      views: 7650,
+      retention: 68.9,
+      avgDuration: "00:11:20",
+      date: "2024-01-12"
+    }, {
+      id: 4,
+      title: "Transmissão vs Rival FC",
+      type: "live",
+      views: 6800,
+      retention: 91.5,
+      avgDuration: "01:52:45",
+      date: "2024-01-08"
+    }, {
+      id: 5,
+      title: "Bastidores: Concentração",
+      type: "video",
+      views: 5400,
+      retention: 64.3,
+      avgDuration: "00:08:30",
+      date: "2024-01-14"
+    }],
     demographics: {
-      ageGroups: [
-        { range: "18-24", percentage: 22.5, count: 5280 },
-        { range: "25-34", percentage: 35.8, count: 8398 },
-        { range: "35-44", percentage: 25.1, count: 5888 },
-        { range: "45-54", percentage: 12.3, count: 2885 },
-        { range: "55+", percentage: 4.3, count: 1009 }
-      ],
-      devices: [
-        { type: "Mobile", percentage: 65.2, count: 15298 },
-        { type: "Desktop", percentage: 28.9, count: 6779 },
-        { type: "Tablet", percentage: 5.9, count: 1384 }
-      ],
-      locations: [
-        { city: "São Paulo", percentage: 35.2, count: 8257 },
-        { city: "Rio de Janeiro", percentage: 18.7, count: 4386 },
-        { city: "Belo Horizonte", percentage: 12.8, count: 3002 },
-        { city: "Salvador", percentage: 8.9, count: 2088 },
-        { city: "Outros", percentage: 24.4, count: 5723 }
-      ]
+      ageGroups: [{
+        range: "18-24",
+        percentage: 22.5,
+        count: 5280
+      }, {
+        range: "25-34",
+        percentage: 35.8,
+        count: 8398
+      }, {
+        range: "35-44",
+        percentage: 25.1,
+        count: 5888
+      }, {
+        range: "45-54",
+        percentage: 12.3,
+        count: 2885
+      }, {
+        range: "55+",
+        percentage: 4.3,
+        count: 1009
+      }],
+      devices: [{
+        type: "Mobile",
+        percentage: 65.2,
+        count: 15298
+      }, {
+        type: "Desktop",
+        percentage: 28.9,
+        count: 6779
+      }, {
+        type: "Tablet",
+        percentage: 5.9,
+        count: 1384
+      }],
+      locations: [{
+        city: "São Paulo",
+        percentage: 35.2,
+        count: 8257
+      }, {
+        city: "Rio de Janeiro",
+        percentage: 18.7,
+        count: 4386
+      }, {
+        city: "Belo Horizonte",
+        percentage: 12.8,
+        count: 3002
+      }, {
+        city: "Salvador",
+        percentage: 8.9,
+        count: 2088
+      }, {
+        city: "Outros",
+        percentage: 24.4,
+        count: 5723
+      }]
     },
     engagement: {
       totalLikes: 15847,
@@ -107,28 +124,20 @@ export default function AnalyticsPage() {
       peakViewingTime: "20:00-22:00",
       mostActiveDay: "Domingo"
     }
-  }
-
+  };
   const getChangeIcon = (change: number) => {
-    return change >= 0 ? <TrendingUp className="h-4 w-4 text-secondary" /> : <TrendingDown className="h-4 w-4 text-destructive" />
-  }
-
+    return change >= 0 ? <TrendingUp className="h-4 w-4 text-secondary" /> : <TrendingDown className="h-4 w-4 text-destructive" />;
+  };
   const getChangeColor = (change: number) => {
-    return change >= 0 ? "text-secondary" : "text-destructive"
-  }
-
+    return change >= 0 ? "text-secondary" : "text-destructive";
+  };
   const getContentTypeIcon = (type: string) => {
-    return <Play className="h-4 w-4 text-primary" />
-  }
-
+    return <Play className="h-4 w-4 text-primary" />;
+  };
   const getContentTypeBadge = (type: string) => {
-    return type === "live" 
-      ? <Badge className="bg-warning text-warning-foreground text-xs">AO VIVO</Badge>
-      : <Badge variant="outline" className="text-xs">VOD</Badge>
-  }
-
-  return (
-    <div className="space-y-6 animate-fade-in">
+    return type === "live" ? <Badge className="bg-warning text-warning-foreground text-xs">AO VIVO</Badge> : <Badge variant="outline" className="text-xs">VOD</Badge>;
+  };
+  return <div className="space-y-6 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -256,8 +265,7 @@ export default function AnalyticsPage() {
             <CardDescription>Top 5 vídeos e lives por visualizações</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {analyticsData.topContent.map((content, index) => (
-              <div key={content.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+            {analyticsData.topContent.map((content, index) => <div key={content.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
                 <div className="flex items-center justify-center w-8 h-8 bg-primary/20 rounded-full">
                   <span className="text-sm font-bold text-primary">#{index + 1}</span>
                 </div>
@@ -271,10 +279,7 @@ export default function AnalyticsPage() {
                       <Eye className="h-3 w-3" />
                       {content.views.toLocaleString()}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <BarChart3 className="h-3 w-3" />
-                      {content.retention}%
-                    </span>
+                    
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {content.avgDuration}
@@ -284,8 +289,7 @@ export default function AnalyticsPage() {
                 <div className="text-xs text-muted-foreground">
                   {new Date(content.date).toLocaleDateString('pt-BR')}
                 </div>
-              </div>
-            ))}
+              </div>)}
           </CardContent>
         </Card>
 
@@ -352,23 +356,20 @@ export default function AnalyticsPage() {
             <CardDescription>Distribuição por idade</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {analyticsData.demographics.ageGroups.map((group) => (
-              <div key={group.range} className="space-y-2">
+            {analyticsData.demographics.ageGroups.map(group => <div key={group.range} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{group.range} anos</span>
                   <span className="text-muted-foreground">{group.percentage}%</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
-                  <div 
-                    className="bg-primary h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${group.percentage}%` }}
-                  />
+                  <div className="bg-primary h-2 rounded-full transition-all duration-300" style={{
+                width: `${group.percentage}%`
+              }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {group.count.toLocaleString()} usuários
                 </p>
-              </div>
-            ))}
+              </div>)}
           </CardContent>
         </Card>
 
@@ -379,23 +380,20 @@ export default function AnalyticsPage() {
             <CardDescription>Plataformas de acesso</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {analyticsData.demographics.devices.map((device) => (
-              <div key={device.type} className="space-y-2">
+            {analyticsData.demographics.devices.map(device => <div key={device.type} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{device.type}</span>
                   <span className="text-muted-foreground">{device.percentage}%</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
-                  <div 
-                    className="bg-primary h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${device.percentage}%` }}
-                  />
+                  <div className="bg-primary h-2 rounded-full transition-all duration-300" style={{
+                width: `${device.percentage}%`
+              }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {device.count.toLocaleString()} usuários
                 </p>
-              </div>
-            ))}
+              </div>)}
           </CardContent>
         </Card>
 
@@ -406,26 +404,22 @@ export default function AnalyticsPage() {
             <CardDescription>Principais cidades</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {analyticsData.demographics.locations.map((location) => (
-              <div key={location.city} className="space-y-2">
+            {analyticsData.demographics.locations.map(location => <div key={location.city} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{location.city}</span>
                   <span className="text-muted-foreground">{location.percentage}%</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
-                  <div 
-                    className="bg-primary h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${location.percentage}%` }}
-                  />
+                  <div className="bg-primary h-2 rounded-full transition-all duration-300" style={{
+                width: `${location.percentage}%`
+              }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {location.count.toLocaleString()} usuários
                 </p>
-              </div>
-            ))}
+              </div>)}
           </CardContent>
         </Card>
       </div>
-    </div>
-  )
+    </div>;
 }
