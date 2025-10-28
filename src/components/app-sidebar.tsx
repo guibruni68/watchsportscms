@@ -43,6 +43,10 @@ const mainNavItems = [{
   url: "/news",
   icon: Newspaper
 }, {
+  title: "Analytics",
+  url: "/analytics",
+  icon: BarChart3
+}, {
   title: "Times & Elencos",
   url: "/teams",
   icon: Users
