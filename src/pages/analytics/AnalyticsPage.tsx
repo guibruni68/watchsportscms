@@ -216,25 +216,6 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-card border-border/50">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Retenção Média</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {analyticsData.overview.avgRetention}%
-                </p>
-                <div className={`flex items-center gap-1 mt-1 ${getChangeColor(analyticsData.overview.retentionChange)}`}>
-                  {getChangeIcon(analyticsData.overview.retentionChange)}
-                  <span className="text-xs font-medium">
-                    {analyticsData.overview.retentionChange > 0 ? '+' : ''}{analyticsData.overview.retentionChange}%
-                  </span>
-                </div>
-              </div>
-              <BarChart3 className="h-6 w-6 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
 
         <Card className="bg-gradient-card border-border/50">
           <CardContent className="p-4">
