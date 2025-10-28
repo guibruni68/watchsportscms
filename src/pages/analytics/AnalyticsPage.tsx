@@ -268,7 +268,7 @@ export default function AnalyticsPage() {
           <CardContent className="space-y-4">
             {analyticsData.topContent.map((content, index) => <div key={content.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
                 <div className="flex items-center justify-center w-8 h-8 bg-primary/20 rounded-full">
-                  <span className="text-sm font-bold text-primary">#{index + 1}</span>
+                  <span className="text-sm font-bold text-white">#{index + 1}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
