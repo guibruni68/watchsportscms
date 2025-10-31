@@ -84,25 +84,33 @@ export default function DashboardIndex() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => <Card key={index} className="bg-gradient-card border-border/50 transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                  <div className="flex items-center gap-1 mt-1">
-                   
-                  </div>
-                </div>
-                <div className="p-3 rounded-lg bg-primary/10">
-                  <stat.icon className="h-6 w-6 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>)}
-      </div>
+      {/* Quick Actions */}
+      <Card className="bg-gradient-card border-border/50">
+        <CardHeader>
+          <CardTitle className="text-lg">Ações Rápidas</CardTitle>
+          <CardDescription>Acesse rapidamente as funcionalidades mais utilizadas</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/videos?new=true')}>
+              <Video className="h-6 w-6" />
+              <span className="text-sm">Upload Vídeo</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/lives?new=true')}>
+              <Radio className="h-6 w-6" />
+              <span className="text-sm">Nova Live</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/news?new=true')}>
+              <Newspaper className="h-6 w-6" />
+              <span className="text-sm">Criar Notícia</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/teams')}>
+              <Users className="h-6 w-6" />
+              <span className="text-sm">Gerir Times</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Videos */}
@@ -160,32 +168,24 @@ export default function DashboardIndex() {
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <Card className="bg-gradient-card border-border/50">
-        <CardHeader>
-          <CardTitle className="text-lg">Ações Rápidas</CardTitle>
-          <CardDescription>Acesse rapidamente as funcionalidades mais utilizadas</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/videos?new=true')}>
-              <Video className="h-6 w-6" />
-              <span className="text-sm">Upload Vídeo</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/lives?new=true')}>
-              <Radio className="h-6 w-6" />
-              <span className="text-sm">Nova Live</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/news?new=true')}>
-              <Newspaper className="h-6 w-6" />
-              <span className="text-sm">Criar Notícia</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/teams')}>
-              <Users className="h-6 w-6" />
-              <span className="text-sm">Gerir Times</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Stats Grid (moved below lists) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => <Card key={index} className="bg-gradient-card border-border/50 transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                  <div className="flex items-center gap-1 mt-1">
+                   
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-primary/10">
+                  <stat.icon className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>)}
+      </div>
     </div>;
 }
