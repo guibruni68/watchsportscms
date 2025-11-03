@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, Edit, Tag, Calendar, FileText } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getCatalogueById } from "@/data/mockCatalogues";
 import { toast } from "@/hooks/use-toast";
 
 interface Catalogue {
@@ -46,25 +46,31 @@ export default function CatalogueDetailsPage() {
       if (!id) return;
 
       try {
-        // Buscar dados do catálogo
-        const { data: catalogueData, error: catalogueError } = await supabase
-          .from('catalogues')
-          .select('*')
-          .eq('id', id)
-          .single();
-
-        if (catalogueError) throw catalogueError;
+        const catalogueData = getCatalogueById(id);
+        
+        if (!catalogueData) {
+          throw new Error("Catalogue not found");
+        }
+        
         setCatalogue(catalogueData);
 
-        // Buscar conteúdos do catálogo
-        const { data: contentsData, error: contentsError } = await supabase
-          .from('banners')
-          .select('id, titulo, tipo_conteudo, status, created_at')
-          .eq('catalogue_id', id)
-          .order('created_at', { ascending: false });
-
-        if (contentsError) throw contentsError;
-        setContents(contentsData || []);
+        // Mock content data
+        setContents([
+          {
+            id: "1",
+            titulo: "Final do Campeonato 2024",
+            tipo_conteudo: "live",
+            status: true,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: "2",
+            titulo: "Melhores Momentos - Semifinal",
+            tipo_conteudo: "vod",
+            status: true,
+            created_at: new Date().toISOString()
+          }
+        ]);
       } catch (error) {
         toast({
           title: "Erro",

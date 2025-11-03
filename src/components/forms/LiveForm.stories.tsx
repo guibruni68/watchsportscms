@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import LiveForm from './LiveForm';
+import { LiveForm } from './LiveForm';
 
 const meta: Meta<typeof LiveForm> = {
   title: 'Forms/LiveForm',

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { mockBanners } from "@/data/mockCatalogues";
 import { ArrowLeft, Edit, Eye, MousePointer, Clock, Calendar, Link as LinkIcon, Settings, Play } from "lucide-react";
 import { format } from "date-fns";
 
@@ -42,13 +42,12 @@ export default function BannerDetailsPage() {
     if (!id) return;
     
     try {
-      const { data, error } = await supabase
-        .from('banners')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const data = mockBanners.find(b => b.id === id);
+      
+      if (!data) {
+        throw new Error("Banner not found");
+      }
 
-      if (error) throw error;
       setBanner(data);
     } catch (error) {
       console.error('Erro ao carregar banner:', error);

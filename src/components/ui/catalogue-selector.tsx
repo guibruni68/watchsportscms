@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
+import { getActiveCatalogues } from "@/data/mockCatalogues";
 import CatalogueForm from "@/components/forms/CatalogueForm";
 
 interface Catalogue {
@@ -41,15 +41,8 @@ export function CatalogueSelector({ value, onValueChange, placeholder = "Selecio
   const fetchCatalogues = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('catalogues')
-        .select('*')
-        .eq('status', true)
-        .order('ordem_exibicao', { ascending: true })
-        .order('titulo', { ascending: true });
-
-      if (error) throw error;
-      setCatalogues(data || []);
+      const data = getActiveCatalogues();
+      setCatalogues(data);
     } catch (error) {
       console.error('Erro ao buscar catálogos:', error);
     } finally {

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus, Search, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+// Mock implementation - no database needed
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UnifiedContentSelector } from "@/components/ui/unified-content-selector";
@@ -66,40 +66,20 @@ export default function CatalogueForm({
   });
   const onSubmit = async (data: CatalogueFormData) => {
     setLoading(true);
-    try {
-      if (catalogueId) {
-        const {
-          error
-        } = await supabase.from('catalogues').update(data).eq('id', catalogueId);
-        if (error) throw error;
-        toast({
-          title: "Sucesso",
-          description: "Catálogo atualizado com sucesso."
-        });
-      } else {
-        const {
-          error
-        } = await supabase.from('catalogues').insert([data]);
-        if (error) throw error;
-        toast({
-          title: "Sucesso",
-          description: "Catálogo criado com sucesso."
-        });
-      }
-      if (onSuccess) {
-        onSuccess();
-      } else if (!isInline) {
-        navigate('/catalogues');
-      }
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Ocorreu um erro ao salvar o catálogo.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
+    // Mock implementation - data is not persisted
+    toast({
+      title: "Sucesso",
+      description: catalogueId 
+        ? "Catálogo atualizado com sucesso! (Dados de exemplo)"
+        : "Catálogo criado com sucesso! (Dados de exemplo)",
+    });
+
+    if (onSuccess) {
+      onSuccess();
+    } else if (!isInline) {
+      navigate('/catalogues');
     }
+    setLoading(false);
   };
   const handleCancel = () => {
     if (onSuccess) {
