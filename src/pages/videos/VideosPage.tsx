@@ -322,7 +322,6 @@ export default function VideosPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Vídeos VOD</h1>
-          <p className="text-muted-foreground">Gerencie o conteúdo de vídeos do clube</p>
         </div>
         <div className="flex gap-2">
           <ImportButton entityName="vídeos" />

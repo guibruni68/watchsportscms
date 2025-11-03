@@ -15,14 +15,19 @@ import { ArrowLeft, Plus, Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { UnifiedContentSelector } from "@/components/ui/unified-content-selector";
+import { ContentMultiSelect, ContentItem } from "@/components/ui/content-multi-select";
 const catalogueSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
   descricao: z.string().optional(),
   tipo_catalogo: z.enum(["serie", "colecao", "playlist", "outro"]),
   status: z.boolean(),
   ordem_exibicao: z.number().min(0),
-  conteudos: z.array(z.string()).optional()
+  conteudos: z.array(z.object({
+    id: z.string(),
+    titulo: z.string(),
+    tipo: z.enum(["video", "live", "news"]),
+    thumbnail: z.string().optional()
+  })).optional()
 });
 type CatalogueFormData = z.infer<typeof catalogueSchema>;
 interface CatalogueFormProps {
@@ -217,7 +222,11 @@ export default function CatalogueForm({
               }) => <FormItem>
                       <FormLabel>Adicionar Conteúdos</FormLabel>
                       <FormControl>
-                        <UnifiedContentSelector domain="content" value={field.value || []} onChange={ids => field.onChange(ids)} placeholder="Buscar conteúdos para adicionar..." />
+                        <ContentMultiSelect 
+                          value={field.value || []} 
+                          onChange={field.onChange} 
+                          placeholder="Buscar conteúdos para adicionar..." 
+                        />
                       </FormControl>
                       
                       <FormMessage />

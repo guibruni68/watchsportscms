@@ -173,7 +173,6 @@ export default function CataloguesPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Catálogos</h1>
-          <p className="text-muted-foreground">Gerencie os catálogos de conteúdo do clube</p>
         </div>
         <div className="flex gap-2">
           <ImportButton entityName="catálogos" />

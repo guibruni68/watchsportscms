@@ -238,9 +238,7 @@ export default function AuthPage() {
             <br />
             esportiva
           </h1>
-          <p className="text-xl text-white/80">
-            Gerencie times, campeonatos e muito mais
-          </p>
+          
         </div>
       </div>
 
@@ -274,7 +272,7 @@ export default function AuthPage() {
                       <Input
                         id="email"
                         type="email"
-                        placeholder="seu@email.com"
+                        placeholder="seuemail@fnb.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -322,7 +320,7 @@ export default function AuthPage() {
                         type="button"
                         variant="link"
                         onClick={() => navigate('/forgot-password')}
-                        className="text-sm text-primary hover:underline p-0 h-auto"
+                        className="text-sm p-0 h-auto"
                       >
                         Esqueceu sua senha?
                       </Button>

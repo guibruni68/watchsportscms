@@ -127,7 +127,7 @@ export default function ForgotPasswordPage() {
                   className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
                   disabled={loading || !email}
                 >
-                  {loading ? "Enviando..." : "Enviar Email de Recuperação"}
+                  {loading ? "Enviando..." : "Enviar Email"}
                 </Button>
               </div>
             </form>

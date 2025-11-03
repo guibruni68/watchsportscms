@@ -88,7 +88,6 @@ export default function DashboardIndex() {
       <Card className="bg-gradient-card border-border/50">
         <CardHeader>
           <CardTitle className="text-lg">Ações Rápidas</CardTitle>
-          <CardDescription>Acesse rapidamente as funcionalidades mais utilizadas</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -118,7 +117,6 @@ export default function DashboardIndex() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-lg">Vídeos Recentes</CardTitle>
-              <CardDescription>Últimos conteúdos publicados</CardDescription>
             </div>
             <Button variant="outline" size="sm" onClick={() => navigate('/videos')}>
               Ver Todos
@@ -147,7 +145,6 @@ export default function DashboardIndex() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-lg">Próximos Eventos</CardTitle>
-              <CardDescription>Agenda e transmissões</CardDescription>
             </div>
             <Button variant="outline" size="sm" onClick={() => navigate('/schedule')}>
               <Calendar className="h-4 w-4 mr-2" />

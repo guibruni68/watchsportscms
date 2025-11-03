@@ -15,9 +15,9 @@ const buttonVariants = cva(
         outline:
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-muted text-foreground hover:bg-muted/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        link: "text-white underline underline-offset-4 hover:text-white/90",
         gradient: "relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white hover:shadow-glow before:absolute before:inset-0 before:rounded-md before:p-[2px] before:bg-gradient-to-r before:from-blue-500 before:via-purple-500 before:to-blue-500 before:-z-10 before:blur-sm hover:before:blur-md transition-all duration-300",
         "gradient-outline": "relative bg-black/40 text-white rounded-full px-6 border-2 border-transparent [background:linear-gradient(#000,#000)_padding-box,linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899)_border-box] hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300",
       },
@@ -28,6 +28,12 @@ const buttonVariants = cva(
         icon: "h-10 w-10",
       },
     },
+    compoundVariants: [
+      {
+        variant: "secondary",
+        class: "h-[52px]",
+      },
+    ],
     defaultVariants: {
       variant: "default",
       size: "default",

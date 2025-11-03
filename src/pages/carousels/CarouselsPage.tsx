@@ -50,7 +50,6 @@ interface Carousel {
   sortType: "alphabetical" | "random" | "mostWatched" | "newest";
   contentLimit?: number;
   planType: "all" | "free" | "premium" | "vip";
-  // Campos específicos por tipo
   domain?: "collection" | "content" | "group" | "agent" | "agenda" | "news";
   manualSelection?: string[];
   personalizedAlgorithm?: "because_you_watched" | "suggestions_for_you";
@@ -166,7 +165,6 @@ const getContentSourceLabel = (source: string) => {
   return labels[source as keyof typeof labels];
 };
 
-// Componente para linha sortável
 function SortableRow({ carousel, children, isEditingOrder }: { 
   carousel: Carousel; 
   children: React.ReactNode;
@@ -258,8 +256,6 @@ export default function CarouselsPage() {
         const newIndex = items.findIndex((item) => item.id === over?.id);
         
         const newOrder = arrayMove(items, oldIndex, newIndex);
-        
-        // Atualizar a ordem dos carrosséis
         const updatedCarousels = newOrder.map((carousel, index) => ({
           ...carousel,
           order: index + 1
@@ -273,11 +269,9 @@ export default function CarouselsPage() {
 
   const handleToggleEditOrder = () => {
     if (isEditingOrder) {
-      // Cancelar edição - voltar ao estado original
       setCarousels(originalCarousels);
       setHasUnsavedChanges(false);
     } else {
-      // Iniciar edição - salvar estado atual
       setOriginalCarousels([...carousels]);
     }
     setIsEditingOrder(!isEditingOrder);
@@ -302,20 +296,6 @@ export default function CarouselsPage() {
     });
   };
 
-  const handleDuplicateCarousel = (carousel: Carousel) => {
-    const duplicatedCarousel = {
-      ...carousel,
-      id: Date.now().toString(),
-      title: `${carousel.title} (Cópia)`,
-      order: carousels.length + 1
-    };
-    setCarousels([...carousels, duplicatedCarousel]);
-    toast({
-      title: "Carrossel duplicado",
-      description: "Uma cópia do carrossel foi criada com sucesso.",
-    });
-  };
-
   const totalPages = Math.ceil(filteredCarousels.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -324,13 +304,7 @@ export default function CarouselsPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Gestão de Carrosséis</h1>
-          <p className="text-muted-foreground">
-            Configure e gerencie os carrosséis de conteúdo da plataforma
-          </p>
-        </div>
-        
+        <h1 className="text-3xl font-bold text-foreground">Gestão de Carrosséis</h1>
         <div className="flex gap-2">
           <ImportButton entityName="carrosséis" />
           <Link to="/carousels/novo">
@@ -342,19 +316,22 @@ export default function CarouselsPage() {
         </div>
       </div>
 
-      <SearchFilters
-        searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
-        categoryFilter={categoryFilter}
-        onCategoryChange={setCategoryFilter}
-        statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
-        categories={categories}
-        statuses={statuses}
-        searchPlaceholder="Buscar carrosséis..."
-        categoryPlaceholder="Tipo de Carrossel"
-        statusPlaceholder="Status"
-      />
+      {/* 🔽 Espaçamento reduzido apenas aqui */}
+      <div className="mb-2">
+        <SearchFilters
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
+          categoryFilter={categoryFilter}
+          onCategoryChange={setCategoryFilter}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          categories={categories}
+          statuses={statuses}
+          searchPlaceholder="Buscar carrosséis..."
+          categoryPlaceholder="Tipo de Carrossel"
+          statusPlaceholder="Status"
+        />
+      </div>
 
       <ListControls
         viewMode={viewMode}
@@ -364,15 +341,14 @@ export default function CarouselsPage() {
         totalItems={filteredCarousels.length}
       />
 
-      <Card>
+      <Card className="mt-0">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               {viewMode === "list" ? <List className="h-5 w-5" /> : <Grid3X3 className="h-5 w-5" />}
               Carrosséis Cadastrados
             </CardTitle>
-            
-            {viewMode === "list" && !isEditingOrder && (
+            {!isEditingOrder && (
               <Button 
                 variant="outline" 
                 size="sm"
@@ -384,244 +360,71 @@ export default function CarouselsPage() {
               </Button>
             )}
           </div>
-          
-          {/* CTA de confirmação quando estiver editando */}
-          {isEditingOrder && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg animate-fade-in">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="text-sm text-blue-700">
-                    <p className="font-medium">Modo de edição ativo</p>
-                    <p className="text-blue-600">Arraste os carrosséis para reordenar</p>
-                  </div>
-                  {hasUnsavedChanges && (
-                    <Badge variant="secondary" className="bg-orange-100 text-orange-700">
-                      Alterações não salvas
-                    </Badge>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={handleToggleEditOrder}
-                    className="gap-2"
-                  >
-                    <X className="h-4 w-4" />
-                    Cancelar
-                  </Button>
-                  <Button 
-                    size="sm"
-                    onClick={handleSaveOrder}
-                    disabled={!hasUnsavedChanges}
-                    className="gap-2"
-                  >
-                    <Save className="h-4 w-4" />
-                    Salvar Ordem
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
         </CardHeader>
         <CardContent>
-          {viewMode === "list" ? (
-            <DndContext
-              sensors={isEditingOrder ? sensors : []}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-8"></TableHead>
-                      <TableHead>Título</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Layout</TableHead>
-                      <TableHead>Ordenação</TableHead>
-                      <TableHead>Limite</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <SortableContext 
-                      items={currentCarousels.map(carousel => carousel.id)} 
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {currentCarousels.map((carousel) => (
-                        <SortableRow key={carousel.id} carousel={carousel} isEditingOrder={isEditingOrder}>
-                          <TableCell className="font-medium">{carousel.title}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{getCarouselTypeLabel(carousel.carouselType)}</Badge>
-                          </TableCell>
-                          <TableCell>{getLayoutLabel(carousel.layout)}</TableCell>
-                          <TableCell>{getSortTypeLabel(carousel.sortType)}</TableCell>
-                          <TableCell>{carousel.contentLimit}</TableCell>
-                          <TableCell>
-                            <Badge variant={carousel.status === "active" ? "default" : "secondary"}>
-                              {carousel.status === "active" ? "Ativo" : "Inativo"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <ActionDropdown
-                              onView={() => setViewingCarousel(carousel)}
-                              onEdit={() => window.location.href = `/carousels/${carousel.id}/editar`}
-                              onDelete={() => handleDeleteCarousel(carousel.id)}
-                            />
-                          </TableCell>
-                        </SortableRow>
-                      ))}
-                    </SortableContext>
-                  </TableBody>
-                </Table>
-              </div>
-            </DndContext>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {currentCarousels.map((carousel) => (
-                <Card key={carousel.id} className="transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg line-clamp-2">{carousel.title}</CardTitle>
-                      <Link 
-                        to={`/carousels/${carousel.id}/editar`}
-                        className="inline-flex"
-                      >
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-2 text-sm">
-                      <div>
-                        <span className="font-medium">Tipo:</span> 
-                        <Badge variant="outline" className="ml-2">{getCarouselTypeLabel(carousel.carouselType)}</Badge>
-                      </div>
-                      <div>
-                        <span className="font-medium">Layout:</span> {getLayoutLabel(carousel.layout)}
-                      </div>
-                      <div>
-                        <span className="font-medium">Ordenação:</span> {getSortTypeLabel(carousel.sortType)}
-                      </div>
-                      <div>
-                        <span className="font-medium">Limite:</span> {carousel.contentLimit} conteúdos
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+          <DndContext
+            sensors={isEditingOrder ? sensors : []}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-8"></TableHead>
+                    <TableHead>Título</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Layout</TableHead>
+                    <TableHead>Ordenação</TableHead>
+                    <TableHead>Limite</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <SortableContext 
+                    items={currentCarousels.map(c => c.id)} 
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {currentCarousels.map((carousel) => (
+                      <SortableRow key={carousel.id} carousel={carousel} isEditingOrder={isEditingOrder}>
+                        <TableCell className="font-medium">{carousel.title}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{getCarouselTypeLabel(carousel.carouselType)}</Badge>
+                        </TableCell>
+                        <TableCell>{getLayoutLabel(carousel.layout)}</TableCell>
+                        <TableCell>{getSortTypeLabel(carousel.sortType)}</TableCell>
+                        <TableCell>{carousel.contentLimit}</TableCell>
+                        <TableCell>
+                          <Badge variant={carousel.status === "active" ? "default" : "secondary"}>
+                            {carousel.status === "active" ? "Ativo" : "Inativo"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <ActionDropdown
+                            onView={() => setViewingCarousel(carousel)}
+                            onEdit={() => window.location.href = `/carousels/${carousel.id}/editar`}
+                            onDelete={() => handleDeleteCarousel(carousel.id)}
+                          />
+                        </TableCell>
+                      </SortableRow>
+                    ))}
+                  </SortableContext>
+                </TableBody>
+              </Table>
             </div>
-          )}
+          </DndContext>
         </CardContent>
       </Card>
 
       <ListPagination
         currentPage={currentPage}
-        totalPages={Math.ceil(filteredCarousels.length / itemsPerPage)}
+        totalPages={totalPages}
         onPageChange={setCurrentPage}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={setItemsPerPage}
         totalItems={filteredCarousels.length}
       />
-
-      {/* Modal de Visualização do Carrossel */}
-      <Dialog open={!!viewingCarousel} onOpenChange={() => setViewingCarousel(null)}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Visualizar Carrossel</DialogTitle>
-          </DialogHeader>
-          {viewingCarousel && (
-            <div className="space-y-6">
-              {/* Informações do Carrossel */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="font-semibold mb-2">Informações Básicas</h3>
-                  <div className="space-y-2 text-sm">
-                    <div><span className="font-medium">Título:</span> {viewingCarousel.title}</div>
-                    <div><span className="font-medium">Tipo:</span> 
-                      <Badge variant="outline" className="ml-2">{getCarouselTypeLabel(viewingCarousel.carouselType)}</Badge>
-                    </div>
-                    <div><span className="font-medium">Layout:</span> {getLayoutLabel(viewingCarousel.layout)}</div>
-                    <div><span className="font-medium">Ordenação:</span> {getSortTypeLabel(viewingCarousel.sortType)}</div>
-                    <div><span className="font-medium">Limite:</span> {viewingCarousel.contentLimit} conteúdos</div>
-                    <div><span className="font-medium">Ordem:</span> {viewingCarousel.order}</div>
-                    <div><span className="font-medium">Status:</span> 
-                      <Badge variant={viewingCarousel.status === "active" ? "default" : "secondary"} className="ml-2">
-                        {viewingCarousel.status === "active" ? "Ativo" : "Inativo"}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Configurações</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Plano:</span>
-                      <Badge variant={getPlanTypeBadgeVariant(viewingCarousel.planType)}>
-                        {getPlanTypeLabel(viewingCarousel.planType)}
-                      </Badge>
-                    </div>
-                    <div><span className="font-medium">Domínio:</span> {viewingCarousel.domain ? getContentSourceLabel(viewingCarousel.domain) : "Não definido"}</div>
-                    <div><span className="font-medium">Botão "Ver mais":</span> {viewingCarousel.showMoreButton ? "Sim" : "Não"}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Lista de Conteúdos */}
-              <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold">Conteúdos do Carrossel</h3>
-                  <Badge variant="outline">
-                    {viewingCarousel.manualSelection?.length || 12} conteúdos total
-                  </Badge>
-                </div>
-                
-                <div className="border rounded-md">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Título</TableHead>
-                        <TableHead>Tipo</TableHead>
-                        <TableHead>Duração</TableHead>
-                        <TableHead>Data</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {[1, 2, 3, 4, 5].map((item) => (
-                        <TableRow key={item}>
-                          <TableCell className="font-medium">
-                            {viewingCarousel.carouselType === "manual" 
-                              ? `Conteúdo Manual ${item}`
-                              : `Conteúdo ${viewingCarousel.carouselType} ${item}`
-                            }
-                          </TableCell>
-                          <TableCell>Vídeo</TableCell>
-                          <TableCell>02:30</TableCell>
-                          <TableCell>15/01/2024</TableCell>
-                          <TableCell className="text-right">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

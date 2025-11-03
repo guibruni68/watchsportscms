@@ -147,7 +147,6 @@ export default function NewsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Notícias</h1>
-          <p className="text-muted-foreground">Gerencie as notícias e artigos do clube</p>
         </div>
         <div className="flex gap-2">
           <ImportButton entityName="notícias" />

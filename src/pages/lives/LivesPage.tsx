@@ -152,8 +152,7 @@ export default function LivesPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Transmissões ao Vivo</h1>
-          <p className="text-muted-foreground">Gerencie as lives e eventos do clube</p>
+          <h1 className="text-3xl font-bold">Lives</h1>
         </div>
         <div className="flex gap-2">
           <ImportButton entityName="transmissões" />

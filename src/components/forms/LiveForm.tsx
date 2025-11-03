@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { mockPlayers, mockTeams } from "@/data/mockData";
+import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
 
 
 const liveSchema = z.object({
@@ -318,96 +319,22 @@ export function LiveForm({
               field
             }) => <FormItem>
                     <FormLabel>Agentes Relacionados</FormLabel>
-                    <div className="space-y-4">
-                      {/* Select unificado para todos os agentes */}
-                       <div>
-                         <Select onValueChange={(agenteId) => {
-                           // Procurar primeiro nos jogadores
-                           let agenteSelecionado: any = mockPlayers.find(p => p.id === agenteId);
-                           let tipo: "jogador" | "time" = "jogador";
-                           
-                           // Se não encontrou nos jogadores, procurar nos times
-                           if (!agenteSelecionado) {
-                             agenteSelecionado = mockTeams.find(t => t.id === agenteId);
-                             tipo = "time";
-                           }
-                           
-                           if (agenteSelecionado && !field.value?.find(a => a.id === agenteId)) {
-                             const novoAgente = {
-                               id: agenteSelecionado.id,
-                               nome: agenteSelecionado.name,
-                               tipo: tipo
-                             };
-                             field.onChange([...(field.value || []), novoAgente]);
-                           }
-                         }}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Buscar e selecionar agentes (jogadores e times)" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {/* Jogadores disponíveis */}
-                            {mockPlayers
-                              .filter(jogador => !field.value?.find(a => a.id === jogador.id))
-                              .map((jogador) => (
-                              <SelectItem key={`jogador-${jogador.id}`} value={jogador.id}>
-                                {jogador.name} - #{jogador.number}
-                              </SelectItem>
-                            ))}
-                            
-                            {/* Times disponíveis */}
-                            {mockTeams
-                              .filter(time => !field.value?.find(a => a.id === time.id))
-                              .map((time) => (
-                              <SelectItem key={`time-${time.id}`} value={time.id}>
-                                {time.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Lista dos agentes selecionados */}
-                      {field.value && field.value.length > 0 && (
-                        <div className="border rounded-lg p-4 bg-muted/50">
-                          <div className="flex items-center justify-between mb-3">
-                            <p className="text-sm font-medium">Agentes Selecionados ({field.value.length})</p>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => field.onChange([])}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              Limpar todos
-                            </Button>
-                          </div>
-                          <div className="space-y-2">
-                            {field.value.map((agente, index) => (
-                              <div 
-                                key={`${agente.id}-${index}`} 
-                                className="flex items-center justify-between p-2 bg-background border rounded-md"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm font-medium">{agente.nome}</span>
-                                </div>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    const novosAgentes = field.value?.filter((_, i) => i !== index) || [];
-                                    field.onChange(novosAgentes);
-                                  }}
-                                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <FormControl>
+                      <AgentMultiSelect
+                        players={mockPlayers.map(p => ({
+                          id: p.id,
+                          name: p.name,
+                          number: p.number
+                        }))}
+                        teams={mockTeams.map(t => ({
+                          id: t.id,
+                          name: t.name
+                        }))}
+                        value={field.value || []}
+                        onChange={field.onChange}
+                        placeholder="Buscar e selecionar agentes (jogadores e times)"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>} />
 
