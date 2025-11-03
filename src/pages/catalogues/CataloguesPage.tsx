@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Eye, Edit, Trash2, Tag } from "lucide-react";
+import { Plus, Eye, Edit, Trash2 } from "lucide-react";
 import { ImportButton } from "@/components/ui/import-button";
 import { ActionDropdown } from "@/components/ui/action-dropdown";
 import { SearchFilters } from "@/components/ui/search-filters";
@@ -210,17 +210,7 @@ export default function CataloguesPage() {
               paginatedCatalogues.map((catalogue) => (
                 <TableRow key={catalogue.id}>
                   <TableCell>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Tag className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{catalogue.titulo}</span>
-                      </div>
-                      {catalogue.descricao && (
-                        <div className="text-sm text-muted-foreground truncate max-w-xs">
-                          {catalogue.descricao}
-                        </div>
-                      )}
-                    </div>
+                    <span className="font-medium">{catalogue.titulo}</span>
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">
