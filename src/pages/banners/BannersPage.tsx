@@ -237,9 +237,7 @@ export default function BannersPage() {
       <Card>
         <CardHeader>
           <CardTitle>Lista de Banners</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Arraste e solte para reordenar os banners ativos
-          </p>
+          
         </CardHeader>
         <CardContent>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
