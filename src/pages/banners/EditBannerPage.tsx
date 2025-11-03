@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import BannerForm from "@/components/forms/BannerForm";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { mockBanners } from "@/data/mockCatalogues";
 import { format } from "date-fns";
 
 export default function EditBannerPage() {
@@ -15,13 +15,11 @@ export default function EditBannerPage() {
     if (!id) return;
     
     try {
-      const { data, error } = await supabase
-        .from('banners')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
+      const data = mockBanners.find(b => b.id === id);
+      
+      if (!data) {
+        throw new Error("Banner not found");
+      }
 
       // Converter as datas para o formato esperado pelo input datetime-local
       const formattedData = {

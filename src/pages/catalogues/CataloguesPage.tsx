@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Eye, Edit, Trash2, Tag } from "lucide-react";
+import { Plus, Eye, Edit, Trash2 } from "lucide-react";
 import { ImportButton } from "@/components/ui/import-button";
 import { ActionDropdown } from "@/components/ui/action-dropdown";
 import { SearchFilters } from "@/components/ui/search-filters";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { mockCatalogues } from "@/data/mockCatalogues";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,28 +54,12 @@ export default function CataloguesPage() {
   const fetchCatalogues = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('catalogues')
-        .select('*')
-        .order('ordem_exibicao', { ascending: true })
-        .order('titulo', { ascending: true });
+      const data = mockCatalogues.map(cat => ({
+        ...cat,
+        content_count: cat.conteudos?.length || 0
+      }));
 
-      if (error) throw error;
-
-      // Buscar contagem de conteúdos para cada catálogo
-      const cataloguesWithCount = await Promise.all(
-        (data || []).map(async (catalogue) => {
-          const { data: countData } = await supabase
-            .rpc('get_catalogue_content_count', { catalogue_uuid: catalogue.id });
-          
-          return {
-            ...catalogue,
-            content_count: countData || 0
-          };
-        })
-      );
-
-      setCatalogues(cataloguesWithCount);
+      setCatalogues(data);
     } catch (error) {
       toast({
         title: "Erro",
@@ -126,42 +110,27 @@ export default function CataloguesPage() {
   const handleDelete = async () => {
     if (!catalogueToDelete) return;
 
-    try {
-      // Verificar se há conteúdos vinculados
-      if (catalogueToDelete.content_count && catalogueToDelete.content_count > 0) {
-        toast({
-          title: "Erro",
-          description: `Não é possível excluir o catálogo "${catalogueToDelete.titulo}" pois há ${catalogueToDelete.content_count} conteúdo(s) vinculado(s).`,
-          variant: "destructive",
-        });
-        setDeleteDialogOpen(false);
-        setCatalogueToDelete(null);
-        return;
-      }
-
-      const { error } = await supabase
-        .from('catalogues')
-        .delete()
-        .eq('id', catalogueToDelete.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Catálogo excluído com sucesso.",
-      });
-
-      fetchCatalogues();
-    } catch (error) {
+    // Verificar se há conteúdos vinculados
+    if (catalogueToDelete.content_count && catalogueToDelete.content_count > 0) {
       toast({
         title: "Erro",
-        description: "Erro ao excluir catálogo.",
+        description: `Não é possível excluir o catálogo "${catalogueToDelete.titulo}" pois há ${catalogueToDelete.content_count} conteúdo(s) vinculado(s).`,
         variant: "destructive",
       });
-    } finally {
       setDeleteDialogOpen(false);
       setCatalogueToDelete(null);
+      return;
     }
+
+    // Mock deletion
+    toast({
+      title: "Sucesso",
+      description: "Catálogo excluído com sucesso! (Dados de exemplo)",
+    });
+
+    fetchCatalogues();
+    setDeleteDialogOpen(false);
+    setCatalogueToDelete(null);
   };
 
   const handleNewCatalogue = () => {
@@ -240,17 +209,7 @@ export default function CataloguesPage() {
               paginatedCatalogues.map((catalogue) => (
                 <TableRow key={catalogue.id}>
                   <TableCell>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Tag className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{catalogue.titulo}</span>
-                      </div>
-                      {catalogue.descricao && (
-                        <div className="text-sm text-muted-foreground truncate max-w-xs">
-                          {catalogue.descricao}
-                        </div>
-                      )}
-                    </div>
+                    <span className="font-medium">{catalogue.titulo}</span>
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">

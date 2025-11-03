@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { X, Plus, Search } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getActiveCatalogues } from "@/data/mockCatalogues";
 
 interface Content {
   id: string;
@@ -44,30 +44,26 @@ export function CarouselContentSelector({
         
         switch (domain) {
           case "agent":
-            const { data: players } = await supabase.from('players').select('*');
-            data = (players || []).map(player => ({
-              id: player.id,
-              title: player.name,
-              type: "player",
-              thumbnail: player.avatar_url,
-              domain: "agent"
-            }));
+            // Mock player data
+            data = [
+              { id: "player1", title: "Carlos Silva - Armador", type: "player", domain: "agent" },
+              { id: "player2", title: "João Santos - Ala", type: "player", domain: "agent" },
+              { id: "player3", title: "Pedro Costa - Pivô", type: "player", domain: "agent" }
+            ];
             break;
             
           case "group":
-            const { data: teams } = await supabase.from('teams').select('*');
-            data = (teams || []).map(team => ({
-              id: team.id,
-              title: team.name,
-              type: "team",
-              thumbnail: team.logo_url,
-              domain: "group"
-            }));
+            // Mock team data
+            data = [
+              { id: "team1", title: "Time Principal", type: "team", domain: "group" },
+              { id: "team2", title: "Time Sub-20", type: "team", domain: "group" },
+              { id: "team3", title: "Time Feminino", type: "team", domain: "group" }
+            ];
             break;
             
           case "collection":
-            const { data: catalogues } = await supabase.from('catalogues').select('*');
-            data = (catalogues || []).map(catalogue => ({
+            const catalogues = getActiveCatalogues();
+            data = catalogues.map(catalogue => ({
               id: catalogue.id,
               title: catalogue.titulo,
               type: "catalogue",

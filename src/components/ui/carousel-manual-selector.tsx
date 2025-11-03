@@ -3,7 +3,7 @@ import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { getActiveCatalogues } from "@/data/mockCatalogues";
 import { toast } from "@/hooks/use-toast";
 
 interface Content {
@@ -42,62 +42,40 @@ export function CarouselManualSelector({
 
       switch (domain) {
         case 'agent':
-          const { data: players } = await supabase
-            .from('players')
-            .select('id, name, position, avatar_url')
-            .ilike('name', `%${term}%`)
-            .limit(10);
-          
-          results = players?.map(p => ({
-            id: p.id,
-            title: p.name,
-            type: 'player',
-            thumbnail: p.avatar_url
-          })) || [];
+          // Mock player data
+          results = [
+            { id: 'player1', title: 'Carlos Silva - Armador', type: 'player' },
+            { id: 'player2', title: 'João Santos - Ala', type: 'player' },
+            { id: 'player3', title: 'Pedro Costa - Pivô', type: 'player' }
+          ].filter(item => item.title.toLowerCase().includes(term.toLowerCase()));
           break;
 
         case 'group':
-          const { data: teams } = await supabase
-            .from('teams')
-            .select('id, name, category, logo_url')
-            .ilike('name', `%${term}%`)
-            .limit(10);
-          
-          results = teams?.map(t => ({
-            id: t.id,
-            title: t.name,
-            type: 'team',
-            thumbnail: t.logo_url
-          })) || [];
+          // Mock team data
+          results = [
+            { id: 'team1', title: 'Time Principal', type: 'team' },
+            { id: 'team2', title: 'Time Sub-20', type: 'team' },
+            { id: 'team3', title: 'Time Feminino', type: 'team' }
+          ].filter(item => item.title.toLowerCase().includes(term.toLowerCase()));
           break;
 
         case 'collection':
-          const { data: catalogues } = await supabase
-            .from('catalogues')
-            .select('id, titulo, tipo_catalogo')
-            .ilike('titulo', `%${term}%`)
-            .eq('status', true)
-            .limit(10);
-          
-          results = catalogues?.map(c => ({
-            id: c.id,
-            title: c.titulo,
-            type: 'catalogue'
-          })) || [];
+          const catalogues = getActiveCatalogues();
+          results = catalogues
+            .filter(c => c.titulo.toLowerCase().includes(term.toLowerCase()))
+            .map(c => ({
+              id: c.id,
+              title: c.titulo,
+              type: 'catalogue'
+            }));
           break;
 
         case 'agenda':
-          const { data: championships } = await supabase
-            .from('championships')
-            .select('id, name, type')
-            .ilike('name', `%${term}%`)
-            .limit(10);
-          
-          results = championships?.map(ch => ({
-            id: ch.id,
-            title: ch.name,
-            type: 'championship'
-          })) || [];
+          // Mock championship data
+          results = [
+            { id: 'champ1', title: 'Campeonato Estadual 2024', type: 'championship' },
+            { id: 'champ2', title: 'Copa Regional', type: 'championship' }
+          ].filter(item => item.title.toLowerCase().includes(term.toLowerCase()));
           break;
 
         case 'news':

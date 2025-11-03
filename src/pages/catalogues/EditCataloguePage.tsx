@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import CatalogueForm from "@/components/forms/CatalogueForm";
-import { supabase } from "@/integrations/supabase/client";
+import { getCatalogueById } from "@/data/mockCatalogues";
 import { toast } from "@/hooks/use-toast";
 
 export default function EditCataloguePage() {
@@ -14,13 +14,11 @@ export default function EditCataloguePage() {
       if (!id) return;
 
       try {
-        const { data, error } = await supabase
-          .from('catalogues')
-          .select('*')
-          .eq('id', id)
-          .single();
-
-        if (error) throw error;
+        const data = getCatalogueById(id);
+        
+        if (!data) {
+          throw new Error("Catalogue not found");
+        }
 
         setInitialData(data);
       } catch (error) {
