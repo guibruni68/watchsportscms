@@ -9,7 +9,7 @@ import { ImportButton } from "@/components/ui/import-button";
 import { ActionDropdown } from "@/components/ui/action-dropdown";
 import { SearchFilters } from "@/components/ui/search-filters";
 import { toast } from "@/hooks/use-toast";
-import { mockCatalogues, Catalogue } from "@/data/mockCatalogues";
+import { mockCatalogues } from "@/data/mockCatalogues";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +21,16 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+interface Catalogue {
+  id: string;
+  titulo: string;
+  descricao?: string;
+  tipo_catalogo: string;
+  status: boolean;
+  ordem_exibicao: number;
+  created_at: string;
+  content_count?: number;
+}
 
 const tipoLabels = {
   serie: "Série",
@@ -173,7 +183,6 @@ export default function CataloguesPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Título</TableHead>
-              <TableHead className="w-24">Imagem</TableHead>
               <TableHead>Tipo</TableHead>
               <TableHead className="w-32">Conteúdos</TableHead>
               <TableHead className="w-24">Status</TableHead>
@@ -201,13 +210,6 @@ export default function CataloguesPage() {
                 <TableRow key={catalogue.id}>
                   <TableCell>
                     <span className="font-medium">{catalogue.titulo}</span>
-                  </TableCell>
-                  <TableCell>
-                    <img 
-                      src={catalogue.imagem_capa || "/placeholder.svg"} 
-                      alt={catalogue.titulo}
-                      className="w-16 h-16 object-cover rounded"
-                    />
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">

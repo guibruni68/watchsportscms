@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Plus, Search, Edit, Trash2, Star } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Star, Eye } from "lucide-react"
 import { ImportButton } from "@/components/ui/import-button"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
@@ -124,8 +124,8 @@ export default function NewsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Título</TableHead>
-              <TableHead className="w-24">Imagem</TableHead>
               <TableHead>Data</TableHead>
+              <TableHead>Visualizações</TableHead>
               <TableHead>Destaque</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
@@ -142,14 +142,13 @@ export default function NewsPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <img 
-                    src={item.imagemCapa || "/placeholder.svg"} 
-                    alt={item.titulo}
-                    className="w-16 h-16 object-cover rounded"
-                  />
+                  {new Date(item.dataPublicacao).toLocaleDateString("pt-BR")}
                 </TableCell>
                 <TableCell>
-                  {new Date(item.dataPublicacao).toLocaleDateString("pt-BR")}
+                  <div className="flex items-center gap-1">
+                    <Eye className="h-4 w-4" />
+                    {item.views.toLocaleString()}
+                  </div>
                 </TableCell>
                 <TableCell>
                   {item.destaque ? (
