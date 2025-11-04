@@ -303,10 +303,10 @@ export default function BannerForm({
                         </FormControl>
                         <SelectContent>
                           {form.watch('tipo_conteudo') === 'live' && mockLives.map(live => <SelectItem key={live.id} value={live.id}>
-                                {live.name}
+                                {live.nome_evento}
                               </SelectItem>)}
                           {form.watch('tipo_conteudo') === 'vod' && mockVideos.map(video => <SelectItem key={video.id} value={video.id}>
-                                {video.name}
+                                {video.titulo}
                               </SelectItem>)}
                         </SelectContent>
                       </Select>

@@ -13,59 +13,7 @@ import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { NewsForm } from "@/components/forms/NewsForm"
 import { toast } from "@/hooks/use-toast"
-
-interface News {
-  id: string
-  titulo: string
-  conteudo: string
-  destaque: boolean
-  imagemCapa?: string
-  dataPublicacao: string
-  views: number
-}
-
-const mockNews: News[] = [
-  {
-    id: "1",
-    titulo: "Nova City Sparks anuncia contratação de novo armador para 2024",
-    conteudo: "O clube confirmou hoje a contratação do armador Marcus Johnson, de 28 anos, que vem da liga americana. O jogador assinou contrato por três temporadas e já está liberado para jogar.",
-    destaque: true,
-    dataPublicacao: "2024-01-18T14:30:00",
-    views: 3421
-  },
-  {
-    id: "2",
-    titulo: "Ingressos para a final já estão à venda",
-    conteudo: "A partir de hoje, os torcedores já podem adquirir seus ingressos para a grande final do campeonato estadual. Os preços variam de R$ 50 a R$ 200.",
-    destaque: false,
-    dataPublicacao: "2024-01-17T10:15:00",
-    views: 1876
-  },
-  {
-    id: "3",
-    titulo: "Time feminino conquista acesso à primeira divisão",
-    conteudo: "Com uma campanha brilhante, o time feminino garantiu o acesso à primeira divisão do campeonato estadual. A equipe não perdeu nenhum jogo na fase final.",
-    destaque: true,
-    dataPublicacao: "2024-01-16T16:45:00",
-    views: 2987
-  },
-  {
-    id: "4",
-    titulo: "Novo técnico é apresentado para a temporada 2024",
-    conteudo: "Roberto Silva, de 45 anos, foi oficialmente apresentado como novo técnico da equipe principal. O profissional chega com vasta experiência em competições nacionais.",
-    destaque: false,
-    dataPublicacao: "2024-01-15T09:00:00",
-    views: 1543
-  },
-  {
-    id: "5",
-    titulo: "Inauguração do novo centro de treinamento",
-    conteudo: "O clube inaugurou suas novas instalações de treinamento, com academia, piscina e campos de última geração para melhor preparação dos atletas.",
-    destaque: true,
-    dataPublicacao: "2024-01-14T11:30:00",
-    views: 4521
-  }
-]
+import { mockNews, News } from "@/data/mockData"
 
 export default function NewsPage() {
   const [searchParams, setSearchParams] = useSearchParams()

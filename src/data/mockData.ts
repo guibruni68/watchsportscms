@@ -55,6 +55,35 @@ export interface Content {
   createdAt: string;
 }
 
+export interface Video {
+  id: string;
+  titulo: string;
+  descricao?: string;
+  imagem_capa?: string;
+  duracao?: string;
+  views: number;
+  createdAt: string;
+}
+
+export interface Live {
+  id: string;
+  nome_evento: string;
+  descricao?: string;
+  imagem_capa?: string;
+  data_inicio: string;
+  status: 'scheduled' | 'live' | 'ended';
+}
+
+export interface News {
+  id: string;
+  titulo: string;
+  conteudo: string;
+  destaque: boolean;
+  imagemCapa?: string;
+  dataPublicacao: string;
+  views: number;
+}
+
 // Times atualizados com novos nomes
 export const mockTeams: Team[] = [
   {
@@ -351,6 +380,127 @@ export const mockCoaches: Coach[] = [
     nationality: "Brasileiro",
     age: 33,
     achievements: ["Revelação Sub-17 2023"]
+  }
+];
+
+// Vídeos (VOD) mocados
+export const mockVideos: Video[] = [
+  {
+    id: "video1",
+    titulo: "Melhores momentos: Final do Campeonato 2024",
+    descricao: "Reveja os melhores lances da emocionante final do campeonato estadual",
+    imagem_capa: "/placeholder.svg",
+    duracao: "12:34",
+    views: 25400,
+    createdAt: "2024-01-18T20:00:00"
+  },
+  {
+    id: "video2",
+    titulo: "Top 10 Cestas da Semana",
+    descricao: "As jogadas mais incríveis da rodada",
+    imagem_capa: "/placeholder.svg",
+    duracao: "5:42",
+    views: 18900,
+    createdAt: "2024-01-17T18:30:00"
+  },
+  {
+    id: "video3",
+    titulo: "Análise Tática: Como vencer defesas por zona",
+    descricao: "Nosso especialista explica as melhores estratégias",
+    imagem_capa: "/placeholder.svg",
+    duracao: "8:15",
+    views: 12300,
+    createdAt: "2024-01-16T15:00:00"
+  },
+  {
+    id: "video4",
+    titulo: "Entrevista: Marcus Johnson fala sobre título",
+    descricao: "O armador conta sobre a conquista e os bastidores",
+    imagem_capa: "/placeholder.svg",
+    duracao: "6:28",
+    views: 14500,
+    createdAt: "2024-01-15T14:00:00"
+  },
+  {
+    id: "video5",
+    titulo: "Treino Aberto: Preparação para os Playoffs",
+    descricao: "Veja como o time se prepara para a fase decisiva",
+    imagem_capa: "/placeholder.svg",
+    duracao: "10:03",
+    views: 9800,
+    createdAt: "2024-01-14T10:00:00"
+  }
+];
+
+// Lives mocadas
+export const mockLives: Live[] = [
+  {
+    id: "live1",
+    nome_evento: "Nova City Sparks vs Northbridge Thunder - Semifinal",
+    descricao: "Jogo decisivo da semifinal do campeonato estadual",
+    imagem_capa: "/placeholder.svg",
+    data_inicio: "2024-01-20T19:00:00",
+    status: "scheduled"
+  },
+  {
+    id: "live2",
+    nome_evento: "Coletiva de Imprensa: Apresentação do Novo Técnico",
+    descricao: "Acompanhe ao vivo a apresentação oficial",
+    imagem_capa: "/placeholder.svg",
+    data_inicio: "2024-01-19T15:00:00",
+    status: "scheduled"
+  },
+  {
+    id: "live3",
+    nome_evento: "Brookdale Saints vs Red Valley Outlaws",
+    descricao: "Confronto direto pela liderança da segunda divisão",
+    imagem_capa: "/placeholder.svg",
+    data_inicio: "2024-01-21T16:00:00",
+    status: "scheduled"
+  }
+];
+
+// Notícias mocadas
+export const mockNews: News[] = [
+  {
+    id: "1",
+    titulo: "Nova City Sparks anuncia contratação de novo armador para 2024",
+    conteudo: "O clube confirmou hoje a contratação do armador Marcus Johnson, de 28 anos, que vem da liga americana. O jogador assinou contrato por três temporadas e já está liberado para jogar.",
+    destaque: true,
+    dataPublicacao: "2024-01-18T14:30:00",
+    views: 3421
+  },
+  {
+    id: "2",
+    titulo: "Ingressos para a final já estão à venda",
+    conteudo: "A partir de hoje, os torcedores já podem adquirir seus ingressos para a grande final do campeonato estadual. Os preços variam de R$ 50 a R$ 200.",
+    destaque: false,
+    dataPublicacao: "2024-01-17T10:15:00",
+    views: 1876
+  },
+  {
+    id: "3",
+    titulo: "Time feminino conquista acesso à primeira divisão",
+    conteudo: "Com uma campanha brilhante, o time feminino garantiu o acesso à primeira divisão do campeonato estadual. A equipe não perdeu nenhum jogo na fase final.",
+    destaque: true,
+    dataPublicacao: "2024-01-16T16:45:00",
+    views: 2987
+  },
+  {
+    id: "4",
+    titulo: "Novo técnico é apresentado para a temporada 2024",
+    conteudo: "Roberto Silva, de 45 anos, foi oficialmente apresentado como novo técnico da equipe principal. O profissional chega com vasta experiência em competições nacionais.",
+    destaque: false,
+    dataPublicacao: "2024-01-15T09:00:00",
+    views: 1543
+  },
+  {
+    id: "5",
+    titulo: "Inauguração do novo centro de treinamento",
+    conteudo: "O clube inaugurou suas novas instalações de treinamento, com academia, piscina e campos de última geração para melhor preparação dos atletas.",
+    destaque: true,
+    dataPublicacao: "2024-01-14T11:30:00",
+    views: 4521
   }
 ];
 
@@ -725,20 +875,4 @@ export const mockCampaigns = [
   { id: "camp2", name: "Volta às Aulas" },
   { id: "camp3", name: "Dia dos Pais" },
   { id: "camp4", name: "Playoffs Premium" }
-];
-
-// Mock de lives
-export const mockLives = [
-  { id: "live1", name: "Final do Campeonato", status: "ao_vivo" },
-  { id: "live2", name: "Semifinal", status: "programado" },
-  { id: "live3", name: "Análise Pós-Jogo", status: "programado" },
-  { id: "live4", name: "Treino Aberto", status: "finalizado" }
-];
-
-// Mock de vídeos
-export const mockVideos = [
-  { id: "vid1", name: "Melhores Momentos - Rodada 15" },
-  { id: "vid2", name: "Entrevista com Técnico" },
-  { id: "vid3", name: "Documentário: História do Clube" },
-  { id: "vid4", name: "Top 10 Gols da Temporada" }
 ];

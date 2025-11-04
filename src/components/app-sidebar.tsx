@@ -29,6 +29,10 @@ const mainNavItems = [{
     title: "Catálogos",
     url: "/catalogues",
     icon: Tag
+  }, {
+    title: "Notícias",
+    url: "/news",
+    icon: Newspaper
   }]
 }, {
   title: "Banners",
@@ -38,10 +42,6 @@ const mainNavItems = [{
   title: "Carrosséis",
   url: "/carousels",
   icon: Layout
-}, {
-  title: "Notícias",
-  url: "/news",
-  icon: Newspaper
 }, {
   title: "Analytics",
   url: "/analytics",

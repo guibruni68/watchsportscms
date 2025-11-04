@@ -16,7 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
+import { mockVideos, mockLives, mockNews } from "@/data/mockData";
 
 export interface ContentItem {
   id: string;
@@ -64,74 +64,46 @@ export function ContentMultiSelect({
     setLoading(true);
     try {
       const contents: ContentItem[] = [];
+      const searchLower = searchTerm.toLowerCase();
 
-      // Buscar vídeos (VOD) - tentar tabela 'videos'
-      try {
-        let query = supabase
-          .from('videos')
-          .select('id, titulo, imagem_capa')
-          .limit(searchTerm ? 10 : 20);
+      // Buscar vídeos (VOD)
+      const filteredVideos = searchTerm
+        ? mockVideos.filter(v => v.titulo.toLowerCase().includes(searchLower)).slice(0, 10)
+        : mockVideos.slice(0, 20);
+      
+      contents.push(...filteredVideos.map(v => ({
+        id: v.id,
+        titulo: v.titulo,
+        tipo: "video" as const,
+        thumbnail: v.imagem_capa
+      })));
 
-        if (searchTerm) {
-          query = query.ilike('titulo', `%${searchTerm}%`);
-        }
-
-        const { data: videos, error: videoError } = await query;
-
-        if (!videoError && videos) {
-          contents.push(...videos.map(v => ({
-            id: v.id,
-            titulo: v.titulo || `Vídeo ${v.id}`,
-            tipo: "video" as const,
-            thumbnail: v.imagem_capa
-          })));
-        }
-      } catch (e) {
-        console.log('Tabela de videos não disponível ou erro:', e);
+      // Buscar lives
+      if (searchTerm) {
+        const filteredLives = mockLives
+          .filter(l => l.nome_evento.toLowerCase().includes(searchLower))
+          .slice(0, 10);
+        
+        contents.push(...filteredLives.map(l => ({
+          id: l.id,
+          titulo: l.nome_evento,
+          tipo: "live" as const,
+          thumbnail: l.imagem_capa
+        })));
       }
 
-      // Buscar lives - tentar tabela 'lives'
+      // Buscar notícias
       if (searchTerm) {
-        try {
-          const { data: lives, error: livesError } = await supabase
-            .from('lives')
-            .select('id, nome_evento, imagem_capa')
-            .ilike('nome_evento', `%${searchTerm}%`)
-            .limit(10);
-
-          if (!livesError && lives) {
-            contents.push(...lives.map(l => ({
-              id: l.id,
-              titulo: l.nome_evento || `Live ${l.id}`,
-              tipo: "live" as const,
-              thumbnail: l.imagem_capa
-            })));
-          }
-        } catch (e) {
-          console.log('Tabela de lives não disponível:', e);
-        }
-      }
-
-      // Buscar notícias - tentar tabela 'news'
-      if (searchTerm) {
-        try {
-          const { data: news, error: newsError } = await supabase
-            .from('news')
-            .select('id, titulo, imagem_capa')
-            .ilike('titulo', `%${searchTerm}%`)
-            .limit(10);
-
-          if (!newsError && news) {
-            contents.push(...news.map(n => ({
-              id: n.id,
-              titulo: n.titulo || `Notícia ${n.id}`,
-              tipo: "news" as const,
-              thumbnail: n.imagem_capa
-            })));
-          }
-        } catch (e) {
-          console.log('Tabela de news não disponível:', e);
-        }
+        const filteredNews = mockNews
+          .filter(n => n.titulo.toLowerCase().includes(searchLower))
+          .slice(0, 10);
+        
+        contents.push(...filteredNews.map(n => ({
+          id: n.id,
+          titulo: n.titulo,
+          tipo: "news" as const,
+          thumbnail: n.imagemCapa
+        })));
       }
 
       setAllContents(contents);
