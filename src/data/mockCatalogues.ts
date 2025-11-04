@@ -2,12 +2,14 @@ export interface Catalogue {
   id: string;
   titulo: string;
   descricao?: string;
+  imagem_capa?: string;
   tipo_catalogo: "playlist" | "serie" | "colecao" | "outro";
   status: boolean;
   ordem_exibicao: number;
   conteudos?: string[];
   created_at: string;
   updated_at: string;
+  content_count?: number;
 }
 
 export const mockCatalogues: Catalogue[] = [
@@ -15,6 +17,7 @@ export const mockCatalogues: Catalogue[] = [
     id: "1",
     titulo: "Melhores Momentos da Temporada 2024",
     descricao: "Compilação dos lances mais emocionantes da temporada atual",
+    imagem_capa: "/placeholder.svg",
     tipo_catalogo: "playlist",
     status: true,
     ordem_exibicao: 1,
@@ -26,6 +29,7 @@ export const mockCatalogues: Catalogue[] = [
     id: "2",
     titulo: "Série: Estrelas do Basquete Nacional",
     descricao: "Documentário sobre os principais jogadores da federação",
+    imagem_capa: "/placeholder.svg",
     tipo_catalogo: "serie",
     status: true,
     ordem_exibicao: 2,
@@ -37,6 +41,7 @@ export const mockCatalogues: Catalogue[] = [
     id: "3",
     titulo: "Campeonato Estadual - Finais",
     descricao: "Todas as partidas finais do campeonato estadual",
+    imagem_capa: "/placeholder.svg",
     tipo_catalogo: "colecao",
     status: true,
     ordem_exibicao: 3,
@@ -48,6 +53,7 @@ export const mockCatalogues: Catalogue[] = [
     id: "4",
     titulo: "Treinamentos e Clínicas",
     descricao: "Vídeos educativos para atletas e treinadores",
+    imagem_capa: "/placeholder.svg",
     tipo_catalogo: "playlist",
     status: true,
     ordem_exibicao: 4,
@@ -59,6 +65,7 @@ export const mockCatalogues: Catalogue[] = [
     id: "5",
     titulo: "História da Federação",
     descricao: "Retrospectiva histórica do basquete estadual",
+    imagem_capa: "/placeholder.svg",
     tipo_catalogo: "serie",
     status: false,
     ordem_exibicao: 5,

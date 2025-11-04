@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Plus, Search, Edit, Trash2, Play, Users } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Play } from "lucide-react"
 import { ImportButton } from "@/components/ui/import-button"
 import { LiveForm } from "@/components/forms/LiveForm"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
@@ -22,6 +22,7 @@ interface Live {
   status: "em_breve" | "ao_vivo" | "encerrado"
   viewers?: number
   playerEmbed?: string
+  imagem_capa?: string
 }
 
 const mockLives: Live[] = [
@@ -182,9 +183,9 @@ export default function LivesPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Evento</TableHead>
+              <TableHead className="w-24">Imagem</TableHead>
               <TableHead>Data/Hora</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Viewers</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -196,6 +197,13 @@ export default function LivesPage() {
                     <p className="font-medium">{live.nomeEvento}</p>
                     <p className="text-sm text-muted-foreground line-clamp-1">{live.descricao}</p>
                   </div>
+                </TableCell>
+                <TableCell>
+                  <img 
+                    src={live.imagem_capa || "/placeholder.svg"} 
+                    alt={live.nomeEvento}
+                    className="w-16 h-16 object-cover rounded"
+                  />
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
@@ -216,12 +224,6 @@ export default function LivesPage() {
                     {live.status === "ao_vivo" && <Play className="h-3 w-3 mr-1" />}
                     {statusLabels[live.status]}
                   </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    {live.viewers || 0}
-                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <ActionDropdown

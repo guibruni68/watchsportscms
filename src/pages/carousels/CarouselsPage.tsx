@@ -316,22 +316,19 @@ export default function CarouselsPage() {
         </div>
       </div>
 
-      {/* 🔽 Espaçamento reduzido apenas aqui */}
-      <div className="mb-2">
-        <SearchFilters
-          searchValue={searchTerm}
-          onSearchChange={setSearchTerm}
-          categoryFilter={categoryFilter}
-          onCategoryChange={setCategoryFilter}
-          statusFilter={statusFilter}
-          onStatusChange={setStatusFilter}
-          categories={categories}
-          statuses={statuses}
-          searchPlaceholder="Buscar carrosséis..."
-          categoryPlaceholder="Tipo de Carrossel"
-          statusPlaceholder="Status"
-        />
-      </div>
+      <SearchFilters
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        categories={categories}
+        statuses={statuses}
+        searchPlaceholder="Buscar carrosséis..."
+        categoryPlaceholder="Tipo de Carrossel"
+        statusPlaceholder="Status"
+      />
 
       <ListControls
         viewMode={viewMode}
