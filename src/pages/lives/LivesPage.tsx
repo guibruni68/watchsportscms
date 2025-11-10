@@ -16,10 +16,11 @@ import { toast } from "@/hooks/use-toast"
 
 interface Live {
   id: string
-  nomeEvento: string
-  descricao: string
-  dataHora: string
-  status: "em_breve" | "ao_vivo" | "encerrado"
+  eventName: string
+  description: string
+  dateTime: string
+  genre: string[]
+  status: "upcoming" | "live" | "ended"
   viewers?: number
   playerEmbed?: string
 }
@@ -27,50 +28,55 @@ interface Live {
 const mockLives: Live[] = [
   {
     id: "1",
-    nomeEvento: "Final do Campeonato Estadual",
-    descricao: "Transmissão ao vivo da grande final contra o tradicional rival",
-    dataHora: "2024-01-20T16:00:00",
-    status: "em_breve",
+    eventName: "State Championship Final",
+    description: "Live broadcast of the grand final against traditional rival",
+    dateTime: "2024-01-20T16:00:00",
+    genre: ["Championship", "Final"],
+    status: "upcoming",
     viewers: 0
   },
   {
     id: "2",
-    nomeEvento: "Apresentação do novo elenco 2024",
-    descricao: "Coletiva de imprensa com apresentação dos novos jogadores",
-    dataHora: "2024-01-18T10:00:00",
-    status: "ao_vivo",
+    eventName: "2024 Squad Presentation",
+    description: "Press conference with presentation of new players",
+    dateTime: "2024-01-18T10:00:00",
+    genre: ["Press Conference", "Institutional"],
+    status: "live",
     viewers: 1247
   },
   {
     id: "3",
-    nomeEvento: "Jogo-treino preparatório",
-    descricao: "Último teste antes da estreia no campeonato",
-    dataHora: "2024-01-15T15:00:00",
-    status: "encerrado",
+    eventName: "Preparatory Practice Match",
+    description: "Last test before championship debut",
+    dateTime: "2024-01-15T15:00:00",
+    genre: ["Training", "Practice"],
+    status: "ended",
     viewers: 892
   },
   {
     id: "4",
-    nomeEvento: "Entrevista com o técnico",
-    descricao: "Conversa exclusiva sobre a temporada 2024",
-    dataHora: "2024-01-14T14:00:00",
-    status: "encerrado",
+    eventName: "Coach Interview",
+    description: "Exclusive conversation about the 2024 season",
+    dateTime: "2024-01-14T14:00:00",
+    genre: ["Interview"],
+    status: "ended",
     viewers: 567
   },
   {
     id: "5",
-    nomeEvento: "Treino aberto para torcedores",
-    descricao: "Acompanhe o treino da equipe antes do jogo decisivo",
-    dataHora: "2024-01-22T09:00:00",
-    status: "em_breve",
+    eventName: "Open Training for Fans",
+    description: "Follow the team's training before the decisive game",
+    dateTime: "2024-01-22T09:00:00",
+    genre: ["Training", "Behind the Scenes"],
+    status: "upcoming",
     viewers: 0
   }
 ]
 
 const statusLabels = {
-  em_breve: "Em Breve",
-  ao_vivo: "Ao Vivo",
-  encerrado: "Encerrado"
+  upcoming: "Upcoming",
+  live: "Live",
+  ended: "Ended"
 }
 
 export default function LivesPage() {
@@ -95,18 +101,19 @@ export default function LivesPage() {
     }
   }, [searchParams, setSearchParams])
 
-  const categories = [{ value: "all", label: "Todas as categorias" }]
+  const genres = Array.from(new Set(lives.flatMap(l => l.genre || [])))
   const statuses = [
-    { value: "all", label: "Todos os status" },
-    { value: "em_breve", label: "Em Breve" },
-    { value: "ao_vivo", label: "Ao Vivo" },
-    { value: "encerrado", label: "Encerrado" }
+    { value: "all", label: "All statuses" },
+    { value: "upcoming", label: "Upcoming" },
+    { value: "live", label: "Live" },
+    { value: "ended", label: "Ended" }
   ]
 
   const filteredLives = lives.filter(live => {
-    const matchesSearch = live.nomeEvento.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      live.descricao.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = categoryFilter === "all"
+    const matchesSearch = live.eventName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      live.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (live.genre || []).some(g => g.toLowerCase().includes(searchTerm.toLowerCase()))
+    const matchesCategory = categoryFilter === "all" || (live.genre || []).includes(categoryFilter)
     const matchesStatus = statusFilter === "all" || live.status === statusFilter
     return matchesSearch && matchesCategory && matchesStatus
   })
@@ -128,8 +135,8 @@ export default function LivesPage() {
   const handleDelete = (id: string) => {
     setLives(lives.filter(live => live.id !== id))
     toast({
-      title: "Live excluída",
-      description: "A transmissão foi removida com sucesso.",
+      title: "Live deleted",
+      description: "The broadcast was removed successfully.",
     })
   }
 
@@ -137,13 +144,14 @@ export default function LivesPage() {
     return (
       <LiveForm 
         initialData={editingLive ? {
-          nomeEvento: editingLive.nomeEvento,
-          descricao: editingLive.descricao,
-          dataHora: editingLive.dataHora.slice(0, 16),
+          nomeEvento: editingLive.eventName,
+          descricao: editingLive.description,
+          dataHora: editingLive.dateTime.slice(0, 16),
           status: editingLive.status,
           playerEmbed: editingLive.playerEmbed
         } : undefined}
         isEdit={!!editingLive}
+        onClose={() => setShowForm(false)}
       />
     )
   }
@@ -152,13 +160,12 @@ export default function LivesPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Lives</h1>
+          <h1 className="text-3xl font-bold">Live Streams</h1>
         </div>
         <div className="flex gap-2">
-          <ImportButton entityName="transmissões" />
           <Button onClick={handleNewLive} className="gap-2">
             <Plus className="h-4 w-4" />
-            Nova Live
+            New Live Stream
           </Button>
         </div>
       </div>
@@ -170,10 +177,13 @@ export default function LivesPage() {
         onCategoryChange={setCategoryFilter}
         statusFilter={statusFilter}
         onStatusChange={setStatusFilter}
-        categories={categories}
+        categories={[
+          { value: "all", label: "All genres" },
+          ...genres.map(genre => ({ value: genre, label: genre }))
+        ]}
         statuses={statuses}
-        searchPlaceholder="Buscar transmissões..."
-        categoryPlaceholder="Categoria"
+        searchPlaceholder="Search live streams..."
+        categoryPlaceholder="Genre"
         statusPlaceholder="Status"
       />
 
@@ -181,11 +191,11 @@ export default function LivesPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Evento</TableHead>
-              <TableHead>Data/Hora</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead className="min-w-[200px]">Genres</TableHead>
+              <TableHead>Date/Time</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Viewers</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -193,15 +203,23 @@ export default function LivesPage() {
               <TableRow key={live.id}>
                 <TableCell>
                   <div>
-                    <p className="font-medium">{live.nomeEvento}</p>
-                    <p className="text-sm text-muted-foreground line-clamp-1">{live.descricao}</p>
+                    <p className="font-medium">{live.eventName}</p>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-1 flex-wrap">
+                    {(live.genre || []).map((g, idx) => (
+                      <Badge key={idx} variant="secondary">
+                        <span>{g}</span>
+                      </Badge>
+                    ))}
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    <p>{new Date(live.dataHora).toLocaleDateString("pt-BR")}</p>
+                    <p>{new Date(live.dateTime).toLocaleDateString("en-US")}</p>
                     <p className="text-muted-foreground">
-                      {new Date(live.dataHora).toLocaleTimeString("pt-BR", { 
+                      {new Date(live.dateTime).toLocaleTimeString("en-US", { 
                         hour: "2-digit", 
                         minute: "2-digit" 
                       })}
@@ -210,18 +228,12 @@ export default function LivesPage() {
                 </TableCell>
                 <TableCell>
                   <Badge variant={
-                    live.status === "ao_vivo" ? "default" : 
-                    live.status === "em_breve" ? "secondary" : "outline"
+                    live.status === "live" ? "default" : 
+                    live.status === "upcoming" ? "secondary" : "outline"
                   }>
-                    {live.status === "ao_vivo" && <Play className="h-3 w-3 mr-1" />}
+                    {live.status === "live" && <Play className="h-3 w-3 mr-1" />}
                     {statusLabels[live.status]}
                   </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    {live.viewers || 0}
-                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <ActionDropdown
@@ -244,10 +256,10 @@ export default function LivesPage() {
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
           >
-            Anterior
+            Previous
           </Button>
           <span className="flex items-center px-4 text-sm">
-            Página {currentPage} de {totalPages}
+            Page {currentPage} of {totalPages}
           </span>
           <Button
             variant="outline"
@@ -255,7 +267,7 @@ export default function LivesPage() {
             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
           >
-            Próxima
+            Next
           </Button>
         </div>
       )}
@@ -264,11 +276,11 @@ export default function LivesPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">
-              {searchTerm || categoryFilter !== "all" || statusFilter !== "all" ? "Nenhuma transmissão encontrada com os filtros aplicados." : "Nenhuma transmissão cadastrada ainda."}
+              {searchTerm || categoryFilter !== "all" || statusFilter !== "all" ? "No live streams found with the applied filters." : "No live streams registered yet."}
             </div>
             {!searchTerm && categoryFilter === "all" && statusFilter === "all" && (
               <Button onClick={handleNewLive} className="mt-4">
-                Criar Primeira Live
+                Create First Live Stream
               </Button>
             )}
           </CardContent>

@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils";
 
 export interface Agent {
   id: string;
-  nome: string;
-  tipo: "jogador" | "time";
+  name: string;
+  type: "agent" | "group";
   number?: number;
 }
 
@@ -45,53 +45,53 @@ export function AgentMultiSelect({
   teams,
   value = [],
   onChange,
-  placeholder = "Buscar e selecionar agentes...",
+  placeholder = "Search and select agents...",
   disabled = false,
 }: AgentMultiSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
 
-  // Atualizar largura do popover quando abrir
+  // Update popover width when opened
   useEffect(() => {
     if (open && triggerRef.current) {
       setPopoverWidth(triggerRef.current.offsetWidth);
     }
   }, [open]);
 
-  // Combinar jogadores e times em uma lista unificada
+  // Combine players and teams into a unified list
   const allAgents = useMemo(() => {
     const agentsList: Array<{
       id: string;
-      nome: string;
-      tipo: "jogador" | "time";
+      name: string;
+      type: "agent" | "group";
       number?: number;
       searchText: string;
     }> = [
       ...players.map((player) => ({
         id: player.id,
-        nome: player.name,
-        tipo: "jogador" as const,
+        name: player.name,
+        type: "agent" as const,
         number: player.number,
-        searchText: `${player.name} ${player.number ? `#${player.number}` : ""} jogador`.toLowerCase(),
+        searchText: `${player.name} ${player.number ? `#${player.number}` : ""} agent`.toLowerCase(),
       })),
       ...teams.map((team) => ({
         id: team.id,
-        nome: team.name,
-        tipo: "time" as const,
-        searchText: `${team.name} time`.toLowerCase(),
+        name: team.name,
+        type: "group" as const,
+        searchText: `${team.name} group`.toLowerCase(),
       })),
     ];
 
-    // Filtrar agentes já adicionados
+    // Filter already added agents
     return agentsList.filter(
       (agent) => !value.find((added) => added.id === agent.id)
     );
   }, [players, teams, value]);
 
-  // Filtrar agentes baseado na busca
+  // Filter agents based on search
   const filteredAgents = useMemo(() => {
     if (!search.trim()) return allAgents;
 
@@ -101,45 +101,46 @@ export function AgentMultiSelect({
     );
   }, [allAgents, search]);
 
-  // Agrupar por tipo
+  // Group by type
   const groupedAgents = useMemo(() => {
-    const jogadores = filteredAgents.filter((a) => a.tipo === "jogador");
-    const times = filteredAgents.filter((a) => a.tipo === "time");
-    return { jogadores, times };
+    const agents = filteredAgents.filter((a) => a.type === "agent");
+    const groups = filteredAgents.filter((a) => a.type === "group");
+    return { agents, groups };
   }, [filteredAgents]);
 
   const handleSelect = (agentId: string) => {
-    setSelectedId(agentId);
+    setSelectedIds(prev => {
+      if (prev.includes(agentId)) {
+        return prev.filter(id => id !== agentId);
+      } else {
+        return [...prev, agentId];
+      }
+    });
   };
 
   const handleAdd = () => {
-    if (!selectedId) return;
+    if (selectedIds.length === 0) return;
 
-    const agent = allAgents.find((a) => a.id === selectedId);
-    if (agent) {
-      const newAgent: Agent = {
-        id: agent.id,
-        nome: agent.nome,
-        tipo: agent.tipo,
-        ...(agent.number && { number: agent.number }),
-      };
-      onChange([...value, newAgent]);
-      setSelectedId(null);
-      setSearch("");
-    }
+    const agentsToAdd = allAgents.filter((a) => selectedIds.includes(a.id));
+    const newAgents: Agent[] = agentsToAdd.map(agent => ({
+      id: agent.id,
+      name: agent.name,
+      type: agent.type,
+      ...(agent.number && { number: agent.number }),
+    }));
+    
+    onChange([...value, ...newAgents]);
+    setSelectedIds([]);
+    setSearch("");
   };
 
   const handleRemove = (agentId: string) => {
     onChange(value.filter((agent) => agent.id !== agentId));
   };
 
-  const selectedAgent = selectedId
-    ? allAgents.find((a) => a.id === selectedId)
-    : null;
-
   return (
     <div className="space-y-4">
-      {/* Campo de busca e seleção */}
+      {/* Search and selection field */}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -169,21 +170,21 @@ export function AgentMultiSelect({
         >
           <Command className="flex flex-col">
             <CommandInput
-              placeholder="Buscar jogadores ou times..."
+              placeholder="Search agents or groups..."
               value={search}
               onValueChange={setSearch}
             />
             <CommandList className="max-h-[250px] overflow-y-auto flex-1">
-              <CommandEmpty>Nenhum agente encontrado.</CommandEmpty>
+              <CommandEmpty>No agents found.</CommandEmpty>
 
-              {/* Grupo de Jogadores */}
-              {groupedAgents.jogadores.length > 0 && (
-                <CommandGroup heading="Jogadores">
-                  {groupedAgents.jogadores.map((agent) => {
-                    const isSelected = selectedId === agent.id;
+              {/* Agents Group */}
+              {groupedAgents.agents.length > 0 && (
+                <CommandGroup heading="Agents">
+                  {groupedAgents.agents.map((agent) => {
+                    const isSelected = selectedIds.includes(agent.id);
                     return (
                       <CommandItem
-                        key={`jogador-${agent.id}`}
+                        key={`agent-${agent.id}`}
                         value={agent.id}
                         onSelect={() => handleSelect(agent.id)}
                         className={cn(
@@ -195,7 +196,7 @@ export function AgentMultiSelect({
                           <div className="flex items-center gap-3 flex-1">
                             <div
                               className={cn(
-                                "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
                                 isSelected
                                   ? "border-primary bg-primary"
                                   : "border-muted-foreground/50"
@@ -208,7 +209,7 @@ export function AgentMultiSelect({
                             <User className="h-4 w-4 text-muted-foreground shrink-0" />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">
-                                {agent.nome}
+                                {agent.name}
                                 {agent.number && (
                                   <span className="text-muted-foreground ml-1">
                                     #{agent.number}
@@ -224,14 +225,14 @@ export function AgentMultiSelect({
                 </CommandGroup>
               )}
 
-              {/* Grupo de Times */}
-              {groupedAgents.times.length > 0 && (
-                <CommandGroup heading="Times">
-                  {groupedAgents.times.map((agent) => {
-                    const isSelected = selectedId === agent.id;
+              {/* Groups Group */}
+              {groupedAgents.groups.length > 0 && (
+                <CommandGroup heading="Groups">
+                  {groupedAgents.groups.map((agent) => {
+                    const isSelected = selectedIds.includes(agent.id);
                     return (
                       <CommandItem
-                        key={`time-${agent.id}`}
+                        key={`group-${agent.id}`}
                         value={agent.id}
                         onSelect={() => handleSelect(agent.id)}
                         className={cn(
@@ -243,7 +244,7 @@ export function AgentMultiSelect({
                           <div className="flex items-center gap-3 flex-1">
                             <div
                               className={cn(
-                                "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
                                 isSelected
                                   ? "border-primary bg-primary"
                                   : "border-muted-foreground/50"
@@ -256,7 +257,7 @@ export function AgentMultiSelect({
                             <Users className="h-4 w-4 text-muted-foreground shrink-0" />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">
-                                {agent.nome}
+                                {agent.name}
                               </p>
                             </div>
                           </div>
@@ -269,29 +270,28 @@ export function AgentMultiSelect({
             </CommandList>
           </Command>
 
-          {/* Botão de adicionar - sempre visível quando há seleção */}
-          {selectedAgent && (
+          {/* Add button - always visible when there's a selection */}
+          {selectedIds.length > 0 && (
             <div className="border-t p-3 bg-muted/30 shrink-0">
               <Button
                 type="button"
                 onClick={handleAdd}
                 className="w-full"
-                disabled={!selectedId}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Adicionar {selectedAgent.tipo === "jogador" ? "Jogador" : "Time"}
+                Add {selectedIds.length} {selectedIds.length === 1 ? "Item" : "Items"}
               </Button>
             </div>
           )}
         </PopoverContent>
       </Popover>
 
-      {/* Lista de agentes adicionados */}
+      {/* List of added agents */}
       {value.length > 0 && (
         <div className="border rounded-lg p-4 bg-muted/50">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium">
-              Agentes Selecionados ({value.length})
+              Selected Agents ({value.length})
             </p>
             <Button
               type="button"
@@ -300,7 +300,7 @@ export function AgentMultiSelect({
               onClick={() => onChange([])}
               className="text-destructive hover:text-destructive h-auto py-1 px-2 text-xs"
             >
-              Limpar todos
+              Clear all
             </Button>
           </div>
           <div className="space-y-2">
@@ -310,14 +310,14 @@ export function AgentMultiSelect({
                 className="flex items-center justify-between p-3 bg-background border rounded-md hover:border-primary/50 transition-colors"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {agent.tipo === "jogador" ? (
+                  {agent.type === "agent" ? (
                     <User className="h-4 w-4 text-muted-foreground shrink-0" />
                   ) : (
                     <Users className="h-4 w-4 text-muted-foreground shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">
-                      {agent.nome}
+                      {agent.name}
                       {agent.number && (
                         <span className="text-muted-foreground ml-1">
                           #{agent.number}
@@ -328,7 +328,7 @@ export function AgentMultiSelect({
                       variant="secondary"
                       className="text-xs mt-1"
                     >
-                      {agent.tipo === "jogador" ? "Jogador" : "Time"}
+                      {agent.type === "agent" ? "Agent" : "Group"}
                     </Badge>
                   </div>
                 </div>

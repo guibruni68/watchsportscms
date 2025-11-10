@@ -23,10 +23,10 @@ import EditBannerPage from "./pages/banners/EditBannerPage";
 import CustomizationPage from "./pages/customization/CustomizationPage";
 import AdsPage from "./pages/ads/AdsPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
-import CataloguesPage from "./pages/catalogues/CataloguesPage";
-import NewCataloguePage from "./pages/catalogues/NewCataloguePage";
-import EditCataloguePage from "./pages/catalogues/EditCataloguePage";
-import CatalogueDetailsPage from "./pages/catalogues/CatalogueDetailsPage";
+import CollectionsPage from "./pages/collections/CollectionsPage";
+import NewCollectionPage from "./pages/collections/NewCollectionPage";
+import EditCollectionPage from "./pages/collections/EditCollectionPage";
+import CollectionDetailsPage from "./pages/collections/CollectionDetailsPage";
 import AuthPage from "./pages/AuthPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import NotFound from "./pages/NotFound";
@@ -136,24 +136,24 @@ const App = () => (
                 <AnalyticsPage />
               </ProtectedRoute>
             } />
-            <Route path="/catalogues" element={
+            <Route path="/collections" element={
               <ProtectedRoute>
-                <CataloguesPage />
+                <CollectionsPage />
               </ProtectedRoute>
             } />
-            <Route path="/catalogues/novo" element={
+            <Route path="/collections/novo" element={
               <ProtectedRoute>
-                <NewCataloguePage />
+                <NewCollectionPage />
               </ProtectedRoute>
             } />
-            <Route path="/catalogues/:id" element={
+            <Route path="/collections/:id" element={
               <ProtectedRoute>
-                <CatalogueDetailsPage />
+                <CollectionDetailsPage />
               </ProtectedRoute>
             } />
-            <Route path="/catalogues/edit/:id" element={
+            <Route path="/collections/edit/:id" element={
               <ProtectedRoute>
-                <EditCataloguePage />
+                <EditCollectionPage />
               </ProtectedRoute>
             } />
             

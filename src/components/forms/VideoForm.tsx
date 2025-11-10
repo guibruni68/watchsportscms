@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format } from "date-fns";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -17,39 +18,43 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { mockPlayers, mockTeams } from "@/data/mockData";
-import { CatalogueSelector } from "@/components/ui/catalogue-selector";
+import { CollectionSelector } from "@/components/ui/collection-selector";
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
 const videoSchema = z.object({
-  titulo: z.string().min(1, "Título é obrigatório"),
-  descricao: z.string().min(1, "Descrição é obrigatória"),
+  titulo: z.string().min(1, "Title is required"),
+  descricao: z.string().min(1, "Description is required"),
   tags: z.string(),
-  generos: z.array(z.string()).min(1, "Pelo menos um gênero é obrigatório"),
-  tag: z.string().min(1, "Tag é obrigatória"),
+  generos: z.array(z.string()).min(1, "At least one genre is required"),
+  tag: z.string().min(1, "Tag is required"),
   dataProducao: z.date(),
   agendarPublicacao: z.boolean(),
   dataPublicacao: z.date().optional(),
   videoFile: z.string().optional(),
   imagemCapa: z.string().optional(),
-  catalogueId: z.string().optional(),
+  collectionId: z.string().optional(),
   agentesRelacionados: z.array(z.object({
     id: z.string(),
-    nome: z.string(),
-    tipo: z.enum(["jogador", "time"])
+    name: z.string(),
+    type: z.enum(["agent", "group"])
   })).optional()
 });
 type VideoFormData = z.infer<typeof videoSchema>;
 interface VideoFormProps {
   initialData?: Partial<VideoFormData>;
   isEdit?: boolean;
+  onClose?: () => void;
 }
 export function VideoForm({
   initialData,
-  isEdit = false
+  isEdit = false,
+  onClose
 }: VideoFormProps) {
   const navigate = useNavigate();
   const {
     toast
   } = useToast();
+  const [videoUploadMode, setVideoUploadMode] = useState<"file" | "url">("file");
+  const [imageUploadMode, setImageUploadMode] = useState<"file" | "url">("file");
   const form = useForm<VideoFormData>({
     resolver: zodResolver(videoSchema),
     defaultValues: {
@@ -59,36 +64,40 @@ export function VideoForm({
       generos: initialData?.generos || [],
       tag: initialData?.tag || "",
       dataProducao: initialData?.dataProducao || new Date(),
-      agendarPublicacao: initialData?.agendarPublicacao || false,
-      dataPublicacao: initialData?.dataPublicacao,
-      videoFile: initialData?.videoFile || "",
-      imagemCapa: initialData?.imagemCapa || "",
-      catalogueId: initialData?.catalogueId,
-      agentesRelacionados: initialData?.agentesRelacionados || []
+      agendarPublicacao: false,
+      dataPublicacao: undefined,
+      videoFile: initialData?.videoFile,
+      imagemCapa: initialData?.imagemCapa,
+      collectionId: initialData?.collectionId,
+      agentesRelacionados: initialData?.agentesRelacionados || [],
     }
   });
   const onSubmit = (data: VideoFormData) => {
-    // Mock save - aqui seria integração com backend
-    console.log("Salvando vídeo:", data);
+    // Mock save - here would be backend integration
+    console.log("Saving video:", data);
     toast({
-      title: isEdit ? "Vídeo atualizado!" : "Vídeo criado!",
-      description: `${data.titulo} foi ${isEdit ? "atualizado" : "criado"} com sucesso.`
+      title: isEdit ? "Video updated!" : "Video created!",
+      description: `${data.titulo} was ${isEdit ? "updated" : "created"} successfully.`
     });
-    navigate("/videos");
+    if (onClose) {
+      onClose();
+    } else {
+      navigate("/videos");
+    }
   };
-  const generos = ["Gols e Melhores Momentos", "Entrevistas", "Bastidores", "Treinos", "Histórico do Clube", "Análises Táticas", "Documentários", "Transmissões"];
-  const tagsPreConfiguradas = ["Novidade", "Novo Episódio", "Destaque", "Ao Vivo", "Exclusivo"];
+  const generos = ["Goals and Highlights", "Interviews", "Behind the Scenes", "Training", "Club History", "Tactical Analysis", "Documentaries", "Live Streams"];
+  const tagsPreConfiguradas = ["New", "New Episode", "Featured", "Live", "Exclusive"];
   return <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/videos")} className="text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="sm" onClick={() => onClose ? onClose() : navigate("/videos")} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Voltar para Vídeos
+          Back to Videos
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{isEdit ? "Editar Vídeo" : "Novo Vídeo"}</CardTitle>
+          <CardTitle>{isEdit ? "Edit Video" : "New Video"}</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -98,9 +107,9 @@ export function VideoForm({
                   <FormField control={form.control} name="titulo" render={({
                   field
                 }) => <FormItem>
-                        <FormLabel>Título *</FormLabel>
+                        <FormLabel>Title *</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ex: Gols da vitória contra o rival" {...field} />
+                          <Input placeholder="Ex: Victory goals against rival" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>} />
@@ -108,7 +117,7 @@ export function VideoForm({
                   <FormField control={form.control} name="generos" render={({
                   field
                 }) => <FormItem>
-                        <FormLabel>Gêneros *</FormLabel>
+                        <FormLabel>Genres *</FormLabel>
                         <div className="space-y-4">
                           <Select onValueChange={value => {
                       if (!field.value?.includes(value)) {
@@ -116,7 +125,7 @@ export function VideoForm({
                       }
                     }}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecionar gêneros" />
+                              <SelectValue placeholder="Select genres" />
                             </SelectTrigger>
                             <SelectContent>
                               {generos.filter(genero => !field.value?.includes(genero)).map(genero => <SelectItem key={genero} value={genero}>
@@ -143,7 +152,7 @@ export function VideoForm({
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecione uma tag" />
+                              <SelectValue placeholder="Select a tag" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -159,27 +168,68 @@ export function VideoForm({
                 <FormField control={form.control} name="imagemCapa" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Imagem de Capa</FormLabel>
+                      <FormLabel>Cover Image</FormLabel>
+                      <div className="flex gap-2 mb-4">
+                        <Button
+                          type="button"
+                          variant={imageUploadMode === "file" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setImageUploadMode("file")}
+                        >
+                          Upload File
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={imageUploadMode === "url" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setImageUploadMode("url")}
+                        >
+                          Image URL
+                        </Button>
+                      </div>
                       <FormControl>
                         <div className="space-y-4">
-                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-muted-foreground/50 transition-colors">
-                            <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                            <p className="text-sm text-muted-foreground mb-1">
-                              Clique para fazer upload da capa
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              PNG, JPG até 5MB
-                            </p>
-                            <Input type="file" accept="image/*" className="hidden" onChange={e => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const url = URL.createObjectURL(file);
-                          field.onChange(url);
-                        }
-                      }} />
-                          </div>
+                          {!field.value && imageUploadMode === "file" && (
+                            <div 
+                              className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-muted-foreground/50 transition-colors cursor-pointer"
+                              onClick={() => document.getElementById('cover-image-input')?.click()}
+                            >
+                              <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                              <p className="text-sm text-muted-foreground mb-1">
+                                Click to upload cover image
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                PNG, JPG up to 5MB
+                              </p>
+                              <Input 
+                                id="cover-image-input"
+                                type="file" 
+                                accept="image/*" 
+                                className="hidden" 
+                                onChange={e => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const url = URL.createObjectURL(file);
+                                    field.onChange(url);
+                                  }
+                                }} 
+                              />
+                            </div>
+                          )}
+                          {!field.value && imageUploadMode === "url" && (
+                            <div className="space-y-2">
+                              <Input 
+                                placeholder="https://example.com/image.jpg" 
+                                value={field.value || ""} 
+                                onChange={(e) => field.onChange(e.target.value)}
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Enter the direct URL to your cover image
+                              </p>
+                            </div>
+                          )}
                           {field.value && <div className="relative">
-                              <img src={field.value} alt="Capa do vídeo" className="w-full h-32 object-cover rounded-lg border" />
+                              <img src={field.value} alt="Video cover" className="w-full h-32 object-cover rounded-lg border" />
                               <Button type="button" variant="destructive" size="sm" className="absolute top-2 right-2" onClick={() => field.onChange("")}>
                                 <X className="h-4 w-4" />
                               </Button>
@@ -193,9 +243,9 @@ export function VideoForm({
               <FormField control={form.control} name="descricao" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Descrição *</FormLabel>
+                    <FormLabel>Description *</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Descreva o conteúdo do vídeo..." className="min-h-24" {...field} />
+                      <Textarea placeholder="Describe the video content..." className="min-h-24" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>} />
@@ -204,9 +254,9 @@ export function VideoForm({
                 <FormField control={form.control} name="tags" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Palavras-chave</FormLabel>
+                      <FormLabel>Keywords</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: gols, vitória, campeonato (separadas por vírgula)" {...field} />
+                        <Input placeholder="Ex: goals, victory, championship (comma separated)" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>} />
@@ -214,12 +264,12 @@ export function VideoForm({
                 <FormField control={form.control} name="dataProducao" render={({
                 field
               }) => <FormItem className="flex flex-col">
-                      <FormLabel>Data de Produção *</FormLabel>
+                      <FormLabel>Production Date *</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                              {field.value ? format(field.value, "PPP") : <span>Selecione uma data</span>}
+                              {field.value ? format(field.value, "PPP") : <span>Select a date</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
@@ -232,17 +282,17 @@ export function VideoForm({
                     </FormItem>} />
               </div>
 
-              {/* Agendamento de Publicação */}
+              {/* Publish Scheduling */}
               <div className="space-y-4 border rounded-lg p-4">
                 <FormField control={form.control} name="agendarPublicacao" render={({
                 field
               }) => <FormItem className="flex flex-row items-center justify-between">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base">
-                          Agendar publicação
+                          Schedule publication
                         </FormLabel>
                         <p className="text-sm text-muted-foreground">
-                          Se desabilitado, o conteúdo será publicado imediatamente
+                          If disabled, content will be published immediately
                         </p>
                       </div>
                       <FormControl>
@@ -253,12 +303,12 @@ export function VideoForm({
                 {form.watch("agendarPublicacao") && <FormField control={form.control} name="dataPublicacao" render={({
                 field
               }) => <FormItem className="flex flex-col">
-                        <FormLabel>Data de Publicação</FormLabel>
+                        <FormLabel>Publication Date</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                {field.value ? format(field.value, "PPP") : <span>Selecione uma data</span>}
+                                {field.value ? format(field.value, "PPP") : <span>Select a date</span>}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
@@ -274,7 +324,7 @@ export function VideoForm({
               <FormField control={form.control} name="agentesRelacionados" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Agentes Relacionados</FormLabel>
+                    <FormLabel>Related Agents & Groups</FormLabel>
                     <FormControl>
                       <AgentMultiSelect
                         players={mockPlayers.map(p => ({
@@ -288,7 +338,7 @@ export function VideoForm({
                         }))}
                         value={field.value || []}
                         onChange={field.onChange}
-                        placeholder="Buscar e selecionar agentes (jogadores e times)"
+                        placeholder="Search and select agents or groups..."
                       />
                     </FormControl>
                     <FormMessage />
@@ -297,28 +347,72 @@ export function VideoForm({
               <FormField control={form.control} name="videoFile" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Arquivo de Vídeo</FormLabel>
+                    <FormLabel>Video File</FormLabel>
+                    <div className="flex gap-2 mb-4">
+                      <Button
+                        type="button"
+                        variant={videoUploadMode === "file" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setVideoUploadMode("file")}
+                      >
+                        Upload File
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={videoUploadMode === "url" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setVideoUploadMode("url")}
+                      >
+                        Video URL
+                      </Button>
+                    </div>
                     <FormControl>
-                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-muted-foreground/50 transition-colors">
-                        <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Clique para fazer upload ou arraste o arquivo aqui
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Formatos aceitos: MP4, AVI, MOV (máx. 500MB)
-                        </p>
-                        <Input type="file" accept="video/*" className="hidden" onChange={e => field.onChange(e.target.files?.[0]?.name || "")} />
-                      </div>
+                      {videoUploadMode === "file" ? (
+                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-muted-foreground/50 transition-colors cursor-pointer"
+                          onClick={() => document.getElementById('video-file-input')?.click()}
+                        >
+                          <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Click to upload or drag file here
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Accepted formats: MP4, AVI, MOV (max. 500MB)
+                          </p>
+                          {field.value && !field.value.startsWith('http') && (
+                            <p className="text-xs text-primary mt-2">
+                              Selected: {field.value}
+                            </p>
+                          )}
+                          <Input 
+                            id="video-file-input"
+                            type="file" 
+                            accept="video/*" 
+                            className="hidden" 
+                            onChange={e => field.onChange(e.target.files?.[0]?.name || "")} 
+                          />
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <Input 
+                            placeholder="https://example.com/video.mp4" 
+                            value={field.value || ""} 
+                            onChange={(e) => field.onChange(e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Enter the direct URL to your video file
+                          </p>
+                        </div>
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>} />
 
               <div className="flex gap-4 pt-6">
                 <Button type="submit" className="flex-1">
-                  {isEdit ? "Atualizar Vídeo" : "Criar Vídeo"}
+                  {isEdit ? "Update Video" : "Create Video"}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => navigate("/videos")} className="flex-1">
-                  Cancelar
+                <Button type="button" variant="outline" onClick={() => onClose ? onClose() : navigate("/videos")} className="flex-1">
+                  Cancel
                 </Button>
               </div>
             </form>

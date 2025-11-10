@@ -3,7 +3,7 @@ import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getActiveCatalogues } from "@/data/mockCatalogues";
+import { getActiveCollections } from "@/data/mockCatalogues";
 import { toast } from "@/hooks/use-toast";
 
 interface Content {
@@ -60,13 +60,15 @@ export function CarouselManualSelector({
           break;
 
         case 'collection':
-          const catalogues = getActiveCatalogues();
-          results = catalogues
-            .filter(c => c.titulo.toLowerCase().includes(term.toLowerCase()))
+          const collections = getActiveCollections();
+          results = collections
+            .filter(c => 
+              c.titulo.toLowerCase().includes(search.toLowerCase())
+            )
             .map(c => ({
               id: c.id,
               title: c.titulo,
-              type: 'catalogue'
+              type: 'collection'
             }));
           break;
 

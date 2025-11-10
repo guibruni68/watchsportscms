@@ -68,19 +68,6 @@ export default function ForgotPasswordPage() {
             className="h-12"
           />
         </div>
-        
-        <div className="space-y-6">
-          <h1 className="text-5xl font-bold leading-tight">
-            Recupere sua
-            <br />
-            senha em
-            <br />
-            instantes
-          </h1>
-          <p className="text-xl text-white/80">
-            Digite seu email e enviaremos as instruções
-          </p>
-        </div>
       </div>
 
       {/* Right Side - Reset Form */}
@@ -90,7 +77,7 @@ export default function ForgotPasswordPage() {
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Voltar ao login
+              Back to Login
             </Button>
           </div>
 
@@ -100,10 +87,10 @@ export default function ForgotPasswordPage() {
               <div className="space-y-2 pb-4">
                 <h2 className="text-3xl font-bold flex items-center gap-3">
                   <KeyRound className="h-7 w-7" />
-                  Recuperar Senha
+                  Recover Password
                 </h2>
                 <p className="text-muted-foreground">
-                  Digite seu email para receber as instruções de recuperação
+                  Enter your email to receive recovery instructions
                 </p>
               </div>
 
@@ -113,7 +100,7 @@ export default function ForgotPasswordPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="seu@email.com"
+                    placeholder="email@cms.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -127,7 +114,7 @@ export default function ForgotPasswordPage() {
                   className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
                   disabled={loading || !email}
                 >
-                  {loading ? "Enviando..." : "Enviar Email"}
+                  {loading ? "Loading..." : "Submit"}
                 </Button>
               </div>
             </form>
@@ -136,13 +123,13 @@ export default function ForgotPasswordPage() {
           {/* Additional Help */}
           <div className="text-center text-sm text-muted-foreground">
             <p>
-              Não recebeu o email? Verifique sua pasta de spam ou{" "}
+              Did not receive the email? Check your spam folder or{" "}
               <button
                 onClick={handlePasswordReset}
                 disabled={loading || !email}
                 className="text-primary hover:underline font-medium"
               >
-                tente novamente
+                try again
               </button>
             </p>
           </div>

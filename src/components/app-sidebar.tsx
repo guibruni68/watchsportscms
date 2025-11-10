@@ -1,7 +1,7 @@
-import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical } from "lucide-react";
+import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop } from "lucide-react";
 import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, useSidebar } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
 import { useGuestMode } from "@/hooks/useGuestMode";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -15,45 +15,80 @@ const mainNavItems = [{
   url: "/",
   icon: Home
 }, {
-  title: "Conteúdos",
+  title: "Content Management",
   icon: Folder,
-  items: [{
-    title: "Vídeos (VOD)",
-    url: "/videos",
-    icon: Video
-  }, {
-    title: "Lives",
-    url: "/lives",
-    icon: Radio
-  }, {
-    title: "Catálogos",
-    url: "/catalogues",
-    icon: Tag
-  }, {
-    title: "Notícias",
-    url: "/news",
-    icon: Newspaper
-  }]
-}, {
-  title: "Banners",
-  url: "/banners",
-  icon: MonitorSpeaker
-}, {
-  title: "Carrosséis",
-  url: "/carousels",
-  icon: Layout
-}, {
+  items: [
+    {
+      title: "Agents & Groups",
+      url: "/teams",
+      icon: Users
+    }, 
+    {
+      title: "Videos (VOD)",
+      url: "/videos",
+      icon: Video
+    }, 
+    {
+      title: "Lives",
+      url: "/lives",
+      icon: Radio
+    }, 
+    {
+      title: "Collections",
+      url: "/collections",
+      icon: Tag
+    }, 
+    {
+      title: "News",
+      url: "/news",
+      icon: Newspaper
+    },
+    {
+      title: "Agenda",
+      url: "/schedule",
+      icon: Calendar
+    },  
+  ]
+}, 
+{
+  title: "Pages & Shelves",
+  icon: LayoutPanelTop,
+  items: [
+    {
+      title: "Banners",
+      url: "/banners",
+      icon: MonitorSpeaker
+    },
+    {
+      title: "Shelves",
+      url: "/carousels",
+      icon: Layout
+    },
+    {
+      title: "Pages",
+      url: "/pages",
+      icon: MonitorSpeaker
+    }
+  ]
+}, 
+{
   title: "Analytics",
   url: "/analytics",
   icon: BarChart3
+},
+{
+  title: "Ads Management",
+  url: "/advertising",
+  icon: Megaphone
+},
+{
+  title: "Subscriptions & Billing",
+  url: "/billing",
+  icon: DollarSign
 }, {
-  title: "Times & Elencos",
-  url: "/teams",
-  icon: Users
-}, {
-  title: "Agenda",
-  url: "/schedule",
-  icon: Calendar
+  title: "Users Management",
+  url: "/team",
+  icon: UserCheck
 }];
 const settingsNavItems = [{
   title: "Personalização",
@@ -65,9 +100,6 @@ const settingsNavItems = [{
   icon: Settings
 }];
 export function AppSidebar() {
-  const {
-    state
-  } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
   const {
@@ -115,7 +147,7 @@ export function AppSidebar() {
 
   const getUserDisplayName = () => {
     if (isGuest) return "Visitante";
-    if (!user?.email) return "Usuário";
+    if (!user?.email) return "User";
     return user.email.split("@")[0];
   };
 
@@ -123,7 +155,7 @@ export function AppSidebar() {
     const name = getUserDisplayName();
     return name.substring(0, 2).toUpperCase();
   };
-  return <Sidebar className={state === "collapsed" ? "w-16" : "w-64"} collapsible="icon">
+  return <Sidebar className="w-64">
       <SidebarContent className="bg-gradient-to-b from-card to-muted/20">
         {/* Logo Section */}
         <div className="px-6 pt-6 pb-3 border-b border-border/50 flex justify-center">
@@ -148,9 +180,9 @@ export function AppSidebar() {
                           <CollapsibleTrigger className="w-full flex items-center justify-between">
                             <div className="flex items-center">
                               <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
-                              {state !== "collapsed" && <span className="mx-[6px]">{item.title}</span>}
+                              <span className="mx-[6px]">{item.title}</span>
                             </div>
-                            {state !== "collapsed" && <ChevronRight className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />}
+                            <ChevronRight className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                           </CollapsibleTrigger>
                         </SidebarMenuButton>
                         <CollapsibleContent>
@@ -173,7 +205,7 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild className={`h-12 px-6 ${getNavClassName(item.url!)}`}>
                       <NavLink to={item.url!} end={item.url === "/"}>
                         <item.icon className="h-4 w-4 text-muted-foreground mr-3" />
-                        {state !== "collapsed" && <span>{item.title}</span>}
+                        <span>{item.title}</span>
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>;
@@ -186,31 +218,25 @@ export function AppSidebar() {
         <SidebarFooter className="mt-auto border-t border-border/50">
           <div className="p-4">
             <DropdownMenu>
-              <div className="flex items-center gap-3 rounded-lg p-2 hover:bg-muted/50 transition-colors">
-                <Avatar className="h-10 w-10 border-2 border-border">
-                  <AvatarImage src={user?.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    {getUserInitials()}
-                  </AvatarFallback>
-                </Avatar>
-                {state !== "collapsed" && (
-                  <>
-                    <div className="flex-1 overflow-hidden">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {getUserDisplayName()}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {isGuest ? "Modo visitante" : user?.email}
-                      </p>
-                    </div>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                  </>
-                )}
-              </div>
+              <DropdownMenuTrigger asChild>
+                <div className="flex items-center gap-3 rounded-lg p-2 hover:bg-muted/50 transition-colors cursor-pointer">
+                  <Avatar className="h-10 w-10 border-2 border-border">
+                    <AvatarImage src={user?.user_metadata?.avatar_url} />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 overflow-hidden">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {getUserDisplayName()}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {isGuest ? "Modo visitante" : user?.email}
+                    </p>
+                  </div>
+                  <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />

@@ -68,14 +68,14 @@ export function ContentMultiSelect({
 
       // Buscar vídeos (VOD)
       const filteredVideos = searchTerm
-        ? mockVideos.filter(v => v.titulo.toLowerCase().includes(searchLower)).slice(0, 10)
+        ? mockVideos.filter(v => v.title.toLowerCase().includes(searchLower)).slice(0, 10)
         : mockVideos.slice(0, 20);
       
       contents.push(...filteredVideos.map(v => ({
         id: v.id,
-        titulo: v.titulo,
+        titulo: v.title,
         tipo: "video" as const,
-        thumbnail: v.imagem_capa
+        thumbnail: v.cover_image
       })));
 
       // Buscar lives

@@ -20,12 +20,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
 
+  // BYPASS AUTH - Comment out redirect to auth
+  /*
   // All hooks must be called before any conditional returns
   useEffect(() => {
     if (!loading && !user && !isGuest) {
       navigate("/auth")
     }
   }, [user, loading, isGuest, navigate])
+  */
 
   const handleSignOut = async () => {
     try {
@@ -64,9 +67,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     )
   }
 
+  // BYPASS AUTH - Comment out auth check
+  /*
   if (!user && !isGuest && !loading) {
     return null
   }
+  */
+  
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">

@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { X, Plus, Search } from "lucide-react";
-import { getActiveCatalogues } from "@/data/mockCatalogues";
+import { getActiveCollections } from "@/data/mockCatalogues";
 
 interface Content {
   id: string;
@@ -62,11 +62,11 @@ export function CarouselContentSelector({
             break;
             
           case "collection":
-            const catalogues = getActiveCatalogues();
-            data = catalogues.map(catalogue => ({
-              id: catalogue.id,
-              title: catalogue.titulo,
-              type: "catalogue",
+            const collections = getActiveCollections();
+            data = collections.map(collection => ({
+              id: collection.id,
+              title: collection.titulo,
+              type: "collection",
               domain: "collection"
             }));
             break;

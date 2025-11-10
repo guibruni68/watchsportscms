@@ -6,17 +6,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { getActiveCatalogues } from "@/data/mockCatalogues";
-import CatalogueForm from "@/components/forms/CatalogueForm";
+import { getActiveCollections } from "@/data/mockCatalogues";
+import CollectionForm from "@/components/forms/CollectionForm";
 
-interface Catalogue {
+interface Collection {
   id: string;
   titulo: string;
   tipo_catalogo: string;
   status: boolean;
 }
 
-interface CatalogueSelectorProps {
+interface CollectionSelectorProps {
   value?: string;
   onValueChange: (value: string | undefined) => void;
   placeholder?: string;
@@ -30,33 +30,33 @@ const tipoLabels = {
   outro: "Outro"
 };
 
-export function CatalogueSelector({ value, onValueChange, placeholder = "Selecionar catálogo...", disabled }: CatalogueSelectorProps) {
+export function CollectionSelector({ value, onValueChange, placeholder = "Selecionar coleção...", disabled }: CollectionSelectorProps) {
   const [open, setOpen] = useState(false);
-  const [catalogues, setCatalogues] = useState<Catalogue[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(false);
   const [showNewForm, setShowNewForm] = useState(false);
 
-  const selectedCatalogue = catalogues.find(catalogue => catalogue.id === value);
+  const selectedCollection = collections.find(collection => collection.id === value);
 
-  const fetchCatalogues = async () => {
+  const fetchCollections = async () => {
     setLoading(true);
     try {
-      const data = getActiveCatalogues();
-      setCatalogues(data);
+      const data = getActiveCollections();
+      setCollections(data);
     } catch (error) {
-      console.error('Erro ao buscar catálogos:', error);
+      console.error('Erro ao buscar coleções:', error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCatalogues();
+    fetchCollections();
   }, []);
 
-  const handleNewCatalogueSuccess = () => {
+  const handleNewCollectionSuccess = () => {
     setShowNewForm(false);
-    fetchCatalogues(); // Recarregar lista
+    fetchCollections(); // Recarregar lista
   };
 
   return (
@@ -70,12 +70,12 @@ export function CatalogueSelector({ value, onValueChange, placeholder = "Selecio
             className="w-full justify-between"
             disabled={disabled}
           >
-            {selectedCatalogue ? (
+            {selectedCollection ? (
               <div className="flex items-center gap-2">
                 <Tag className="h-4 w-4" />
-                <span className="truncate">{selectedCatalogue.titulo}</span>
+                <span className="truncate">{selectedCollection.titulo}</span>
                 <Badge variant="secondary" className="text-xs">
-                  {tipoLabels[selectedCatalogue.tipo_catalogo as keyof typeof tipoLabels]}
+                  {tipoLabels[selectedCollection.tipo_catalogo as keyof typeof tipoLabels]}
                 </Badge>
               </div>
             ) : (
@@ -86,10 +86,10 @@ export function CatalogueSelector({ value, onValueChange, placeholder = "Selecio
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
           <Command>
-            <CommandInput placeholder="Buscar catálogo..." />
+            <CommandInput placeholder="Buscar coleção..." />
             <CommandList>
               <CommandEmpty>
-                {loading ? "Carregando..." : "Nenhum catálogo encontrado."}
+                {loading ? "Carregando..." : "Nenhuma coleção encontrada."}
               </CommandEmpty>
               <CommandGroup>
                 <CommandItem
@@ -105,28 +105,28 @@ export function CatalogueSelector({ value, onValueChange, placeholder = "Selecio
                       !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  Nenhum catálogo
+                  Nenhuma coleção
                 </CommandItem>
-                {catalogues.map((catalogue) => (
+                {collections.map((collection) => (
                   <CommandItem
-                    key={catalogue.id}
-                    value={catalogue.titulo}
+                    key={collection.id}
+                    value={collection.titulo}
                     onSelect={() => {
-                      onValueChange(catalogue.id === value ? undefined : catalogue.id);
+                      onValueChange(collection.id === value ? undefined : collection.id);
                       setOpen(false);
                     }}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value === catalogue.id ? "opacity-100" : "opacity-0"
+                        value === collection.id ? "opacity-100" : "opacity-0"
                       )}
                     />
                     <div className="flex items-center gap-2 flex-1">
                       <Tag className="h-4 w-4" />
-                      <span className="truncate">{catalogue.titulo}</span>
+                      <span className="truncate">{collection.titulo}</span>
                       <Badge variant="secondary" className="text-xs ml-auto">
-                        {tipoLabels[catalogue.tipo_catalogo as keyof typeof tipoLabels]}
+                        {tipoLabels[collection.tipo_catalogo as keyof typeof tipoLabels]}
                       </Badge>
                     </div>
                   </CommandItem>
@@ -141,16 +141,16 @@ export function CatalogueSelector({ value, onValueChange, placeholder = "Selecio
                       className="text-primary"
                     >
                       <Plus className="mr-2 h-4 w-4" />
-                      Criar novo catálogo
+                      Criar nova coleção
                     </CommandItem>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>Criar Novo Catálogo</DialogTitle>
+                      <DialogTitle>Criar Nova Coleção</DialogTitle>
                     </DialogHeader>
-                    <CatalogueForm 
+                    <CollectionForm 
                       isInline={true}
-                      onSuccess={handleNewCatalogueSuccess}
+                      onSuccess={handleNewCollectionSuccess}
                     />
                   </DialogContent>
                 </Dialog>
@@ -160,13 +160,13 @@ export function CatalogueSelector({ value, onValueChange, placeholder = "Selecio
         </PopoverContent>
       </Popover>
 
-      {/* Mostrar catálogo selecionado */}
-      {selectedCatalogue && (
+      {/* Mostrar coleção selecionada */}
+      {selectedCollection && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Tag className="h-3 w-3" />
-          <span>Catálogo: {selectedCatalogue.titulo}</span>
+          <span>Coleção: {selectedCollection.titulo}</span>
           <Badge variant="outline" className="text-xs">
-            {tipoLabels[selectedCatalogue.tipo_catalogo as keyof typeof tipoLabels]}
+            {tipoLabels[selectedCollection.tipo_catalogo as keyof typeof tipoLabels]}
           </Badge>
         </div>
       )}

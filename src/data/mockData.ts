@@ -57,10 +57,11 @@ export interface Content {
 
 export interface Video {
   id: string;
-  titulo: string;
-  descricao?: string;
-  imagem_capa?: string;
-  duracao?: string;
+  title: string;
+  description?: string;
+  cover_image?: string;
+  duration?: string;
+  genre?: string[];
   views: number;
   createdAt: string;
 }
@@ -387,46 +388,51 @@ export const mockCoaches: Coach[] = [
 export const mockVideos: Video[] = [
   {
     id: "video1",
-    titulo: "Melhores momentos: Final do Campeonato 2024",
-    descricao: "Reveja os melhores lances da emocionante final do campeonato estadual",
-    imagem_capa: "/placeholder.svg",
-    duracao: "12:34",
+    title: "Melhores momentos: Final do Campeonato 2024",
+    description: "Reveja os melhores lances da emocionante final do campeonato estadual",
+    cover_image: "/placeholder.svg",
+    duration: "12:34",
+    genre: ["Highlights", "Championship"],
     views: 25400,
     createdAt: "2024-01-18T20:00:00"
   },
   {
     id: "video2",
-    titulo: "Top 10 Cestas da Semana",
-    descricao: "As jogadas mais incríveis da rodada",
-    imagem_capa: "/placeholder.svg",
-    duracao: "5:42",
+    title: "Top 10 Cestas da Semana",
+    description: "As jogadas mais incríveis da rodada",
+    cover_image: "/placeholder.svg",
+    duration: "5:42",
+    genre: ["Highlights", "Weekly"],
     views: 18900,
     createdAt: "2024-01-17T18:30:00"
   },
   {
     id: "video3",
-    titulo: "Análise Tática: Como vencer defesas por zona",
-    descricao: "Nosso especialista explica as melhores estratégias",
-    imagem_capa: "/placeholder.svg",
-    duracao: "8:15",
+    title: "Análise Tática: Como vencer defesas por zona",
+    description: "Nosso especialista explica as melhores estratégias",
+    cover_image: "/placeholder.svg",
+    duration: "8:15",
+    genre: ["Analysis", "Tactics"],
     views: 12300,
     createdAt: "2024-01-16T15:00:00"
   },
   {
     id: "video4",
-    titulo: "Entrevista: Marcus Johnson fala sobre título",
-    descricao: "O armador conta sobre a conquista e os bastidores",
-    imagem_capa: "/placeholder.svg",
-    duracao: "6:28",
+    title: "Entrevista: Marcus Johnson fala sobre título",
+    description: "O armador conta sobre a conquista e os bastidores",
+    cover_image: "/placeholder.svg",
+    duration: "6:28",
+    genre: ["Interview", "Behind the Scenes"],
     views: 14500,
     createdAt: "2024-01-15T14:00:00"
   },
   {
     id: "video5",
-    titulo: "Treino Aberto: Preparação para os Playoffs",
-    descricao: "Veja como o time se prepara para a fase decisiva",
-    imagem_capa: "/placeholder.svg",
-    duracao: "10:03",
+    title: "Treino Aberto: Preparação para os Playoffs",
+    description: "Veja como o time se prepara para a fase decisiva",
+    cover_image: "/placeholder.svg",
+    duration: "10:03",
+    genre: ["Training", "Playoffs"],
     views: 9800,
     createdAt: "2024-01-14T10:00:00"
   }

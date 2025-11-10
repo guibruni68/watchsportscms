@@ -24,26 +24,26 @@ export function ActionDropdown({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
           <MoreHorizontal className="h-4 w-4" />
-          <span className="sr-only">Abrir menu de ações</span>
+          <span className="sr-only">Open options menu</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         {showView && onView && (
           <DropdownMenuItem onClick={onView}>
             <Eye className="mr-2 h-4 w-4" />
-            Visualizar
+            View
           </DropdownMenuItem>
         )}
         {showEdit && onEdit && (
           <DropdownMenuItem onClick={onEdit}>
             <Edit className="mr-2 h-4 w-4" />
-            Editar
+            Edit
           </DropdownMenuItem>
         )}
         {showDelete && onDelete && (
           <DropdownMenuItem onClick={onDelete} className="text-destructive">
             <Trash2 className="mr-2 h-4 w-4" />
-            Excluir
+            Delete
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

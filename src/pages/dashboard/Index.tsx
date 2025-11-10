@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { Video, Radio, Users, Calendar, Newspaper, Eye, TrendingUp, Play, Plus, Activity } from "lucide-react";
+import { Video, Radio, Users, Calendar, Newspaper, Eye, TrendingUp, Play, Plus, Activity, LayoutPanelTop } from "lucide-react";
 export default function DashboardIndex() {
   const navigate = useNavigate();
   const stats = [{
@@ -80,32 +80,32 @@ export default function DashboardIndex() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Home</h1>
-          <p className="text-muted-foreground">Bem-vindo ao CMS da FNB!</p>
+          <p className="text-muted-foreground">Welcome!</p>
         </div>
       </div>
 
       {/* Quick Actions */}
       <Card className="bg-gradient-card border-border/50">
         <CardHeader>
-          <CardTitle className="text-lg">Ações Rápidas</CardTitle>
+          <CardTitle className="text-lg">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/videos?new=true')}>
               <Video className="h-6 w-6" />
-              <span className="text-sm">Upload Vídeo</span>
+              <span className="text-sm">Upload Video</span>
             </Button>
             <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/lives?new=true')}>
               <Radio className="h-6 w-6" />
-              <span className="text-sm">Nova Live</span>
+              <span className="text-sm">New Livestream</span>
             </Button>
             <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/news?new=true')}>
               <Newspaper className="h-6 w-6" />
-              <span className="text-sm">Criar Notícia</span>
+              <span className="text-sm">Create News</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/teams')}>
-              <Users className="h-6 w-6" />
-              <span className="text-sm">Gerir Times</span>
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/pages')}>
+              <LayoutPanelTop className="h-6 w-6" />
+              <span className="text-sm">Manage Pages</span>
             </Button>
           </div>
         </CardContent>
@@ -116,10 +116,10 @@ export default function DashboardIndex() {
         <Card className="bg-gradient-card border-border/50">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-lg">Vídeos Recentes</CardTitle>
+              <CardTitle className="text-lg">Recent Uploaded Videos</CardTitle>
             </div>
             <Button variant="outline" size="sm" onClick={() => navigate('/videos')}>
-              Ver Todos
+              See All
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -128,13 +128,9 @@ export default function DashboardIndex() {
                   <div className="w-16 h-12 bg-muted rounded-md flex items-center justify-center">
                     <Play className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <Badge className="absolute -bottom-1 -right-1 text-xs px-1 py-0 bg-primary text-primary-foreground">
-                    {video.duration}
-                  </Badge>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm text-foreground truncate">{video.title}</h4>
-                  <span className="text-xs text-muted-foreground">{video.publishedAt}</span>
                 </div>
               </div>)}
           </CardContent>
@@ -144,7 +140,7 @@ export default function DashboardIndex() {
         <Card className="bg-gradient-card border-border/50">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-lg">Próximos Eventos</CardTitle>
+              <CardTitle className="text-lg">Upcoming Events</CardTitle>
             </div>
             <Button variant="outline" size="sm" onClick={() => navigate('/schedule')}>
               <Calendar className="h-4 w-4 mr-2" />
@@ -158,31 +154,10 @@ export default function DashboardIndex() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm text-foreground">{event.title}</h4>
-                  <p className="text-xs text-muted-foreground mt-1">{event.date}</p>
                 </div>
               </div>)}
           </CardContent>
         </Card>
-      </div>
-
-      {/* Stats Grid (moved below lists) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => <Card key={index} className="bg-gradient-card border-border/50 transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                  <div className="flex items-center gap-1 mt-1">
-                   
-                  </div>
-                </div>
-                <div className="p-3 rounded-lg bg-primary/10">
-                  <stat.icon className="h-6 w-6 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>)}
       </div>
     </div>;
 }

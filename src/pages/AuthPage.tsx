@@ -21,6 +21,8 @@ export default function AuthPage() {
   const navigate = useNavigate()
   const { toast } = useToast()
 
+  // BYPASS AUTH - Comment out auth check
+  /*
   useEffect(() => {
     // Check if user is already logged in
     const checkAuth = async () => {
@@ -42,6 +44,7 @@ export default function AuthPage() {
 
     return () => subscription.unsubscribe()
   }, [navigate])
+  */
 
   const cleanupAuthState = () => {
     // Remove standard auth tokens
@@ -64,6 +67,8 @@ export default function AuthPage() {
     e.preventDefault()
     setLoading(true)
 
+    // BYPASS AUTH FOR TESTING - Comment out actual authentication
+    /*
     try {
       // Clean up existing state
       cleanupAuthState();
@@ -115,57 +120,18 @@ export default function AuthPage() {
     } finally {
       setLoading(false)
     }
-  }
+    */
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            full_name: fullName,
-          }
-        }
-      })
-
-      if (error) {
-        if (error.message.includes("User already registered")) {
-          toast({
-            title: "Usuário já existe",
-            description: "Este email já está cadastrado. Tente fazer login.",
-            variant: "destructive",
-          })
-        } else {
-          toast({
-            title: "Erro",
-            description: error.message,
-            variant: "destructive",
-          })
-        }
-      } else {
-        toast({
-          title: "Cadastro realizado!",
-          description: "Verifique seu email para confirmar a conta.",
-        })
-        // Clear form
-        setEmail("")
-        setPassword("")
-        setFullName("")
-      }
-    } catch (error: any) {
-      toast({
-        title: "Erro inesperado",
-        description: "Ocorreu um erro inesperado. Tente novamente.",
-        variant: "destructive",
-      })
-    } finally {
+    // TESTING BYPASS - Just authenticate directly
+    toast({
+      title: "Login realizado com sucesso!",
+      description: "Você será redirecionado em instantes (modo de teste).",
+    })
+    
+    setTimeout(() => {
       setLoading(false)
-    }
+      navigate('/')
+    }, 500)
   }
 
   const handlePasswordReset = async () => {
@@ -208,15 +174,6 @@ export default function AuthPage() {
     }
   }
 
-  const handleGuestAccess = () => {
-    enableGuestMode()
-    navigate("/")
-    toast({
-      title: "Modo visitante ativado",
-      description: "Você está navegando como visitante.",
-    })
-  }
-
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left Side - Welcome Section */}
@@ -229,17 +186,6 @@ export default function AuthPage() {
             className="h-12"
           />
         </div>
-        
-        <div className="space-y-6">
-          <h1 className="text-5xl font-bold leading-tight">
-            Bem-vindo ao nosso
-            <br />
-            sistema de gestão
-            <br />
-            esportiva
-          </h1>
-          
-        </div>
       </div>
 
       {/* Right Side - Auth Forms */}
@@ -249,21 +195,14 @@ export default function AuthPage() {
           {/* Auth Forms - Sem Card */}
           <div className="space-y-6">
             <Tabs defaultValue="signin" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Entrar</TabsTrigger>
-                <TabsTrigger value="signup">Cadastrar</TabsTrigger>
-              </TabsList>
 
               {/* Sign In Tab */}
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2 pb-4">
                     <h2 className="text-2xl font-semibold">
-                      Entrar na sua conta
+                      Login to CMS Panel
                     </h2>
-                    <p className="text-muted-foreground">
-                      Digite seus dados para prosseguir
-                    </p>
                   </div>
 
                   <div className="space-y-4">
@@ -272,7 +211,7 @@ export default function AuthPage() {
                       <Input
                         id="email"
                         type="email"
-                        placeholder="seuemail@fnb.com"
+                        placeholder="email@cms.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -282,12 +221,12 @@ export default function AuthPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="password">Senha</Label>
+                      <Label htmlFor="password">Password</Label>
                       <div className="relative">
                         <Input
                           id="password"
                           type={showPassword ? "text" : "password"}
-                          placeholder="Sua senha"
+                          placeholder="Your Password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
@@ -312,7 +251,7 @@ export default function AuthPage() {
                       className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
                       disabled={loading}
                     >
-                      {loading ? "Entrando..." : "Entrar"}
+                      {loading ? "Loading..." : "Submit"}
                     </Button>
 
                     <div className="text-center">
@@ -322,104 +261,14 @@ export default function AuthPage() {
                         onClick={() => navigate('/forgot-password')}
                         className="text-sm p-0 h-auto"
                       >
-                        Esqueceu sua senha?
+                        Did you forget your password?
                       </Button>
                     </div>
                   </div>
                 </form>
               </TabsContent>
-
-              {/* Sign Up Tab */}
-              <TabsContent value="signup">
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2 pb-4">
-                    <h2 className="text-2xl font-semibold flex items-center gap-2">
-                      <UserPlus className="h-5 w-5" />
-                      Criar Conta
-                    </h2>
-                    <p className="text-muted-foreground">
-                      Cadastre-se para começar a usar o sistema
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="fullName">Nome Completo</Label>
-                      <Input
-                        id="fullName"
-                        type="text"
-                        placeholder="Seu nome completo"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        required
-                        disabled={loading}
-                        className="h-12"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="signupEmail">Email</Label>
-                      <Input
-                        id="signupEmail"
-                        type="email"
-                        placeholder="seu@email.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={loading}
-                        className="h-12"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="signupPassword">Senha</Label>
-                      <div className="relative">
-                        <Input
-                          id="signupPassword"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Mínimo 6 caracteres"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          minLength={6}
-                          disabled={loading}
-                          className="h-12"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-2 top-1/2 -translate-y-1/2 h-auto p-1"
-                          onClick={() => setShowPassword(!showPassword)}
-                          disabled={loading}
-                        >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </Button>
-                      </div>
-                    </div>
-
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-primary hover:bg-gradient-primary/90 transition-all"
-                      disabled={loading}
-                    >
-                      {loading ? "Cadastrando..." : "Criar Conta"}
-                    </Button>
-                  </div>
-                </form>
-              </TabsContent>
             </Tabs>
           </div>
-
-          {/* Guest Access Button */}
-          <Button 
-            onClick={handleGuestAccess}
-            variant="outline" 
-            className="w-full border-primary/20 hover:bg-primary/10 transition-all"
-          >
-            <Users className="h-4 w-4 mr-2" />
-            Entrar como Visitante
-          </Button>
         </div>
       </div>
     </div>

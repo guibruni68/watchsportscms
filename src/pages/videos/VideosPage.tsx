@@ -14,236 +14,236 @@ import { VideoForm } from "@/components/forms/VideoForm"
 
 interface Video {
   id: string
-  titulo: string
-  descricao: string
-  categoria: string
+  title: string
+  description: string
+  genre: string[]
   tags: string[]
-  dataPublicacao: string
+  publishDate: string
   views: number
-  duracao: string
-  status: "publicado" | "rascunho"
+  duration: string
+  status: "published" | "draft" | "scheduled"
 }
 
 const mockVideos: Video[] = [
   {
     id: "1",
-    titulo: "Gols da vitória por 3x1 contra o Rival FC",
-    descricao: "Melhores momentos da partida válida pelo campeonato estadual",
-    categoria: "Gols e Melhores Momentos",
+    title: "Gols da vitória por 3x1 contra o Rival FC",
+    description: "Melhores momentos da partida válida pelo campeonato estadual",
+    genre: ["Goals and Highlights", "Best Moments"],
     tags: ["gols", "vitória", "campeonato"],
-    dataPublicacao: "2024-01-15T20:30:00",
+    publishDate: "2024-01-15T20:30:00",
     views: 15420,
-    duracao: "05:32",
-    status: "publicado"
+    duration: "05:32",
+    status: "published"
   },
   {
     id: "2", 
-    titulo: "Entrevista com novo atacante contratado",
-    descricao: "Primeiro bate-papo com o jogador que chegou para reforçar o ataque",
-    categoria: "Entrevistas",
+    title: "Entrevista com novo atacante contratado",
+    description: "Primeiro bate-papo com o jogador que chegou para reforçar o ataque",
+    genre: ["Interviews", "Backstage"],
     tags: ["entrevista", "contratação", "atacante"],
-    dataPublicacao: "2024-01-12T14:00:00",
+    publishDate: "2024-01-12T14:00:00",
     views: 8931,
-    duracao: "12:18",
-    status: "publicado"
+    duration: "12:18",
+    status: "scheduled"
   },
   {
     id: "3",
-    titulo: "Bastidores do treino tático",
-    descricao: "Como o time se prepara taticamente para os próximos jogos",
-    categoria: "Bastidores",
+    title: "Bastidores do treino tático",
+    description: "Como o time se prepara taticamente para os próximos jogos",
+    genre: ["Behind the Scenes"],
     tags: ["treino", "tática", "preparação"],
-    dataPublicacao: "2024-01-10T16:45:00",
+    publishDate: "2024-01-10T16:45:00",
     views: 5672,
-    duracao: "08:15",
-    status: "rascunho"
+    duration: "08:15",
+    status: "draft"
   },
   {
     id: "4",
-    titulo: "Coletiva de imprensa pré-jogo",
-    descricao: "Técnico e capitão falam sobre a próxima partida",
-    categoria: "Coletivas",
+    title: "Coletiva de imprensa pré-jogo",
+    description: "Técnico e capitão falam sobre a próxima partida",
+    genre: ["Press Conference"],
     tags: ["coletiva", "imprensa", "pré-jogo"],
-    dataPublicacao: "2024-01-08T11:00:00",
+    publishDate: "2024-01-08T11:00:00",
     views: 3245,
-    duracao: "15:42",
-    status: "publicado"
+    duration: "15:42",
+    status: "published"
   },
   {
     id: "5",
-    titulo: "Análise tática da derrota",
-    descricao: "Entenda os pontos que precisam ser melhorados",
-    categoria: "Análises",
+    title: "Análise tática da derrota",
+    description: "Entenda os pontos que precisam ser melhorados",
+    genre: ["Analysis"],
     tags: ["análise", "tática", "derrota"],
-    dataPublicacao: "2024-01-06T19:30:00",
+    publishDate: "2024-01-06T19:30:00",
     views: 12850,
-    duracao: "18:22",
-    status: "publicado"
+    duration: "18:22",
+    status: "published"
   },
   {
     id: "6",
-    titulo: "Treino de finalizações",
-    descricao: "Atacantes trabalham a pontaria no CT",
-    categoria: "Treinos",
+    title: "Treino de finalizações",
+    description: "Atacantes trabalham a pontaria no CT",
+    genre: ["Training"],
     tags: ["treino", "finalizações", "atacantes"],
-    dataPublicacao: "2024-01-05T09:15:00",
+    publishDate: "2024-01-05T09:15:00",
     views: 7423,
-    duracao: "06:45",
-    status: "publicado"
+    duration: "06:45",
+    status: "published"
   },
   {
     id: "7",
-    titulo: "Apresentação do novo uniforme",
-    descricao: "Conheça os detalhes da nova camisa para 2024",
-    categoria: "Institucional",
+    title: "Apresentação do novo uniforme",
+    description: "Conheça os detalhes da nova camisa para 2024",
+    genre: ["Institutional"],
     tags: ["uniforme", "camisa", "2024"],
-    dataPublicacao: "2024-01-04T16:20:00",
+    publishDate: "2024-01-04T16:20:00",
     views: 21340,
-    duracao: "04:18",
-    status: "publicado"
+    duration: "04:18",
+    status: "published"
   },
   {
     id: "8",
-    titulo: "Gols mais bonitos da temporada",
-    descricao: "Relembre os melhores gols marcados pelo time",
-    categoria: "Gols e Melhores Momentos",
+    title: "Gols mais bonitos da temporada",
+    description: "Relembre os melhores gols marcados pelo time",
+    genre: ["Goals and Highlights"],
     tags: ["gols", "temporada", "melhores"],
-    dataPublicacao: "2024-01-03T20:00:00",
+    publishDate: "2024-01-03T20:00:00",
     views: 18765,
-    duracao: "09:33",
-    status: "publicado"
+    duration: "09:33",
+    status: "published"
   },
   {
     id: "9",
-    titulo: "Entrevista com técnico sobre renovação",
-    descricao: "Comandante fala sobre a renovação de contrato",
-    categoria: "Entrevistas",
+    title: "Entrevista com técnico sobre renovação",
+    description: "Comandante fala sobre a renovação de contrato",
+    genre: ["Interviews"],
     tags: ["entrevista", "técnico", "renovação"],
-    dataPublicacao: "2024-01-02T14:30:00",
+    publishDate: "2024-01-02T14:30:00",
     views: 9876,
-    duracao: "08:52",
-    status: "rascunho"
+    duration: "08:52",
+    status: "draft"
   },
   {
     id: "10",
-    titulo: "Bastidores da viagem para São Paulo",
-    descricao: "Acompanhe a delegação na viagem para o jogo fora",
-    categoria: "Bastidores",
+    title: "Bastidores da viagem para São Paulo",
+    description: "Acompanhe a delegação na viagem para o jogo fora",
+    genre: ["Behind the Scenes"],
     tags: ["bastidores", "viagem", "são paulo"],
-    dataPublicacao: "2024-01-01T07:45:00",
+    publishDate: "2024-01-01T07:45:00",
     views: 6543,
-    duracao: "11:27",
-    status: "publicado"
+    duration: "11:27",
+    status: "published"
   },
   {
     id: "11",
-    titulo: "Defesas incríveis do goleiro",
-    descricao: "As melhores defesas do arqueiro da temporada",
-    categoria: "Gols e Melhores Momentos",
+    title: "Defesas incríveis do goleiro",
+    description: "As melhores defesas do arqueiro da temporada",
+    genre: ["Goals and Highlights"],
     tags: ["defesas", "goleiro", "incríveis"],
-    dataPublicacao: "2023-12-30T18:15:00",
+    publishDate: "2023-12-30T18:15:00",
     views: 13245,
-    duracao: "07:20",
-    status: "publicado"
+    duration: "07:20",
+    status: "published"
   },
   {
     id: "12",
-    titulo: "Treino físico intenso",
-    descricao: "Preparação física para a sequência de jogos",
-    categoria: "Treinos",
+    title: "Treino físico intenso",
+    description: "Preparação física para a sequência de jogos",
+    genre: ["Training"],
     tags: ["treino", "físico", "intenso"],
-    dataPublicacao: "2023-12-29T08:30:00",
+    publishDate: "2023-12-29T08:30:00",
     views: 4567,
-    duracao: "12:08",
-    status: "publicado"
+    duration: "12:08",
+    status: "published"
   },
   {
     id: "13",
-    titulo: "Homenagem aos veteranos",
-    descricao: "Clube presta homenagem aos jogadores mais experientes",
-    categoria: "Institucional",
+    title: "Homenagem aos veteranos",
+    description: "Clube presta homenagem aos jogadores mais experientes",
+    genre: ["Institutional"],
     tags: ["homenagem", "veteranos", "clube"],
-    dataPublicacao: "2023-12-28T17:00:00",
+    publishDate: "2023-12-28T17:00:00",
     views: 8901,
-    duracao: "14:35",
-    status: "publicado"
+    duration: "14:35",
+    status: "published"
   },
   {
     id: "14",
-    titulo: "Análise do sistema defensivo",
-    descricao: "Como a defesa tem se comportado nas últimas partidas",
-    categoria: "Análises",
+    title: "Análise do sistema defensivo",
+    description: "Como a defesa tem se comportado nas últimas partidas",
+    genre: ["Analysis"],
     tags: ["análise", "defesa", "sistema"],
-    dataPublicacao: "2023-12-27T15:45:00",
+    publishDate: "2023-12-27T15:45:00",
     views: 6789,
-    duracao: "16:12",
-    status: "rascunho"
+    duration: "16:12",
+    status: "draft"
   },
   {
     id: "15",
-    titulo: "Concentração antes do clássico",
-    descricao: "Ambiente no hotel antes do grande jogo",
-    categoria: "Bastidores",
+    title: "Concentração antes do clássico",
+    description: "Ambiente no hotel antes do grande jogo",
+    genre: ["Behind the Scenes"],
     tags: ["concentração", "clássico", "hotel"],
-    dataPublicacao: "2023-12-26T19:30:00",
+    publishDate: "2023-12-26T19:30:00",
     views: 15432,
-    duracao: "09:47",
-    status: "publicado"
+    duration: "09:47",
+    status: "published"
   },
   {
     id: "16",
-    titulo: "Entrevista com jovem promessa",
-    descricao: "Conversamos com o jovem que vem se destacando",
-    categoria: "Entrevistas",
+    title: "Entrevista com jovem promessa",
+    description: "Conversamos com o jovem que vem se destacando",
+    genre: ["Interviews"],
     tags: ["entrevista", "jovem", "promessa"],
-    dataPublicacao: "2023-12-25T13:20:00",
+    publishDate: "2023-12-25T13:20:00",
     views: 7654,
-    duracao: "10:33",
-    status: "publicado"
+    duration: "10:33",
+    status: "published"
   },
   {
     id: "17",
-    titulo: "Dribles e jogadas especiais",
-    descricao: "Os melhores dribles e jogadas da temporada",
-    categoria: "Gols e Melhores Momentos",
+    title: "Dribles e jogadas especiais",
+    description: "Os melhores dribles e jogadas da temporada",
+    genre: ["Goals and Highlights"],
     tags: ["dribles", "jogadas", "especiais"],
-    dataPublicacao: "2023-12-24T16:00:00",
+    publishDate: "2023-12-24T16:00:00",
     views: 19876,
-    duracao: "08:24",
-    status: "publicado"
+    duration: "08:24",
+    status: "published"
   },
   {
     id: "18",
-    titulo: "Treino tático para o próximo jogo",
-    descricao: "Preparação específica para enfrentar o adversário",
-    categoria: "Treinos",
+    title: "Treino tático para o próximo jogo",
+    description: "Preparação específica para enfrentar o adversário",
+    genre: ["Training"],
     tags: ["treino", "tático", "próximo"],
-    dataPublicacao: "2023-12-23T10:15:00",
+    publishDate: "2023-12-23T10:15:00",
     views: 5432,
-    duracao: "13:56",
-    status: "rascunho"
+    duration: "13:56",
+    status: "draft"
   },
   {
     id: "19",
-    titulo: "Coletiva pós-vitória épica",
-    descricao: "Reações após a vitória no último minuto",
-    categoria: "Coletivas",
+    title: "Coletiva pós-vitória épica",
+    description: "Reações após a vitória no último minuto",
+    genre: ["Press Conference"],
     tags: ["coletiva", "vitória", "épica"],
-    dataPublicacao: "2023-12-22T22:45:00",
+    publishDate: "2023-12-22T22:45:00",
     views: 11234,
-    duracao: "12:47",
-    status: "publicado"
+    duration: "12:47",
+    status: "published"
   },
   {
     id: "20",
-    titulo: "Projeto social do clube",
-    descricao: "Conheca as ações sociais desenvolvidas pelo clube",
-    categoria: "Institucional",
+    title: "Projeto social do clube",
+    description: "Conheca as ações sociais desenvolvidas pelo clube",
+    genre: ["Institutional"],
     tags: ["projeto", "social", "clube"],
-    dataPublicacao: "2023-12-21T14:30:00",
+    publishDate: "2023-12-21T14:30:00",
     views: 6789,
-    duracao: "17:22",
-    status: "publicado"
+    duration: "17:22",
+    status: "published"
   }
 ]
 
@@ -269,15 +269,15 @@ export default function VideosPage() {
     }
   }, [searchParams, setSearchParams])
 
-  const categories = Array.from(new Set(videos.map(v => v.categoria)))
+  const categories = Array.from(new Set(videos.flatMap(v => v.genre || [])))
   const statuses = Array.from(new Set(videos.map(v => v.status)))
 
   const filteredVideos = videos.filter(video => {
-    const matchesSearch = video.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      video.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (video.genre || []).some(g => g.toLowerCase().includes(searchTerm.toLowerCase())) ||
       video.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
     
-    const matchesCategory = categoryFilter === "all" || video.categoria === categoryFilter
+    const matchesCategory = categoryFilter === "all" || (video.genre || []).includes(categoryFilter)
     const matchesStatus = statusFilter === "all" || video.status === statusFilter
     
     return matchesSearch && matchesCategory && matchesStatus
@@ -305,14 +305,15 @@ export default function VideosPage() {
     return (
       <VideoForm 
         initialData={editingVideo ? {
-          titulo: editingVideo.titulo,
-          descricao: editingVideo.descricao,
-          generos: [editingVideo.categoria],
+          titulo: editingVideo.title,
+          descricao: editingVideo.description,
+          generos: editingVideo.genre || [],
           tag: "Destaque",
           tags: editingVideo.tags.join(", "),
-          dataPublicacao: new Date(editingVideo.dataPublicacao),
+          dataPublicacao: new Date(editingVideo.publishDate),
         } : undefined}
         isEdit={!!editingVideo}
+        onClose={() => setShowForm(false)}
       />
     )
   }
@@ -321,13 +322,12 @@ export default function VideosPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Vídeos VOD</h1>
+          <h1 className="text-3xl font-bold">Videos (VOD)</h1>
         </div>
         <div className="flex gap-2">
-          <ImportButton entityName="vídeos" />
           <Button onClick={handleNewVideo} className="gap-2">
             <Plus className="h-4 w-4" />
-            Novo Vídeo
+            New Video
           </Button>
         </div>
       </div>
@@ -341,18 +341,18 @@ export default function VideosPage() {
         statusFilter={statusFilter}
         onStatusChange={setStatusFilter}
         categories={[
-          { value: "all", label: "Todas as categorias" },
+          { value: "all", label: "All Genres" },
           ...categories.map(cat => ({ value: cat, label: cat }))
         ]}
         statuses={[
-          { value: "all", label: "Todos os status" },
+          { value: "all", label: "All Statuses" },
           ...statuses.map(status => ({ 
             value: status, 
-            label: status === "publicado" ? "Publicado" : "Rascunho" 
+            label: status === "published" ? "Published" : status === "scheduled" ? "Scheduled" : "Draft" 
           }))
         ]}
-        searchPlaceholder="Buscar vídeos..."
-        categoryPlaceholder="Categoria"
+        searchPlaceholder="Search Video..."
+        categoryPlaceholder="Genre"
         statusPlaceholder="Status"
       />
 
@@ -362,12 +362,11 @@ export default function VideosPage() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-20">Thumb</TableHead>
-              <TableHead>Título</TableHead>
-              <TableHead>Categoria</TableHead>
-              <TableHead className="w-32">Data</TableHead>
-              <TableHead className="w-24">Duração</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead className="min-w-[250px]">Genres</TableHead>
+              <TableHead className="w-32">Publish Date</TableHead>
               <TableHead className="w-24">Status</TableHead>
-              <TableHead className="w-32">Ações</TableHead>
+              <TableHead className="w-32">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -380,28 +379,31 @@ export default function VideosPage() {
                 </TableCell>
                 <TableCell>
                   <div className="max-w-xs">
-                    <div className="font-medium truncate">{video.titulo}</div>
-                    <div className="text-sm text-muted-foreground truncate">{video.descricao}</div>
+                    <div className="font-medium truncate">{video.title}</div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">
-                    <span className="truncate max-w-[100px]">
-                      {video.categoria}
-                    </span>
-                  </Badge>
+                  <div className="flex gap-1 flex-wrap">
+                    {(video.genre || []).map((g, idx) => {
+                      console.log(`Video ${video.id} - Genre ${idx}:`, g);
+                      return (
+                        <Badge key={idx} variant="secondary">
+                          <span>
+                            {g}
+                          </span>
+                        </Badge>
+                      );
+                    })}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    {new Date(video.dataPublicacao).toLocaleDateString("pt-BR")}
+                    {new Date(video.publishDate).toLocaleDateString("pt-BR")}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm font-mono">{video.duracao}</div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={video.status === "publicado" ? "default" : "outline"}>
-                    {video.status === "publicado" ? "Publicado" : "Rascunho"}
+                  <Badge variant={video.status === "published" ? "default" : video.status === "scheduled" ? "secondary" : "outline"}>
+                    {video.status === "published" ? "Published" : video.status === "scheduled" ? "Scheduled" : "Draft"}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -420,7 +422,7 @@ export default function VideosPage() {
       {/* Paginação */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, filteredVideos.length)} de {filteredVideos.length} vídeos
+          Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredVideos.length)} of {filteredVideos.length} videos
         </div>
         <div className="flex items-center gap-2">
           <Select value={itemsPerPage.toString()} onValueChange={(value) => {
@@ -444,11 +446,11 @@ export default function VideosPage() {
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
             >
-              Anterior
+              Previous
             </Button>
             <div className="flex items-center gap-1">
               <span className="text-sm">
-                Página {currentPage} de {totalPages}
+                Page {currentPage} of {totalPages}
               </span>
             </div>
             <Button
@@ -457,7 +459,7 @@ export default function VideosPage() {
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
             >
-              Próxima
+              Next
             </Button>
           </div>
         </div>
@@ -467,13 +469,13 @@ export default function VideosPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">
-              {searchTerm || categoryFilter !== "all" || statusFilter !== "all" 
-                ? "Nenhum vídeo encontrado com os filtros aplicados." 
-                : "Nenhum vídeo cadastrado ainda."}
+              {searchTerm || categoryFilter !== "all" || statusFilter !== "all"
+                ? "No videos found with the applied filters."
+                : "No videos registered yet."}
             </div>
             {!searchTerm && categoryFilter === "all" && statusFilter === "all" && (
               <Button onClick={handleNewVideo} className="mt-4">
-                Criar Primeiro Vídeo
+                Create First Video
               </Button>
             )}
           </CardContent>

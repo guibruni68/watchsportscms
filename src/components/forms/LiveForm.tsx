@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -10,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, CalendarIcon, Clock, Upload, X } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Upload, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -21,19 +22,17 @@ import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
 
 
 const liveSchema = z.object({
-  nomeEvento: z.string().min(1, "Nome do evento é obrigatório"),
-  descricao: z.string().min(1, "Descrição é obrigatória"),
-  generos: z.array(z.string()).min(1, "Pelo menos um gênero é obrigatório"),
-  data: z.date(),
-  hora: z.string().min(1, "Hora é obrigatória"),
-  status: z.string().min(1, "Status é obrigatório"),
+  nomeEvento: z.string().min(1, "Event name is required"),
+  descricao: z.string().min(1, "Description is required"),
+  generos: z.array(z.string()).min(1, "At least one genre is required"),
+  dataHora: z.date(),
   playerEmbed: z.string().optional(),
   imagemCapa: z.string().optional(),
   
   agentesRelacionados: z.array(z.object({
     id: z.string(),
-    nome: z.string(),
-    tipo: z.enum(["jogador", "time"]),
+    name: z.string(),
+    type: z.enum(["agent", "group"]),
   })).optional(),
 });
 type LiveFormData = z.infer<typeof liveSchema>;
@@ -43,39 +42,39 @@ interface LiveFormProps {
     descricao?: string;
     generos?: string[];
     dataHora?: string;
-    status?: string;
     playerEmbed?: string;
     imagemCapa?: string;
     
     agentesRelacionados?: Array<{
       id: string;
-      nome: string;
-      tipo: "jogador" | "time";
+      name: string;
+      type: "agent" | "group";
     }>;
   };
   isEdit?: boolean;
+  onClose?: () => void;
 }
 export function LiveForm({
   initialData,
-  isEdit = false
+  isEdit = false,
+  onClose
 }: LiveFormProps) {
   const navigate = useNavigate();
   const {
     toast
   } = useToast();
+  const [imageUploadMode, setImageUploadMode] = useState<"file" | "url">("file");
 
   // Parse initial datetime if provided
-  const initialDate = initialData?.dataHora ? new Date(initialData.dataHora) : undefined;
-  const initialTime = initialData?.dataHora ? format(new Date(initialData.dataHora), "HH:mm") : "";
+  const initialDateTime = initialData?.dataHora ? new Date(initialData.dataHora) : new Date();
+  
   const form = useForm<LiveFormData>({
     resolver: zodResolver(liveSchema),
     defaultValues: {
       nomeEvento: initialData?.nomeEvento || "",
       descricao: initialData?.descricao || "",
       generos: initialData?.generos || [],
-      data: initialDate,
-      hora: initialTime,
-      status: initialData?.status || "",
+      dataHora: initialDateTime,
       playerEmbed: initialData?.playerEmbed || "",
       imagemCapa: initialData?.imagemCapa || "",
       
@@ -83,45 +82,39 @@ export function LiveForm({
     }
   });
   const onSubmit = (data: LiveFormData) => {
-    console.log("Salvando live:", data);
+    console.log("Saving live:", data);
     toast({
-      title: isEdit ? "Live atualizada!" : "Live criada!",
-      description: `${data.nomeEvento} foi ${isEdit ? "atualizada" : "criada"} com sucesso.`
+      title: isEdit ? "Live updated!" : "Live created!",
+      description: `${data.nomeEvento} was ${isEdit ? "updated" : "created"} successfully.`
     });
-    navigate("/lives");
+    if (onClose) {
+      onClose();
+    } else {
+      navigate("/lives");
+    }
   };
-  const statusOptions = [{
-    value: "em_breve",
-    label: "Em Breve"
-  }, {
-    value: "ao_vivo",
-    label: "Ao Vivo"
-  }, {
-    value: "encerrado",
-    label: "Encerrado"
-  }];
 
   const generos = [
-    "Gols e Melhores Momentos",
-    "Entrevistas", 
-    "Bastidores",
-    "Treinos",
-    "Histórico do Clube",
-    "Análises Táticas",
-    "Documentários",
-    "Transmissões"
+    "Goals and Highlights",
+    "Interviews", 
+    "Behind the Scenes",
+    "Training",
+    "Club History",
+    "Tactical Analysis",
+    "Documentaries",
+    "Live Streams"
   ];
   return <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/lives")} className="text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="sm" onClick={() => onClose ? onClose() : navigate("/lives")} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Voltar para Lives
+          Back to Live Streams
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{isEdit ? "Editar Transmissão" : "Nova Transmissão"}</CardTitle>
+          <CardTitle>{isEdit ? "Edit Live Stream" : "New Live Stream"}</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -131,9 +124,9 @@ export function LiveForm({
                   <FormField control={form.control} name="nomeEvento" render={({
                   field
                 }) => <FormItem>
-                        <FormLabel>Nome do Evento *</FormLabel>
+                        <FormLabel>Event Name *</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ex: Final do Campeonato Estadual" {...field} />
+                          <Input placeholder="Ex: State Championship Final" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>} />
@@ -141,7 +134,7 @@ export function LiveForm({
                   <FormField control={form.control} name="generos" render={({
                   field
                 }) => <FormItem>
-                        <FormLabel>Gêneros *</FormLabel>
+                        <FormLabel>Genres *</FormLabel>
                         <div className="space-y-4">
                           <Select onValueChange={(value) => {
                             if (!field.value?.includes(value)) {
@@ -149,7 +142,7 @@ export function LiveForm({
                             }
                           }}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecionar gêneros" />
+                              <SelectValue placeholder="Select genres" />
                             </SelectTrigger>
                             <SelectContent>
                               {generos
@@ -179,146 +172,189 @@ export function LiveForm({
                         </div>
                         <FormMessage />
                       </FormItem>} />
-
-                  <FormField control={form.control} name="status" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Status *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {statusOptions.map(option => <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>} />
-
                 </div>
 
-                <FormField control={form.control} name="imagemCapa" render={({
-                field
-              }) => <FormItem>
-                      <FormLabel>Imagem de Capa</FormLabel>
-                      <FormControl>
-                        <div className="space-y-4">
-                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-muted-foreground/50 transition-colors">
-                            <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                            <p className="text-sm text-muted-foreground mb-1">
-                              Clique para fazer upload da capa
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              PNG, JPG até 5MB
-                            </p>
-                            <Input type="file" accept="image/*" className="hidden" onChange={e => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const url = URL.createObjectURL(file);
-                          field.onChange(url);
-                        }
-                      }} />
-                          </div>
-                          {field.value && <div className="relative">
-                              <img src={field.value} alt="Capa da transmissão" className="w-full h-32 object-cover rounded-lg border" />
-                              <Button type="button" variant="destructive" size="sm" className="absolute top-2 right-2" onClick={() => field.onChange("")}>
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>}
+                <div className="space-y-6">
+                  <FormField control={form.control} name="imagemCapa" render={({
+                  field
+                }) => <FormItem>
+                        <FormLabel>Cover Image</FormLabel>
+                        <div className="flex gap-2 mb-4">
+                          <Button
+                            type="button"
+                            variant={imageUploadMode === "file" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setImageUploadMode("file")}
+                          >
+                            Upload File
+                          </Button>
+                          <Button
+                            type="button"
+                            variant={imageUploadMode === "url" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setImageUploadMode("url")}
+                          >
+                            Image URL
+                          </Button>
                         </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>} />
+                        <FormControl>
+                          <div className="space-y-4">
+                            {!field.value && imageUploadMode === "file" && (
+                              <div 
+                                className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-muted-foreground/50 transition-colors cursor-pointer"
+                                onClick={() => document.getElementById('live-cover-image-input')?.click()}
+                              >
+                                <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                                <p className="text-sm text-muted-foreground mb-1">
+                                  Click to upload cover image
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  PNG, JPG up to 5MB
+                                </p>
+                                <Input 
+                                  id="live-cover-image-input"
+                                  type="file" 
+                                  accept="image/*" 
+                                  className="hidden" 
+                                  onChange={e => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      const url = URL.createObjectURL(file);
+                                      field.onChange(url);
+                                    }
+                                  }} 
+                                />
+                              </div>
+                            )}
+                            {!field.value && imageUploadMode === "url" && (
+                              <div className="space-y-2">
+                                <Input 
+                                  placeholder="https://example.com/image.jpg" 
+                                  value={field.value || ""} 
+                                  onChange={(e) => field.onChange(e.target.value)}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                  Enter the direct URL to your cover image
+                                </p>
+                              </div>
+                            )}
+                            {field.value && <div className="relative">
+                                <img src={field.value} alt="Live cover" className="w-full h-32 object-cover rounded-lg border" />
+                                <Button type="button" variant="destructive" size="sm" className="absolute top-2 right-2" onClick={() => field.onChange("")}>
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>}
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>} />
+                </div>
               </div>
 
               <FormField control={form.control} name="descricao" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Descrição *</FormLabel>
+                    <FormLabel>Description *</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Descreva o evento..." className="min-h-24" {...field} />
+                      <Textarea placeholder="Describe the event..." className="min-h-24" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>} />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="data" render={({
+              <FormField control={form.control} name="dataHora" render={({
                 field
-              }) => <FormItem>
-                      <FormLabel>Data *</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button variant="outline" className={cn("justify-start text-left font-normal w-full", !field.value && "text-muted-foreground")}>
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {field.value ? format(field.value, "PPP", {
-                          locale: ptBR
-                        }) : <span>Selecione a data</span>}
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus className="p-3 pointer-events-auto" />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>} />
-
-                <FormField control={form.control} name="hora" render={({
-                field
-              }) => <FormItem>
-                      <FormLabel>Hora *</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              <Clock className="mr-2 h-4 w-4" />
-                              {field.value ? field.value : "Selecionar hora"}
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <div className="p-3 pointer-events-auto">
-                            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
-                              {Array.from({ length: 24 }, (_, hour) => {
-                                return Array.from({ length: 4 }, (_, quarter) => {
-                                  const minutes = quarter * 15;
-                                  const timeString = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-                                  return (
-                                    <Button
-                                      key={timeString}
-                                      variant="ghost"
-                                      size="sm"
-                                      className="justify-start"
-                                      onClick={() => field.onChange(timeString)}
-                                    >
-                                      {timeString}
-                                    </Button>
-                                  );
-                                });
-                              }).flat()}
+              }) => (
+                <FormItem>
+                  <FormLabel>Date and Time *</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button 
+                          variant="outline" 
+                          className={cn(
+                            "justify-start text-left font-normal w-full", 
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? (
+                            format(field.value, "PPP 'at' p", { locale: ptBR })
+                          ) : (
+                            <span>Select date and time</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <div className="flex">
+                        <Calendar 
+                          mode="single" 
+                          selected={field.value} 
+                          onSelect={(date) => {
+                            if (date) {
+                              const currentTime = field.value || new Date();
+                              date.setHours(currentTime.getHours());
+                              date.setMinutes(currentTime.getMinutes());
+                              field.onChange(date);
+                            }
+                          }}
+                          initialFocus 
+                          className="pointer-events-auto rounded-r-none border-r" 
+                        />
+                        <div className="p-4 border-l w-[200px]">
+                          <label className="text-sm font-medium mb-3 block">Time</label>
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-xs text-muted-foreground mb-1 block">Hour</label>
+                              <Input
+                                type="number"
+                                min="0"
+                                max="23"
+                                placeholder="HH"
+                                value={field.value ? field.value.getHours().toString().padStart(2, '0') : ''}
+                                onChange={(e) => {
+                                  const hour = parseInt(e.target.value);
+                                  if (!isNaN(hour) && hour >= 0 && hour <= 23) {
+                                    const newDate = new Date(field.value || new Date());
+                                    newDate.setHours(hour);
+                                    field.onChange(newDate);
+                                  }
+                                }}
+                                className="text-center"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs text-muted-foreground mb-1 block">Minutes</label>
+                              <Input
+                                type="number"
+                                min="0"
+                                max="59"
+                                placeholder="MM"
+                                value={field.value ? field.value.getMinutes().toString().padStart(2, '0') : ''}
+                                onChange={(e) => {
+                                  const minutes = parseInt(e.target.value);
+                                  if (!isNaN(minutes) && minutes >= 0 && minutes <= 59) {
+                                    const newDate = new Date(field.value || new Date());
+                                    newDate.setMinutes(minutes);
+                                    field.onChange(newDate);
+                                  }
+                                }}
+                                className="text-center"
+                              />
                             </div>
                           </div>
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>} />
-              </div>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )} />
 
               <FormField control={form.control} name="agentesRelacionados" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Agentes Relacionados</FormLabel>
+                    <FormLabel>Related Agents & Groups</FormLabel>
                     <FormControl>
                       <AgentMultiSelect
                         players={mockPlayers.map(p => ({
@@ -332,7 +368,7 @@ export function LiveForm({
                         }))}
                         value={field.value || []}
                         onChange={field.onChange}
-                        placeholder="Buscar e selecionar agentes (jogadores e times)"
+                        placeholder="Search and select agents or groups..."
                       />
                     </FormControl>
                     <FormMessage />
@@ -341,20 +377,19 @@ export function LiveForm({
               <FormField control={form.control} name="playerEmbed" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Link da Transmissão
+                    <FormLabel>Stream Link
               </FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Cole aqui o código embed do YouTube, Twitch ou outro player..." className="min-h-24 font-mono text-sm" {...field} />
+                      <Textarea placeholder="Paste the embed code from YouTube, Twitch or other player..." className="min-h-24 font-mono text-sm" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>} />
-
               <div className="flex gap-4 pt-6">
                 <Button type="submit" className="flex-1">
-                  {isEdit ? "Atualizar Live" : "Criar Live"}
+                  {isEdit ? "Update Live Stream" : "Create Live Stream"}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => navigate("/lives")} className="flex-1">
-                  Cancelar
+                <Button type="button" variant="outline" onClick={() => onClose ? onClose() : navigate("/lives")} className="flex-1">
+                  Cancel
                 </Button>
               </div>
             </form>

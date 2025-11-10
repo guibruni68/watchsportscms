@@ -17,7 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import { mockLives, mockVideos } from "@/data/mockData";
 import { ArrowLeft, Upload, X, Image, Monitor, Smartphone, CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CatalogueSelector } from "@/components/ui/catalogue-selector";
+import { CollectionSelector } from "@/components/ui/collection-selector";
 const bannerSchema = z.object({
   titulo: z.string().min(1, "Título é obrigatório"),
   tipo_conteudo: z.enum(["live", "vod", "personalizado"]),
@@ -32,7 +32,7 @@ const bannerSchema = z.object({
   status: z.boolean(),
   ordem: z.number().min(0),
   conteudo_vinculado_id: z.string().optional(),
-  catalogue_id: z.string().optional(),
+  collection_id: z.string().optional(),
   planos_permitidos: z.array(z.string())
 });
 type BannerFormData = z.infer<typeof bannerSchema>;
@@ -306,7 +306,7 @@ export default function BannerForm({
                                 {live.nome_evento}
                               </SelectItem>)}
                           {form.watch('tipo_conteudo') === 'vod' && mockVideos.map(video => <SelectItem key={video.id} value={video.id}>
-                                {video.titulo}
+                                {video.title}
                               </SelectItem>)}
                         </SelectContent>
                       </Select>
@@ -472,12 +472,12 @@ export default function BannerForm({
               </div>
 
               {/* Seletor de Catálogo */}
-              <FormField control={form.control} name="catalogue_id" render={({
-              field
-            }) => <FormItem>
-                    <FormLabel>Catálogo</FormLabel>
+              <FormField control={form.control} name="collection_id" render={({
+                field
+              }) => <FormItem>
+                    <FormLabel>Coleção</FormLabel>
                     <FormControl>
-                      <CatalogueSelector value={field.value} onValueChange={field.onChange} placeholder="Selecionar catálogo (opcional)..." />
+                      <CollectionSelector value={field.value} onValueChange={field.onChange} placeholder="Selecionar coleção (opcional)..." />
                     </FormControl>
                     
                     <FormMessage />

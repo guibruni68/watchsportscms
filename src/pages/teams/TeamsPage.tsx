@@ -84,7 +84,7 @@ export default function TeamsPage() {
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-          <p className="text-muted-foreground">Carregando dados...</p>
+          <p className="text-muted-foreground">Loading data...</p>
         </div>
       </div>
     )
