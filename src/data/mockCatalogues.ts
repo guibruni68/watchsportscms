@@ -22,12 +22,19 @@ export interface Catalogue {
   tipo_catalogo: "playlist" | "serie" | "colecao" | "outro";
   genre?: string[];
   cover_url?: string;
+  bannerImageUrl?: string;
   status: boolean;
   ordem_exibicao: number;
   conteudos?: string[];
   seasons?: Season[];
   published_at: string;
   updated_at: string;
+  releaseYear?: number;
+  badge?: "NEW" | "NEW EPISODES" | "SOON";
+  visibility?: "FREE" | "BASIC" | "PREMIUM";
+  ageRating?: string;
+  enabled?: boolean;
+  scheduleDate?: string;
 }
 
 export const mockCatalogues: Catalogue[] = [
@@ -37,10 +44,16 @@ export const mockCatalogues: Catalogue[] = [
     descricao: "Compilação dos lances mais emocionantes da temporada atual",
     tipo_catalogo: "playlist",
     genre: ["Goals and Highlights", "Best Moments"],
-    cover_url: "/lovable-uploads/Backgroundfnb.png",
+    cover_url: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400",
+    bannerImageUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1200",
+    badge: "NEW",
+    visibility: "FREE",
+    ageRating: "L",
+    enabled: true,
     status: true,
     ordem_exibicao: 1,
     conteudos: ["video1", "video2", "video3"],
+    releaseYear: 2024,
     seasons: [
       {
         id: "s1-1",
@@ -100,10 +113,16 @@ export const mockCatalogues: Catalogue[] = [
     descricao: "Documentário sobre os principais jogadores da federação",
     tipo_catalogo: "serie",
     genre: ["Interviews", "Documentary"],
-    cover_url: "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
+    cover_url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
+    bannerImageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1200",
+    badge: "NEW EPISODES",
+    visibility: "PREMIUM",
+    ageRating: "12+",
+    enabled: true,
     status: true,
     ordem_exibicao: 2,
     conteudos: ["video4", "video5"],
+    releaseYear: 2023,
     seasons: [
       {
         id: "s2-1",
@@ -155,6 +174,7 @@ export const mockCatalogues: Catalogue[] = [
     status: true,
     ordem_exibicao: 3,
     conteudos: ["video6", "video7", "video8"],
+    releaseYear: 2024,
     seasons: [
       {
         id: "s3-1",
@@ -196,6 +216,7 @@ export const mockCatalogues: Catalogue[] = [
     cover_url: "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
     status: true,
     ordem_exibicao: 4,
+    releaseYear: 2024,
     conteudos: ["video9", "video10"],
     seasons: [
       {

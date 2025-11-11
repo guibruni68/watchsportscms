@@ -25,12 +25,16 @@ export default function EditCollectionPage() {
           title: data.titulo,
           description: data.descricao,
           cover_url: data.cover_url,
-          status: data.status,
+          genres: data.genre || [],
+          available: data.status,
           agendarPublicacao: false,
           published_at: data.published_at ? new Date(data.published_at) : undefined,
           seasons: data.seasons?.map(season => ({
             ...season,
-            published_at: new Date(season.published_at)
+            published_at: new Date(season.published_at),
+            agendarPublicacao: false,
+            dataPublicacao: undefined,
+            available: true // Default to available for existing seasons
           })) || []
         };
 

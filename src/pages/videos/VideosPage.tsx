@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +11,7 @@ import { ImportButton } from "@/components/ui/import-button"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { VideoForm } from "@/components/forms/VideoForm"
+import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils"
 
 interface Video {
   id: string
@@ -21,7 +22,8 @@ interface Video {
   publishDate: string
   views: number
   duration: string
-  status: "published" | "draft" | "scheduled"
+  available: boolean
+  thumbnail?: string
 }
 
 const mockVideos: Video[] = [
@@ -34,7 +36,8 @@ const mockVideos: Video[] = [
     publishDate: "2024-01-15T20:30:00",
     views: 15420,
     duration: "05:32",
-    status: "published"
+    available: true,
+    thumbnail: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400"
   },
   {
     id: "2", 
@@ -42,10 +45,11 @@ const mockVideos: Video[] = [
     description: "Primeiro bate-papo com o jogador que chegou para reforçar o ataque",
     genre: ["Interviews", "Backstage"],
     tags: ["entrevista", "contratação", "atacante"],
-    publishDate: "2024-01-12T14:00:00",
+    publishDate: "2025-12-15T14:00:00",
     views: 8931,
     duration: "12:18",
-    status: "scheduled"
+    available: false,
+    thumbnail: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400"
   },
   {
     id: "3",
@@ -56,7 +60,8 @@ const mockVideos: Video[] = [
     publishDate: "2024-01-10T16:45:00",
     views: 5672,
     duration: "08:15",
-    status: "draft"
+    available: false,
+    thumbnail: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400"
   },
   {
     id: "4",
@@ -67,7 +72,8 @@ const mockVideos: Video[] = [
     publishDate: "2024-01-08T11:00:00",
     views: 3245,
     duration: "15:42",
-    status: "published"
+    available: true,
+    thumbnail: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=400"
   },
   {
     id: "5",
@@ -78,7 +84,7 @@ const mockVideos: Video[] = [
     publishDate: "2024-01-06T19:30:00",
     views: 12850,
     duration: "18:22",
-    status: "published"
+    available: true
   },
   {
     id: "6",
@@ -89,7 +95,7 @@ const mockVideos: Video[] = [
     publishDate: "2024-01-05T09:15:00",
     views: 7423,
     duration: "06:45",
-    status: "published"
+    available: true
   },
   {
     id: "7",
@@ -100,7 +106,7 @@ const mockVideos: Video[] = [
     publishDate: "2024-01-04T16:20:00",
     views: 21340,
     duration: "04:18",
-    status: "published"
+    available: true
   },
   {
     id: "8",
@@ -111,7 +117,7 @@ const mockVideos: Video[] = [
     publishDate: "2024-01-03T20:00:00",
     views: 18765,
     duration: "09:33",
-    status: "published"
+    available: true
   },
   {
     id: "9",
@@ -122,7 +128,7 @@ const mockVideos: Video[] = [
     publishDate: "2024-01-02T14:30:00",
     views: 9876,
     duration: "08:52",
-    status: "draft"
+    available: false
   },
   {
     id: "10",
@@ -133,7 +139,7 @@ const mockVideos: Video[] = [
     publishDate: "2024-01-01T07:45:00",
     views: 6543,
     duration: "11:27",
-    status: "published"
+    available: true
   },
   {
     id: "11",
@@ -144,7 +150,7 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-30T18:15:00",
     views: 13245,
     duration: "07:20",
-    status: "published"
+    available: true
   },
   {
     id: "12",
@@ -155,7 +161,7 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-29T08:30:00",
     views: 4567,
     duration: "12:08",
-    status: "published"
+    available: true
   },
   {
     id: "13",
@@ -166,7 +172,7 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-28T17:00:00",
     views: 8901,
     duration: "14:35",
-    status: "published"
+    available: true
   },
   {
     id: "14",
@@ -177,7 +183,7 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-27T15:45:00",
     views: 6789,
     duration: "16:12",
-    status: "draft"
+    available: false
   },
   {
     id: "15",
@@ -188,7 +194,7 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-26T19:30:00",
     views: 15432,
     duration: "09:47",
-    status: "published"
+    available: true
   },
   {
     id: "16",
@@ -199,7 +205,7 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-25T13:20:00",
     views: 7654,
     duration: "10:33",
-    status: "published"
+    available: true
   },
   {
     id: "17",
@@ -210,7 +216,7 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-24T16:00:00",
     views: 19876,
     duration: "08:24",
-    status: "published"
+    available: true
   },
   {
     id: "18",
@@ -221,7 +227,7 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-23T10:15:00",
     views: 5432,
     duration: "13:56",
-    status: "draft"
+    available: false
   },
   {
     id: "19",
@@ -232,7 +238,7 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-22T22:45:00",
     views: 11234,
     duration: "12:47",
-    status: "published"
+    available: true
   },
   {
     id: "20",
@@ -243,12 +249,13 @@ const mockVideos: Video[] = [
     publishDate: "2023-12-21T14:30:00",
     views: 6789,
     duration: "17:22",
-    status: "published"
+    available: true
   }
 ]
 
 export default function VideosPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [videos, setVideos] = useState<Video[]>(mockVideos)
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
@@ -270,7 +277,6 @@ export default function VideosPage() {
   }, [searchParams, setSearchParams])
 
   const categories = Array.from(new Set(videos.flatMap(v => v.genre || [])))
-  const statuses = Array.from(new Set(videos.map(v => v.status)))
 
   const filteredVideos = videos.filter(video => {
     const matchesSearch = video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -278,7 +284,12 @@ export default function VideosPage() {
       video.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
     
     const matchesCategory = categoryFilter === "all" || (video.genre || []).includes(categoryFilter)
-    const matchesStatus = statusFilter === "all" || video.status === statusFilter
+    
+    const videoStatus = getContentStatus(video.available, video.publishDate)
+    const matchesStatus = statusFilter === "all" || 
+      (statusFilter === "Active" && videoStatus === "Active") ||
+      (statusFilter === "Inactive" && videoStatus === "Inactive") ||
+      (statusFilter === "Publishing" && videoStatus === "Publishing")
     
     return matchesSearch && matchesCategory && matchesStatus
   })
@@ -296,6 +307,10 @@ export default function VideosPage() {
     setVideos(videos.filter(video => video.id !== id))
   }
 
+  const handleView = (id: string) => {
+    navigate(`/videos/${id}`)
+  }
+
   const handleNewVideo = () => {
     setEditingVideo(null)
     setShowForm(true)
@@ -310,7 +325,7 @@ export default function VideosPage() {
           generos: editingVideo.genre || [],
           tag: "Destaque",
           tags: editingVideo.tags.join(", "),
-          dataPublicacao: new Date(editingVideo.publishDate),
+          scheduleDate: new Date(editingVideo.publishDate),
         } : undefined}
         isEdit={!!editingVideo}
         onClose={() => setShowForm(false)}
@@ -346,10 +361,9 @@ export default function VideosPage() {
         ]}
         statuses={[
           { value: "all", label: "All Statuses" },
-          ...statuses.map(status => ({ 
-            value: status, 
-            label: status === "published" ? "Published" : status === "scheduled" ? "Scheduled" : "Draft" 
-          }))
+          { value: "Active", label: "Active" },
+          { value: "Inactive", label: "Inactive" },
+          { value: "Publishing", label: "Publishing" }
         ]}
         searchPlaceholder="Search Video..."
         categoryPlaceholder="Genre"
@@ -373,8 +387,16 @@ export default function VideosPage() {
             {paginatedVideos.map((video) => (
               <TableRow key={video.id}>
                 <TableCell>
-                  <div className="w-16 h-12 bg-muted rounded-md flex items-center justify-center">
-                    <Play className="h-4 w-4 text-muted-foreground" />
+                  <div className="w-16 aspect-[3/4] bg-muted rounded-md flex items-center justify-center overflow-hidden">
+                    {video.thumbnail ? (
+                      <img 
+                        src={video.thumbnail} 
+                        alt={video.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Play className="h-4 w-4 text-muted-foreground" />
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -402,15 +424,16 @@ export default function VideosPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={video.status === "published" ? "default" : video.status === "scheduled" ? "secondary" : "outline"}>
-                    {video.status === "published" ? "Published" : video.status === "scheduled" ? "Scheduled" : "Draft"}
+                  <Badge variant={getStatusBadgeVariant(getContentStatus(video.available, video.publishDate))}>
+                    {getContentStatus(video.available, video.publishDate)}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <ActionDropdown
+                    onView={() => handleView(video.id)}
                     onEdit={() => handleEdit(video)}
                     onDelete={() => handleDelete(video.id)}
-                    showView={false}
+                    showView={true}
                   />
                 </TableCell>
               </TableRow>

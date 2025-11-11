@@ -181,20 +181,6 @@ export function ContentMultiSelect({
     }
   };
 
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case "video":
-      case "vod":
-        return "Vídeo";
-      case "live":
-        return "Live";
-      case "news":
-        return "Notícia";
-      default:
-        return "Conteúdo";
-    }
-  };
-
   return (
     <div className="space-y-4">
       {/* Campo de busca e seleção */}
@@ -386,7 +372,7 @@ export function ContentMultiSelect({
                 disabled={!selectedId}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Adicionar {getTypeLabel(selectedContent.tipo)}
+                Add
               </Button>
             </div>
           )}
@@ -398,7 +384,7 @@ export function ContentMultiSelect({
         <div className="border rounded-lg p-4 bg-muted/50">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium">
-              Conteúdos Selecionados ({value.length})
+              Seleced Contents ({value.length})
             </p>
             <Button
               type="button"
@@ -422,12 +408,6 @@ export function ContentMultiSelect({
                     <p className="text-sm font-medium truncate">
                       {content.titulo}
                     </p>
-                    <Badge
-                      variant="secondary"
-                      className="text-xs mt-1"
-                    >
-                      {getTypeLabel(content.tipo)}
-                    </Badge>
                   </div>
                 </div>
                 <Button

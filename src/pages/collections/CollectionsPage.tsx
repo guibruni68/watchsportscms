@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Eye, Edit, Trash2 } from "lucide-react";
+import { Plus, Eye, Edit, Trash2, Play } from "lucide-react";
 import { ImportButton } from "@/components/ui/import-button";
 import { ActionDropdown } from "@/components/ui/action-dropdown";
 import { SearchFilters } from "@/components/ui/search-filters";
 import { toast } from "@/hooks/use-toast";
 import { mockCatalogues } from "@/data/mockCatalogues";
+import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +31,7 @@ interface Collection {
   ordem_exibicao: number;
   published_at: string;
   content_count?: number;
+  cover_url?: string;
 }
 
 export default function CollectionsPage() {
@@ -69,7 +71,6 @@ export default function CollectionsPage() {
   }, []);
 
   const categories = Array.from(new Set(collections.flatMap(c => c.genre || [])));
-  const statuses = Array.from(new Set(collections.map(c => c.status)));
 
   const filteredCollections = collections.filter(collection => {
     const matchesSearch = collection.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -77,9 +78,12 @@ export default function CollectionsPage() {
       (collection.genre || []).some(g => g.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesCategory = categoryFilter === "all" || (collection.genre || []).includes(categoryFilter);
+    
+    const collectionStatus = getContentStatus(collection.status, collection.published_at);
     const matchesStatus = statusFilter === "all" || 
-      (statusFilter === "true" && collection.status) ||
-      (statusFilter === "false" && !collection.status);
+      (statusFilter === "Active" && collectionStatus === "Active") ||
+      (statusFilter === "Inactive" && collectionStatus === "Inactive") ||
+      (statusFilter === "Publishing" && collectionStatus === "Publishing");
     
     return matchesSearch && matchesCategory && matchesStatus;
   });
@@ -159,8 +163,9 @@ export default function CollectionsPage() {
         ]}
         statuses={[
           { value: "all", label: "All statuses" },
-          { value: "true", label: "Active" },
-          { value: "false", label: "Inactive" }
+          { value: "Active", label: "Active" },
+          { value: "Inactive", label: "Inactive" },
+          { value: "Publishing", label: "Publishing" }
         ]}
         searchPlaceholder="Search collections..."
         categoryPlaceholder="Genre"
@@ -172,8 +177,9 @@ export default function CollectionsPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-20">Thumb</TableHead>
               <TableHead>Title</TableHead>
-              <TableHead className="w-48">Genres</TableHead>
+              <TableHead className="min-w-[250px]">Genres</TableHead>
               <TableHead className="w-32">Publish Date</TableHead>
               <TableHead className="w-24">Status</TableHead>
               <TableHead className="w-32">Actions</TableHead>
@@ -182,13 +188,13 @@ export default function CollectionsPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell colSpan={6} className="text-center py-8">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : paginatedCollections.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell colSpan={6} className="text-center py-8">
                   {filteredCollections.length === 0 && searchTerm === "" && categoryFilter === "all" && statusFilter === "all" 
                     ? "No collections registered yet." 
                     : "No collections found with the applied filters."}
@@ -198,13 +204,28 @@ export default function CollectionsPage() {
               paginatedCollections.map((collection) => (
                 <TableRow key={collection.id}>
                   <TableCell>
-                    <span className="font-medium">{collection.titulo}</span>
+                    <div className="w-16 aspect-[3/4] bg-muted rounded-md flex items-center justify-center overflow-hidden">
+                      {collection.cover_url ? (
+                        <img 
+                          src={collection.cover_url} 
+                          alt={collection.titulo}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Play className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="max-w-xs">
+                      <div className="font-medium truncate">{collection.titulo}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1 flex-wrap">
                       {(collection.genre || []).map((genre, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {genre}
+                        <Badge key={index} variant="secondary">
+                          <span>{genre}</span>
                         </Badge>
                       ))}
                     </div>
@@ -215,8 +236,8 @@ export default function CollectionsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={collection.status ? "default" : "outline"}>
-                      {collection.status ? "Active" : "Inactive"}
+                    <Badge variant={getStatusBadgeVariant(getContentStatus(collection.status, collection.published_at))}>
+                      {getContentStatus(collection.status, collection.published_at)}
                     </Badge>
                   </TableCell>
                   <TableCell>

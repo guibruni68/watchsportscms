@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -13,6 +13,7 @@ import { LiveForm } from "@/components/forms/LiveForm"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { toast } from "@/hooks/use-toast"
+import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils"
 
 interface Live {
   id: string
@@ -20,9 +21,10 @@ interface Live {
   description: string
   dateTime: string
   genre: string[]
-  status: "upcoming" | "live" | "ended"
+  available: boolean
   viewers?: number
   playerEmbed?: string
+  thumbnail?: string
 }
 
 const mockLives: Live[] = [
@@ -30,10 +32,11 @@ const mockLives: Live[] = [
     id: "1",
     eventName: "State Championship Final",
     description: "Live broadcast of the grand final against traditional rival",
-    dateTime: "2024-01-20T16:00:00",
+    dateTime: "2025-12-20T16:00:00",
     genre: ["Championship", "Final"],
-    status: "upcoming",
-    viewers: 0
+    available: false,
+    viewers: 0,
+    thumbnail: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400"
   },
   {
     id: "2",
@@ -41,8 +44,9 @@ const mockLives: Live[] = [
     description: "Press conference with presentation of new players",
     dateTime: "2024-01-18T10:00:00",
     genre: ["Press Conference", "Institutional"],
-    status: "live",
-    viewers: 1247
+    available: true,
+    viewers: 1247,
+    thumbnail: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=400"
   },
   {
     id: "3",
@@ -50,8 +54,9 @@ const mockLives: Live[] = [
     description: "Last test before championship debut",
     dateTime: "2024-01-15T15:00:00",
     genre: ["Training", "Practice"],
-    status: "ended",
-    viewers: 892
+    available: false,
+    viewers: 892,
+    thumbnail: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400"
   },
   {
     id: "4",
@@ -59,28 +64,25 @@ const mockLives: Live[] = [
     description: "Exclusive conversation about the 2024 season",
     dateTime: "2024-01-14T14:00:00",
     genre: ["Interview"],
-    status: "ended",
-    viewers: 567
+    available: false,
+    viewers: 567,
+    thumbnail: "https://images.unsplash.com/photo-1487466365202-1afdb86c764e?w=400"
   },
   {
     id: "5",
     eventName: "Open Training for Fans",
     description: "Follow the team's training before the decisive game",
-    dateTime: "2024-01-22T09:00:00",
+    dateTime: "2026-01-22T09:00:00",
     genre: ["Training", "Behind the Scenes"],
-    status: "upcoming",
-    viewers: 0
+    available: false,
+    viewers: 0,
+    thumbnail: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400"
   }
 ]
 
-const statusLabels = {
-  upcoming: "Upcoming",
-  live: "Live",
-  ended: "Ended"
-}
-
 export default function LivesPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [lives, setLives] = useState<Live[]>(mockLives)
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
@@ -104,9 +106,9 @@ export default function LivesPage() {
   const genres = Array.from(new Set(lives.flatMap(l => l.genre || [])))
   const statuses = [
     { value: "all", label: "All statuses" },
-    { value: "upcoming", label: "Upcoming" },
-    { value: "live", label: "Live" },
-    { value: "ended", label: "Ended" }
+    { value: "Active", label: "Active" },
+    { value: "Inactive", label: "Inactive" },
+    { value: "Publishing", label: "Publishing" }
   ]
 
   const filteredLives = lives.filter(live => {
@@ -114,7 +116,13 @@ export default function LivesPage() {
       live.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (live.genre || []).some(g => g.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesCategory = categoryFilter === "all" || (live.genre || []).includes(categoryFilter)
-    const matchesStatus = statusFilter === "all" || live.status === statusFilter
+    
+    const liveStatus = getContentStatus(live.available, live.dateTime)
+    const matchesStatus = statusFilter === "all" || 
+      (statusFilter === "Active" && liveStatus === "Active") ||
+      (statusFilter === "Inactive" && liveStatus === "Inactive") ||
+      (statusFilter === "Publishing" && liveStatus === "Publishing")
+    
     return matchesSearch && matchesCategory && matchesStatus
   })
 
@@ -125,6 +133,10 @@ export default function LivesPage() {
   const handleEdit = (live: Live) => {
     setEditingLive(live)
     setShowForm(true)
+  }
+
+  const handleView = (id: string) => {
+    navigate(`/lives/${id}`)
   }
 
   const handleNewLive = () => {
@@ -146,8 +158,8 @@ export default function LivesPage() {
         initialData={editingLive ? {
           nomeEvento: editingLive.eventName,
           descricao: editingLive.description,
-          dataHora: editingLive.dateTime.slice(0, 16),
-          status: editingLive.status,
+          dataHora: editingLive.dateTime,
+          generos: editingLive.genre || [],
           playerEmbed: editingLive.playerEmbed
         } : undefined}
         isEdit={!!editingLive}
@@ -191,6 +203,7 @@ export default function LivesPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[80px]">Thumb</TableHead>
               <TableHead>Title</TableHead>
               <TableHead className="min-w-[200px]">Genres</TableHead>
               <TableHead>Date/Time</TableHead>
@@ -202,8 +215,21 @@ export default function LivesPage() {
             {paginatedLives.map((live) => (
               <TableRow key={live.id}>
                 <TableCell>
-                  <div>
-                    <p className="font-medium">{live.eventName}</p>
+                  <div className="w-16 aspect-[3/4] bg-muted rounded-md flex items-center justify-center overflow-hidden">
+                    {live.thumbnail ? (
+                      <img 
+                        src={live.thumbnail} 
+                        alt={live.eventName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Play className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="max-w-xs">
+                    <div className="font-medium truncate">{live.eventName}</div>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -227,19 +253,16 @@ export default function LivesPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={
-                    live.status === "live" ? "default" : 
-                    live.status === "upcoming" ? "secondary" : "outline"
-                  }>
-                    {live.status === "live" && <Play className="h-3 w-3 mr-1" />}
-                    {statusLabels[live.status]}
+                  <Badge variant={getStatusBadgeVariant(getContentStatus(live.available, live.dateTime))}>
+                    {getContentStatus(live.available, live.dateTime)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
                   <ActionDropdown
+                    onView={() => handleView(live.id)}
                     onEdit={() => handleEdit(live)}
                     onDelete={() => handleDelete(live.id)}
-                    showView={false}
+                    showView={true}
                   />
                 </TableCell>
               </TableRow>

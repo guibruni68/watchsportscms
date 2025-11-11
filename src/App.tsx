@@ -7,7 +7,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/dashboard/Index";
 import VideosPage from "./pages/videos/VideosPage";
+import VideoDetailsPage from "./pages/videos/VideoDetailsPage";
+import EditVideoPage from "./pages/videos/EditVideoPage";
 import LivesPage from "./pages/lives/LivesPage";
+import LiveDetailsPage from "./pages/lives/LiveDetailsPage";
+import EditLivePage from "./pages/lives/EditLivePage";
 import TeamsPage from "./pages/teams/TeamsPage";
 import TeamDetailsPage from "./pages/teams/TeamDetailsPage";
 import ChampionshipDetailsPage from "./pages/championships/ChampionshipDetailsPage";
@@ -56,9 +60,29 @@ const App = () => (
                 <VideosPage />
               </ProtectedRoute>
             } />
+            <Route path="/videos/:id" element={
+              <ProtectedRoute>
+                <VideoDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/videos/edit/:id" element={
+              <ProtectedRoute>
+                <EditVideoPage />
+              </ProtectedRoute>
+            } />
             <Route path="/lives" element={
               <ProtectedRoute>
                 <LivesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/lives/:id" element={
+              <ProtectedRoute>
+                <LiveDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/lives/edit/:id" element={
+              <ProtectedRoute>
+                <EditLivePage />
               </ProtectedRoute>
             } />
             <Route path="/teams" element={
