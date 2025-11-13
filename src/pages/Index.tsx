@@ -53,12 +53,12 @@ const Index = () => {
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Link to="/teams">
+          <Link to="/groups">
             <Card className="bg-gradient-card border-border/50 transition-all duration-300 cursor-pointer">
               <CardContent className="p-6 text-center">
                 <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">Times & Elencos</h3>
-                <p className="text-muted-foreground text-sm">Gerencie seus times e jogadores</p>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Groups</h3>
+                <p className="text-muted-foreground text-sm">Gerencie seus times</p>
               </CardContent>
             </Card>
           </Link>

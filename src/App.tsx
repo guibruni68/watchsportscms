@@ -12,8 +12,10 @@ import EditVideoPage from "./pages/videos/EditVideoPage";
 import LivesPage from "./pages/lives/LivesPage";
 import LiveDetailsPage from "./pages/lives/LiveDetailsPage";
 import EditLivePage from "./pages/lives/EditLivePage";
-import TeamsPage from "./pages/teams/TeamsPage";
-import TeamDetailsPage from "./pages/teams/TeamDetailsPage";
+import AgentsPage from "./pages/agents/AgentsPage";
+import GroupsPage from "./pages/groups/GroupsPage";
+import GroupDetailsPage from "./pages/groups/GroupDetailsPage";
+import AgentDetailsPage from "./pages/agents/AgentDetailsPage";
 import ChampionshipDetailsPage from "./pages/championships/ChampionshipDetailsPage";
 import SchedulePage from "./pages/schedule/SchedulePage";
 import NewsPage from "./pages/news/NewsPage";
@@ -28,7 +30,7 @@ import CustomizationPage from "./pages/customization/CustomizationPage";
 import AdsPage from "./pages/ads/AdsPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
 import CollectionsPage from "./pages/collections/CollectionsPage";
-import NewCollectionPage from "./pages/collections/NewCollectionPage";
+import CollectionForm from "./components/forms/CollectionForm";
 import EditCollectionPage from "./pages/collections/EditCollectionPage";
 import CollectionDetailsPage from "./pages/collections/CollectionDetailsPage";
 import AuthPage from "./pages/AuthPage";
@@ -85,14 +87,24 @@ const App = () => (
                 <EditLivePage />
               </ProtectedRoute>
             } />
-            <Route path="/teams" element={
+            <Route path="/agents" element={
               <ProtectedRoute>
-                <TeamsPage />
+                <AgentsPage />
               </ProtectedRoute>
             } />
-            <Route path="/teams/:id" element={
+            <Route path="/agents/:id" element={
               <ProtectedRoute>
-                <TeamDetailsPage />
+                <AgentDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/groups" element={
+              <ProtectedRoute>
+                <GroupsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/groups/:id" element={
+              <ProtectedRoute>
+                <GroupDetailsPage />
               </ProtectedRoute>
             } />
             <Route path="/championships/:id" element={
@@ -167,7 +179,7 @@ const App = () => (
             } />
             <Route path="/collections/novo" element={
               <ProtectedRoute>
-                <NewCollectionPage />
+                <CollectionForm />
               </ProtectedRoute>
             } />
             <Route path="/collections/:id" element={

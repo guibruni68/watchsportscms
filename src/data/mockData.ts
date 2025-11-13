@@ -1,4 +1,5 @@
 // Dados mocados centralizados para a plataforma
+import { Genre } from "@/types/genre"
 
 export interface Team {
   id: string;
@@ -882,3 +883,56 @@ export const mockCampaigns = [
   { id: "camp3", name: "Dia dos Pais" },
   { id: "camp4", name: "Playoffs Premium" }
 ];
+
+// Mock genres for different entity types
+export const mockGenres: Genre[] = [
+  // Content genres
+  { id: "genre-content-1", name: "Highlights", type: "content", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-content-2", name: "Full Match", type: "content", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-content-3", name: "Interview", type: "content", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-content-4", name: "Training", type: "content", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-content-5", name: "Documentary", type: "content", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-content-6", name: "Analysis", type: "content", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-content-7", name: "Behind the Scenes", type: "content", createdAt: "2024-01-01T00:00:00Z" },
+  
+  // Live genres
+  { id: "genre-live-1", name: "Live Match", type: "live", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-live-2", name: "Pre-Match Show", type: "live", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-live-3", name: "Post-Match Analysis", type: "live", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-live-4", name: "Press Conference", type: "live", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-live-5", name: "Special Event", type: "live", createdAt: "2024-01-01T00:00:00Z" },
+  
+  // Collection genres
+  { id: "genre-collection-1", name: "Season Highlights", type: "collection", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-collection-2", name: "Player Spotlight", type: "collection", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-collection-3", name: "Classic Matches", type: "collection", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-collection-4", name: "Championship Series", type: "collection", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-collection-5", name: "Top Goals", type: "collection", createdAt: "2024-01-01T00:00:00Z" },
+  
+  // Agent genres (positions/roles)
+  { id: "genre-agent-1", name: "Goalkeeper", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-2", name: "Defender", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-3", name: "Center Back", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-4", name: "Left Back", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-5", name: "Right Back", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-6", name: "Defensive Midfielder", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-7", name: "Midfielder", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-8", name: "Attacking Midfielder", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-9", name: "Winger", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-10", name: "Forward", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-11", name: "Striker", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-12", name: "Head Coach", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-13", name: "Assistant Coach", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-14", name: "Sports Journalist", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-agent-15", name: "Commentator", type: "agent", createdAt: "2024-01-01T00:00:00Z" },
+  
+  // Group genres (team/league categories)
+  { id: "genre-group-1", name: "Professional League", type: "group", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-group-2", name: "Amateur League", type: "group", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-group-3", name: "Youth Team", type: "group", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-group-4", name: "National Team", type: "group", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-group-5", name: "Club Team", type: "group", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-group-6", name: "Regional League", type: "group", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-group-7", name: "International Competition", type: "group", createdAt: "2024-01-01T00:00:00Z" },
+]
+;

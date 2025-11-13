@@ -1,4 +1,4 @@
-import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop } from "lucide-react";
+import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, UserCircle } from "lucide-react";
 import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
@@ -19,8 +19,13 @@ const mainNavItems = [{
   icon: Folder,
   items: [
     {
-      title: "Agents & Groups",
-      url: "/teams",
+      title: "Agents",
+      url: "/agents",
+      icon: UserCircle
+    },
+    {
+      title: "Groups",
+      url: "/groups",
       icon: Users
     }, 
     {
@@ -87,7 +92,7 @@ const mainNavItems = [{
   icon: DollarSign
 }, {
   title: "Users Management",
-  url: "/team",
+  url: "/users-management",
   icon: UserCheck
 }];
 const settingsNavItems = [{
@@ -116,7 +121,8 @@ export function AppSidebar() {
     if (path === "/") {
       return currentPath === "/";
     }
-    return currentPath.startsWith(path);
+    // Exact match or path with a slash after it to avoid matching similar paths
+    return currentPath === path || currentPath.startsWith(path + "/");
   };
   const getNavClassName = (path: string) => {
     return isActive(path) ? "bg-primary text-white font-medium" : "hover:bg-muted/60 transition-colors font-medium";
@@ -166,9 +172,6 @@ export function AppSidebar() {
 
         {/* Main Navigation */}
         <SidebarGroup className="py-4">
-          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Conteúdo
-          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-3">
               {mainNavItems.map(item => {

@@ -14,6 +14,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
+import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
+import { mockGenres } from "@/data/mockData";
 import { ArrowLeft, Plus, X, Upload, CalendarIcon, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ContentMultiSelect, ContentItem } from "@/components/ui/content-multi-select";
@@ -410,44 +412,18 @@ export default function CollectionForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Genres</FormLabel>
-                        <div className="space-y-4">
-                          <Select
-                            onValueChange={(value) => {
-                              const currentGenres = field.value || [];
-                              if (!currentGenres.includes(value)) {
-                                field.onChange([...currentGenres, value]);
-                              }
-                            }}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select genres..." />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {AVAILABLE_GENRES.map((genre) => (
-                                <SelectItem key={genre} value={genre}>
-                                  {genre}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          {field.value && field.value.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {field.value.map((genre) => (
-                                <Badge key={genre} variant="secondary" className="flex items-center gap-1">
-                                  {genre}
-                                  <X 
-                                    className="h-3 w-3 cursor-pointer" 
-                                    onClick={() => {
-                                      field.onChange(field.value?.filter(g => g !== genre) || []);
-                                    }}
-                                  />
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                        <FormControl>
+                          <GenreMultiSelect
+                            selectedGenres={field.value || []}
+                            onGenresChange={field.onChange}
+                            genreType="collection"
+                            availableGenres={mockGenres}
+                            placeholder="Select or create genres..."
+                          />
+                        </FormControl>
+                        <p className="text-sm text-muted-foreground">
+                          Add genres to categorize this collection
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}

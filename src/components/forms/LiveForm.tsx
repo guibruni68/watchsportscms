@@ -13,6 +13,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
+import { mockGenres } from "@/data/mockData";
 import { ArrowLeft, CalendarIcon, Upload, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -246,6 +248,25 @@ export function LiveForm({
                           value={field.value || ""}
                         />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>} />
+
+              <FormField control={form.control} name="generos" render={({
+                field
+              }) => <FormItem>
+                      <FormLabel>Genres</FormLabel>
+                      <FormControl>
+                        <GenreMultiSelect
+                          selectedGenres={field.value || []}
+                          onGenresChange={field.onChange}
+                          genreType="live"
+                          availableGenres={mockGenres}
+                          placeholder="Select or create genres..."
+                        />
+                      </FormControl>
+                      <p className="text-sm text-muted-foreground">
+                        Add genres to categorize this live event
+                      </p>
                       <FormMessage />
                     </FormItem>} />
             </CardContent>
