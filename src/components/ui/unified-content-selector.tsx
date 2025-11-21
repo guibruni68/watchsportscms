@@ -15,21 +15,92 @@ export interface Content {
 }
 
 interface UnifiedContentSelectorProps {
-  domain: 'agent' | 'group' | 'collection' | 'agenda' | 'news' | 'content';
+  domain: 'agent' | 'group' | 'collection' | 'agenda' | 'news' | 'content' | 'banner';
   value: string[];
   onChange: (ids: string[], details: Content[]) => void;
   placeholder?: string;
   disabled?: boolean;
+  hideSelectedList?: boolean;
 }
+
+// Mock data for all domains
+const mockData = {
+  agent: [
+    { id: 'agent-1', title: 'Cristiano Ronaldo', type: 'player', domain: 'agent' },
+    { id: 'agent-2', title: 'Lionel Messi', type: 'player', domain: 'agent' },
+    { id: 'agent-3', title: 'Neymar Jr', type: 'player', domain: 'agent' },
+    { id: 'agent-4', title: 'Kylian Mbappé', type: 'player', domain: 'agent' },
+    { id: 'agent-5', title: 'Erling Haaland', type: 'player', domain: 'agent' },
+    { id: 'agent-6', title: 'Kevin De Bruyne', type: 'player', domain: 'agent' },
+    { id: 'agent-7', title: 'Mohamed Salah', type: 'player', domain: 'agent' },
+    { id: 'agent-8', title: 'Robert Lewandowski', type: 'player', domain: 'agent' },
+  ],
+  group: [
+    { id: 'group-1', title: 'Real Madrid', type: 'team', domain: 'group' },
+    { id: 'group-2', title: 'Barcelona', type: 'team', domain: 'group' },
+    { id: 'group-3', title: 'Manchester City', type: 'team', domain: 'group' },
+    { id: 'group-4', title: 'Bayern Munich', type: 'team', domain: 'group' },
+    { id: 'group-5', title: 'Liverpool', type: 'team', domain: 'group' },
+    { id: 'group-6', title: 'Paris Saint-Germain', type: 'team', domain: 'group' },
+    { id: 'group-7', title: 'Chelsea', type: 'team', domain: 'group' },
+    { id: 'group-8', title: 'Juventus', type: 'team', domain: 'group' },
+  ],
+  collection: [
+    { id: 'collection-1', title: 'Best Goals of 2024', type: 'catalogue', domain: 'collection' },
+    { id: 'collection-2', title: 'Top Saves', type: 'catalogue', domain: 'collection' },
+    { id: 'collection-3', title: 'Match Highlights', type: 'catalogue', domain: 'collection' },
+    { id: 'collection-4', title: 'Player Interviews', type: 'catalogue', domain: 'collection' },
+    { id: 'collection-5', title: 'Behind the Scenes', type: 'catalogue', domain: 'collection' },
+    { id: 'collection-6', title: 'Training Sessions', type: 'catalogue', domain: 'collection' },
+    { id: 'collection-7', title: 'Classic Matches', type: 'catalogue', domain: 'collection' },
+  ],
+  agenda: [
+    { id: 'agenda-1', title: 'UEFA Champions League', type: 'championship', domain: 'agenda' },
+    { id: 'agenda-2', title: 'Premier League', type: 'championship', domain: 'agenda' },
+    { id: 'agenda-3', title: 'La Liga', type: 'championship', domain: 'agenda' },
+    { id: 'agenda-4', title: 'Serie A', type: 'championship', domain: 'agenda' },
+    { id: 'agenda-5', title: 'Bundesliga', type: 'championship', domain: 'agenda' },
+    { id: 'agenda-6', title: 'Ligue 1', type: 'championship', domain: 'agenda' },
+    { id: 'agenda-7', title: 'Copa Libertadores', type: 'championship', domain: 'agenda' },
+    { id: 'agenda-8', title: 'World Cup Qualifiers', type: 'championship', domain: 'agenda' },
+  ],
+  news: [
+    { id: 'news-1', title: 'Transfer Market: Latest Updates', type: 'news', domain: 'news' },
+    { id: 'news-2', title: 'Champions League Final Preview', type: 'news', domain: 'news' },
+    { id: 'news-3', title: 'Injury Report: Key Players Out', type: 'news', domain: 'news' },
+    { id: 'news-4', title: 'Manager Press Conference Highlights', type: 'news', domain: 'news' },
+    { id: 'news-5', title: 'Youth Academy Success Stories', type: 'news', domain: 'news' },
+    { id: 'news-6', title: 'Stadium Renovation Plans Announced', type: 'news', domain: 'news' },
+    { id: 'news-7', title: 'Record-Breaking Performance Analysis', type: 'news', domain: 'news' },
+  ],
+  content: [
+    { id: 'content-1', title: 'Match Day Highlights - Real Madrid vs Barcelona', type: 'video', domain: 'content' },
+    { id: 'content-2', title: 'Top 10 Goals of the Week', type: 'video', domain: 'content' },
+    { id: 'content-3', title: 'Exclusive: Manager Interview', type: 'video', domain: 'content' },
+    { id: 'content-4', title: 'Tactical Analysis: Defensive Strategies', type: 'video', domain: 'content' },
+    { id: 'content-5', title: 'Player Profile: Rising Star', type: 'video', domain: 'content' },
+    { id: 'content-6', title: 'Full Match Replay', type: 'video', domain: 'content' },
+    { id: 'content-7', title: 'Training Ground Access', type: 'video', domain: 'content' },
+    { id: 'content-8', title: 'Documentary: Season Review', type: 'video', domain: 'content' },
+  ],
+  banner: [
+    { id: 'banner-1', title: 'Season Tickets Now Available', type: 'banner', domain: 'banner' },
+    { id: 'banner-2', title: 'New Kit Launch 2024/25', type: 'banner', domain: 'banner' },
+    { id: 'banner-3', title: 'Watch Live: Next Match', type: 'banner', domain: 'banner' },
+    { id: 'banner-4', title: 'Special Offer: Premium Membership', type: 'banner', domain: 'banner' },
+    { id: 'banner-5', title: 'Fan Zone Activities', type: 'banner', domain: 'banner' },
+  ],
+};
 
 const getDomainLabel = (domain: string): string => {
   const labels: Record<string, string> = {
-    agent: "jogadores",
-    group: "times",
-    collection: "catálogos",
-    agenda: "campeonatos",
-    news: "notícias",
-    content: "conteúdos"
+    agent: "agents",
+    group: "teams",
+    collection: "collections",
+    agenda: "championships",
+    news: "news",
+    content: "content",
+    banner: "banners"
   };
   return labels[domain] || domain;
 };
@@ -39,7 +110,8 @@ export function UnifiedContentSelector({
   value = [], 
   onChange, 
   placeholder,
-  disabled 
+  disabled,
+  hideSelectedList = false
 }: UnifiedContentSelectorProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<Content[]>([]);
@@ -53,8 +125,9 @@ export function UnifiedContentSelector({
       if (searchTerm.trim()) {
         searchContent(searchTerm);
       } else {
-        setSearchResults([]);
-        setShowDropdown(false);
+        // Show all items when search is empty
+        const domainData = mockData[domain] || [];
+        setSearchResults(domainData);
       }
     }, 300);
     return () => clearTimeout(timeout);
@@ -77,95 +150,15 @@ export function UnifiedContentSelector({
       let results: Content[] = [];
       const searchLower = term.toLowerCase();
 
-      switch (domain) {
-        case 'agent': {
-          // Busca players
-          const { data: players } = await supabase
-            .from('players')
-            .select('id, name, avatar_url')
-            .ilike('name', `%${term}%`)
-            .limit(10);
-          
-          results = (players || []).map(p => ({
-            id: p.id,
-            title: p.name,
-            type: 'player',
-            thumbnail: p.avatar_url,
-            domain: 'agent'
-          }));
-          break;
-        }
-        
-        case 'group': {
-          // Busca teams
-          const { data: teams } = await supabase
-            .from('teams')
-            .select('id, name, logo_url')
-            .ilike('name', `%${term}%`)
-            .limit(10);
-          
-          results = (teams || []).map(t => ({
-            id: t.id,
-            title: t.name,
-            type: 'team',
-            thumbnail: t.logo_url,
-            domain: 'group'
-          }));
-          break;
-        }
-        
-        case 'collection': {
-          // Dados mockados temporários (tabela não existe)
-          results = [
-            { id: 'cat-1', title: 'Melhores Momentos', type: 'catalogue', domain: 'collection' },
-            { id: 'cat-2', title: 'Gols da Semana', type: 'catalogue', domain: 'collection' },
-            { id: 'cat-3', title: 'Entrevistas', type: 'catalogue', domain: 'collection' },
-          ].filter(item => item.title.toLowerCase().includes(searchLower));
-          break;
-        }
-        
-        case 'agenda': {
-          // Busca championships
-          const { data: championships } = await supabase
-            .from('championships')
-            .select('id, name, logo_url')
-            .ilike('name', `%${term}%`)
-            .limit(10);
-          
-          results = (championships || []).map(c => ({
-            id: c.id,
-            title: c.name,
-            type: 'championship',
-            thumbnail: c.logo_url,
-            domain: 'agenda'
-          }));
-          break;
-        }
-        
-        case 'news': {
-          // Dados mockados temporários
-          results = [
-            { id: 'news-1', title: 'Flamengo vence clássico', type: 'news', domain: 'news' },
-            { id: 'news-2', title: 'Palmeiras contrata reforço', type: 'news', domain: 'news' },
-            { id: 'news-3', title: 'Corinthians na final', type: 'news', domain: 'news' },
-          ].filter(item => item.title.toLowerCase().includes(searchLower));
-          break;
-        }
-        
-        case 'content': {
-          // Dados mockados temporários
-          results = [
-            { id: 'content-1', title: 'Vídeo Melhores Momentos', type: 'video', domain: 'content' },
-            { id: 'content-2', title: 'Gols da Semana', type: 'video', domain: 'content' },
-            { id: 'content-3', title: 'Entrevista do Técnico', type: 'video', domain: 'content' },
-          ].filter(item => item.title.toLowerCase().includes(searchLower));
-          break;
-        }
-      }
+      // Use mock data for all domains
+      const domainData = mockData[domain] || [];
+      results = domainData.filter(item => 
+        item.title.toLowerCase().includes(searchLower)
+      );
 
       setSearchResults(results);
     } catch (error) {
-      console.error('Erro ao buscar conteúdos:', error);
+      console.error('Error searching content:', error);
       setSearchResults([]);
     } finally {
       setLoading(false);
@@ -176,90 +169,21 @@ export function UnifiedContentSelector({
     try {
       let details: Content[] = [];
 
-      switch (domain) {
-        case 'agent': {
-          const { data: players } = await supabase
-            .from('players')
-            .select('id, name, avatar_url')
-            .in('id', ids);
-          
-          details = (players || []).map(p => ({
-            id: p.id,
-            title: p.name,
-            type: 'player',
-            thumbnail: p.avatar_url,
-            domain: 'agent'
-          }));
-          break;
-        }
-        
-        case 'group': {
-          const { data: teams } = await supabase
-            .from('teams')
-            .select('id, name, logo_url')
-            .in('id', ids);
-          
-          details = (teams || []).map(t => ({
-            id: t.id,
-            title: t.name,
-            type: 'team',
-            thumbnail: t.logo_url,
-            domain: 'group'
-          }));
-          break;
-        }
-        
-        case 'collection': {
-          // Dados mockados temporários (tabela não existe)
-          const mockCatalogues = [
-            { id: 'cat-1', title: 'Melhores Momentos' },
-            { id: 'cat-2', title: 'Gols da Semana' },
-            { id: 'cat-3', title: 'Entrevistas' },
-          ];
-          details = ids.map(id => {
-            const found = mockCatalogues.find(c => c.id === id);
-            return {
-              id,
-              title: found?.title || `Catálogo ${id}`,
-              type: 'catalogue',
-              domain: 'collection'
-            };
-          });
-          break;
-        }
-        
-        case 'agenda': {
-          const { data: championships } = await supabase
-            .from('championships')
-            .select('id, name, logo_url')
-            .in('id', ids);
-          
-          details = (championships || []).map(c => ({
-            id: c.id,
-            title: c.name,
-            type: 'championship',
-            thumbnail: c.logo_url,
-            domain: 'agenda'
-          }));
-          break;
-        }
-        
-        case 'news':
-        case 'content': {
-          // Para dados mockados, não temos detalhes reais
-          details = ids.map(id => ({
-            id,
-            title: `Item ${id}`,
-            type: domain,
-            domain
-          }));
-          break;
-        }
-      }
+      // Use mock data for all domains
+      const domainData = mockData[domain] || [];
+      details = ids.map(id => {
+        const found = domainData.find(item => item.id === id);
+        return found || {
+          id,
+          title: `Item ${id}`,
+          type: domain,
+          domain
+        };
+      });
 
       setSelectedDetails(details);
     } catch (error) {
-      console.error('Erro ao buscar detalhes dos IDs:', error);
+      console.error('Error fetching details:', error);
     }
   };
 
@@ -287,21 +211,22 @@ export function UnifiedContentSelector({
       <div className="relative">
         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder={placeholder || `Buscar ${getDomainLabel(domain)}...`}
+          placeholder={placeholder || `Search ${getDomainLabel(domain)}...`}
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            if (e.target.value.trim()) {
-              setShowDropdown(true);
-            }
+            setShowDropdown(true);
           }}
           onFocus={() => {
-            if (searchTerm.trim()) {
-              setShowDropdown(true);
+            setShowDropdown(true);
+            // Show all items when focusing on empty input
+            if (!searchTerm.trim()) {
+              const domainData = mockData[domain] || [];
+              setSearchResults(domainData);
             }
           }}
           onBlur={() => {
-            // Delay para permitir cliques nos resultados
+            // Delay to allow clicks on results
             setTimeout(() => setShowDropdown(false), 200);
           }}
           className="pl-10"
@@ -309,13 +234,13 @@ export function UnifiedContentSelector({
         />
         
         {/* Dropdown de resultados */}
-        {showDropdown && searchTerm && (
+        {showDropdown && (
           <div className="absolute z-50 w-full mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-y-auto">
             {loading ? (
               <div className="p-3 text-center text-muted-foreground">
                 <div className="flex items-center justify-center gap-2">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                  Buscando...
+                  Searching...
                 </div>
               </div>
             ) : searchResults.length > 0 ? (
@@ -348,7 +273,7 @@ export function UnifiedContentSelector({
                         </div>
                       </div>
                       {isSelected && (
-                        <span className="text-xs text-muted-foreground">✓ Selecionado</span>
+                        <span className="text-xs text-muted-foreground">✓ Selected</span>
                       )}
                     </div>
                   </Button>
@@ -356,7 +281,7 @@ export function UnifiedContentSelector({
               })
             ) : (
               <div className="p-3 text-center text-muted-foreground">
-                Nenhum resultado encontrado
+                No results found
               </div>
             )}
           </div>
@@ -364,10 +289,10 @@ export function UnifiedContentSelector({
       </div>
 
       {/* Lista de selecionados */}
-      {selectedDetails.length > 0 && (
+      {!hideSelectedList && selectedDetails.length > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-medium">
-            {getDomainLabel(domain)} selecionados ({selectedDetails.length})
+            Selected {getDomainLabel(domain)} ({selectedDetails.length})
           </p>
           <div className="flex flex-wrap gap-2">
             {selectedDetails.map(item => (

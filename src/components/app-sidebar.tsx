@@ -66,7 +66,7 @@ const mainNavItems = [{
     },
     {
       title: "Shelves",
-      url: "/carousels",
+      url: "/shelves",
       icon: Layout
     },
     {

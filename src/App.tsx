@@ -21,9 +21,9 @@ import SchedulePage from "./pages/schedule/SchedulePage";
 import EventDetailPage from "./pages/schedule/EventDetailPage";
 import NewsPage from "./pages/news/NewsPage";
 import NewsDetailPage from "./pages/news/NewsDetailPage";
-import CarouselsPage from "./pages/carousels/CarouselsPage";
-import NewCarouselPage from "./pages/carousels/NewCarouselPage";
-import EditCarouselPage from "./pages/carousels/EditCarouselPage";
+import ShelvesPage from "./pages/shelves/ShelvesPage";
+import NewShelfPage from "./pages/shelves/NewShelfPage";
+import EditShelfPage from "./pages/shelves/EditShelfPage";
 import BannersPage from "./pages/banners/BannersPage";
 import BannerDetailsPage from "./pages/banners/BannerDetailsPage";
 import NewBannerPage from "./pages/banners/NewBannerPage";
@@ -134,19 +134,19 @@ const App = () => (
                 <NewsDetailPage />
               </ProtectedRoute>
             } />
-            <Route path="/carousels" element={
+            <Route path="/shelves" element={
               <ProtectedRoute>
-                <CarouselsPage />
+                <ShelvesPage />
               </ProtectedRoute>
             } />
-            <Route path="/carousels/novo" element={
+            <Route path="/shelves/new" element={
               <ProtectedRoute>
-                <NewCarouselPage />
+                <NewShelfPage />
               </ProtectedRoute>
             } />
-            <Route path="/carousels/:id/editar" element={
+            <Route path="/shelves/:id/edit" element={
               <ProtectedRoute>
-                <EditCarouselPage />
+                <EditShelfPage />
               </ProtectedRoute>
             } />
             <Route path="/banners" element={
