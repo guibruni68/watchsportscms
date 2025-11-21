@@ -78,12 +78,34 @@ export interface Live {
 
 export interface News {
   id: string;
-  titulo: string;
-  conteudo: string;
-  destaque: boolean;
-  imagemCapa?: string;
-  dataPublicacao: string;
-  views: number;
+  title: string; // Internal CMS title
+  header: string; // Public-facing news title/headline
+  firstText: string; // First paragraph/content block
+  lastText: string; // Last paragraph/content block
+  firstImageUrl?: string; // Main image
+  secondImageUrl?: string; // Secondary/mid-banner image
+  highlighted: boolean; // Featured/highlight flag
+  date: string; // Publication date
+  scheduleDate?: string; // Scheduled publication date
+  published: boolean; // Publication status
+  createdAt: string;
+  updatedAt: string;
+  enabled: boolean;
+  genres?: string[]; // Array of genre IDs for news types
+  agentId?: string; // Optional linked agent
+  groupId?: string; // Optional linked group
+}
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string; // Event date/time
+  cardImageUrl?: string; // Event card/thumbnail image
+  redirectionUrl?: string; // External link for event details
+  createdAt: string;
+  updatedAt: string;
+  enabled: boolean;
 }
 
 // Times atualizados com novos nomes
@@ -471,43 +493,81 @@ export const mockLives: Live[] = [
 export const mockNews: News[] = [
   {
     id: "1",
-    titulo: "Nova City Sparks anuncia contratação de novo armador para 2024",
-    conteudo: "O clube confirmou hoje a contratação do armador Marcus Johnson, de 28 anos, que vem da liga americana. O jogador assinou contrato por três temporadas e já está liberado para jogar.",
-    destaque: true,
-    dataPublicacao: "2024-01-18T14:30:00",
-    views: 3421
+    title: "Nova contratação 2024",
+    header: "Nova City Sparks anuncia contratação de novo armador para 2024",
+    firstText: "O clube confirmou hoje a contratação do armador Marcus Johnson, de 28 anos, que vem da liga americana. O jogador assinou contrato por três temporadas e já está liberado para jogar.",
+    lastText: "Com essa contratação, o clube reforça seu elenco visando a disputa do campeonato nacional. Marcus Johnson chega com experiência internacional e promete agregar muito ao time.",
+    firstImageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800",
+    secondImageUrl: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=800",
+    highlighted: true,
+    date: "2024-01-18T14:30:00",
+    published: true,
+    createdAt: "2024-01-18T10:00:00",
+    updatedAt: "2024-01-18T14:30:00",
+    enabled: true,
+    genres: ["genre-news-1", "genre-news-2"]
   },
   {
     id: "2",
-    titulo: "Ingressos para a final já estão à venda",
-    conteudo: "A partir de hoje, os torcedores já podem adquirir seus ingressos para a grande final do campeonato estadual. Os preços variam de R$ 50 a R$ 200.",
-    destaque: false,
-    dataPublicacao: "2024-01-17T10:15:00",
-    views: 1876
+    title: "Ingressos final",
+    header: "Ingressos para a final já estão à venda",
+    firstText: "A partir de hoje, os torcedores já podem adquirir seus ingressos para a grande final do campeonado estadual. Os preços variam de R$ 50 a R$ 200.",
+    lastText: "A venda está sendo realizada online e nos pontos físicos autorizados. Garanta já o seu ingresso e não perca essa grande decisão!",
+    firstImageUrl: "https://images.unsplash.com/photo-1459865264687-595d652de67e?w=800",
+    highlighted: false,
+    date: "2024-01-17T10:15:00",
+    published: true,
+    createdAt: "2024-01-17T08:00:00",
+    updatedAt: "2024-01-17T10:15:00",
+    enabled: true,
+    genres: ["genre-news-3"]
   },
   {
     id: "3",
-    titulo: "Time feminino conquista acesso à primeira divisão",
-    conteudo: "Com uma campanha brilhante, o time feminino garantiu o acesso à primeira divisão do campeonato estadual. A equipe não perdeu nenhum jogo na fase final.",
-    destaque: true,
-    dataPublicacao: "2024-01-16T16:45:00",
-    views: 2987
+    title: "Time feminino acesso",
+    header: "Time feminino conquista acesso à primeira divisão",
+    firstText: "Com uma campanha brilhante, o time feminino garantiu o acesso à primeira divisão do campeonato estadual. A equipe não perdeu nenhum jogo na fase final.",
+    lastText: "Esta conquista marca um momento histórico para o clube e reafirma o compromisso com o desenvolvimento do futebol feminino.",
+    firstImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800",
+    secondImageUrl: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800",
+    highlighted: true,
+    date: "2024-01-16T16:45:00",
+    published: true,
+    createdAt: "2024-01-16T14:00:00",
+    updatedAt: "2024-01-16T16:45:00",
+    enabled: true,
+    genres: ["genre-news-1", "genre-news-4"]
   },
   {
     id: "4",
-    titulo: "Novo técnico é apresentado para a temporada 2024",
-    conteudo: "Roberto Silva, de 45 anos, foi oficialmente apresentado como novo técnico da equipe principal. O profissional chega com vasta experiência em competições nacionais.",
-    destaque: false,
-    dataPublicacao: "2024-01-15T09:00:00",
-    views: 1543
+    title: "Novo técnico 2024",
+    header: "Novo técnico é apresentado para a temporada 2024",
+    firstText: "Roberto Silva, de 45 anos, foi oficialmente apresentado como novo técnico da equipe principal. O profissional chega com vasta experiência em competições nacionais.",
+    lastText: "Em sua apresentação, Roberto destacou seus objetivos e a importância de um trabalho coletivo para alcançar os resultados esperados.",
+    firstImageUrl: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800",
+    highlighted: false,
+    date: "2024-01-15T09:00:00",
+    published: true,
+    createdAt: "2024-01-15T07:00:00",
+    updatedAt: "2024-01-15T09:00:00",
+    enabled: true,
+    genres: ["genre-news-2"]
   },
   {
     id: "5",
-    titulo: "Inauguração do novo centro de treinamento",
-    conteudo: "O clube inaugurou suas novas instalações de treinamento, com academia, piscina e campos de última geração para melhor preparação dos atletas.",
-    destaque: true,
-    dataPublicacao: "2024-01-14T11:30:00",
-    views: 4521
+    title: "Centro de treinamento",
+    header: "Inauguração do novo centro de treinamento",
+    firstText: "O clube inaugurou suas novas instalações de treinamento, com academia, piscina e campos de última geração para melhor preparação dos atletas.",
+    lastText: "O investimento reflete o compromisso do clube com a excelência e o desenvolvimento profissional dos atletas. As novas instalações são consideradas referência no país.",
+    firstImageUrl: "https://images.unsplash.com/photo-1577223625816-7546f36aba40?w=800",
+    secondImageUrl: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800",
+    highlighted: true,
+    date: "2024-01-14T11:30:00",
+    published: true,
+    createdAt: "2024-01-14T09:00:00",
+    updatedAt: "2024-01-14T11:30:00",
+    enabled: true,
+    genres: ["genre-news-5"]
   }
 ];
 
@@ -648,231 +708,163 @@ export const getContentsByAlgorithm = (algorithm: string) => {
 // Dados mockados para banners
 export interface Banner {
   id: string;
-  titulo: string;
-  tipo_conteudo: string;
-  layout_banner: string;
-  midia_url?: string;
-  midia_tipo?: string;
-  data_inicio: string;
-  data_fim: string;
-  status: boolean;
-  ordem: number;
-  visualizacoes: number;
-  cliques: number;
-  tempo_total_reproducao: number;
-  created_at: string;
-  conteudo_vinculado_id?: string;
-  planos_permitidos: string[];
-  texto_botao?: string;
-  url_acao?: string;
-  exibir_botao: boolean;
+  title: string;
+  layout: "hero" | "standard"; // Two layout types
+  text: string; // Body text
+  tag?: "LINE" | "NEW" | "NEW EPISODES"; // Optional tag enum
+  buttonText?: string;
+  buttonRedirectionUrl?: string;
+  scheduleDate?: string;
+  isPublished: boolean;
+  bgImageUrl?: string; // Desktop background image
+  bgMobileUrl?: string; // Mobile background image
+  createdAt: string;
+  updatedAt: string;
+  enabled: boolean;
 }
 
 export const mockBanners: Banner[] = [
   {
     id: "banner1",
-    titulo: "Jogo da Final - Ao Vivo Agora",
-    tipo_conteudo: "live_agora",
-    layout_banner: "hero_cta",
-    midia_url: "/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png",
-    midia_tipo: "imagem",
-    data_inicio: new Date(Date.now() - 3600000).toISOString(),
-    data_fim: new Date(Date.now() + 7200000).toISOString(),
-    status: true,
-    ordem: 1,
-    texto_botao: "Assistir Agora",
-    url_acao: "/live/final-championship",
-    planos_permitidos: ["gratuito", "basico", "premium", "vip"],
-    visualizacoes: 15420,
-    cliques: 892,
-    tempo_total_reproducao: 45600,
-    created_at: new Date().toISOString(),
-    conteudo_vinculado_id: "content1",
-    exibir_botao: true
+    title: "Championship Final - Watch Live Now",
+    layout: "hero",
+    text: "Don't miss the most important match of the season! Watch live and exclusive coverage of the championship final.",
+    tag: "LINE",
+    buttonText: "Watch Now",
+    buttonRedirectionUrl: "/live/final-championship",
+    scheduleDate: new Date(Date.now() - 3600000).toISOString(),
+    isPublished: true,
+    bgImageUrl: "/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png",
+    bgMobileUrl: "/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date().toISOString(),
+    enabled: true
   },
   {
     id: "banner2",
-    titulo: "Semifinal - Hoje às 20h",
-    tipo_conteudo: "live_programado",
-    layout_banner: "video_texto",
-    midia_url: "/lovable-uploads/3e4f7302-40a3-4b04-95b2-f925cfb43250.png",
-    midia_tipo: "imagem",
-    data_inicio: new Date(Date.now() + 21600000).toISOString(),
-    data_fim: new Date(Date.now() + 28800000).toISOString(),
-    status: true,
-    ordem: 2,
-    texto_botao: "Lembrar-me",
-    url_acao: "/schedule/semifinal",
-    planos_permitidos: ["basico", "premium", "vip"],
-    visualizacoes: 8930,
-    cliques: 445,
-    tempo_total_reproducao: 0,
-    created_at: new Date().toISOString(),
-    conteudo_vinculado_id: "content2",
-    exibir_botao: true
+    title: "Semifinal - Tonight at 8 PM",
+    layout: "standard",
+    text: "Get ready for an intense match! The semifinal starts tonight at 8 PM.",
+    tag: "NEW",
+    buttonText: "Set Reminder",
+    buttonRedirectionUrl: "/schedule/semifinal",
+    scheduleDate: new Date(Date.now() + 21600000).toISOString(),
+    isPublished: false,
+    bgImageUrl: "/lovable-uploads/3e4f7302-40a3-4b04-95b2-f925cfb43250.png",
+    bgMobileUrl: "/lovable-uploads/3e4f7302-40a3-4b04-95b2-f925cfb43250.png",
+    createdAt: new Date(Date.now() - 172800000).toISOString(),
+    updatedAt: new Date().toISOString(),
+    enabled: false
   },
   {
     id: "banner3",
-    titulo: "Melhores Momentos da Rodada",
-    tipo_conteudo: "vod",
-    layout_banner: "imagem_botao",
-    midia_url: "/lovable-uploads/56b1b2ee-687f-4828-8038-c0902cb9f932.png",
-    midia_tipo: "imagem",
-    data_inicio: new Date(Date.now() - 172800000).toISOString(),
-    data_fim: new Date(Date.now() + 432000000).toISOString(),
-    status: true,
-    ordem: 3,
-    texto_botao: "Ver Vídeo",
-    url_acao: "/videos/melhores-momentos-rodada-15",
-    planos_permitidos: ["gratuito", "basico", "premium", "vip"],
-    visualizacoes: 12340,
-    cliques: 678,
-    tempo_total_reproducao: 89400,
-    created_at: new Date().toISOString(),
-    conteudo_vinculado_id: "content3",
-    exibir_botao: true
+    title: "Best Moments of the Round",
+    layout: "standard",
+    text: "Relive all the best moments, goals, and highlights from this weekend's matches.",
+    tag: "NEW EPISODES",
+    buttonText: "Watch Video",
+    buttonRedirectionUrl: "/videos/best-moments-round-15",
+    scheduleDate: new Date(Date.now() - 172800000).toISOString(),
+    isPublished: true,
+    bgImageUrl: "/lovable-uploads/56b1b2ee-687f-4828-8038-c0902cb9f932.png",
+    bgMobileUrl: "/lovable-uploads/56b1b2ee-687f-4828-8038-c0902cb9f932.png",
+    createdAt: new Date(Date.now() - 259200000).toISOString(),
+    updatedAt: new Date().toISOString(),
+    enabled: true
   },
   {
     id: "banner4",
-    titulo: "Campanha Black Friday - 50% OFF",
-    tipo_conteudo: "campanha",
-    layout_banner: "hero_cta",
-    midia_url: "/lovable-uploads/68bd6b68-c5e2-4cdc-81bb-941708e88ddb.png",
-    midia_tipo: "imagem",
-    data_inicio: new Date(Date.now() - 86400000).toISOString(),
-    data_fim: new Date(Date.now() + 604800000).toISOString(),
-    status: true,
-    ordem: 4,
-    texto_botao: "Aproveitar Oferta",
-    url_acao: "/campaigns/black-friday-2024",
-    planos_permitidos: ["gratuito", "basico"],
-    visualizacoes: 25670,
-    cliques: 1892,
-    tempo_total_reproducao: 0,
-    created_at: new Date().toISOString(),
-    exibir_botao: true
+    title: "Black Friday - 50% OFF Premium",
+    layout: "hero",
+    text: "Limited time offer! Get 50% off on all premium subscriptions. Don't miss this exclusive deal!",
+    buttonText: "Claim Offer",
+    buttonRedirectionUrl: "/campaigns/black-friday-2024",
+    scheduleDate: new Date(Date.now() - 86400000).toISOString(),
+    isPublished: true,
+    bgImageUrl: "/lovable-uploads/68bd6b68-c5e2-4cdc-81bb-941708e88ddb.png",
+    bgMobileUrl: "/lovable-uploads/68bd6b68-c5e2-4cdc-81bb-941708e88ddb.png",
+    createdAt: new Date(Date.now() - 432000000).toISOString(),
+    updatedAt: new Date().toISOString(),
+    enabled: true
   },
   {
     id: "banner5",
-    titulo: "Novo Documentário: História do Clube",
-    tipo_conteudo: "recomendado",
-    layout_banner: "video_texto",
-    midia_url: "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
-    midia_tipo: "video",
-    data_inicio: new Date(Date.now() - 259200000).toISOString(),
-    data_fim: new Date(Date.now() + 864000000).toISOString(),
-    status: true,
-    ordem: 5,
-    texto_botao: "Assistir Trailer",
-    url_acao: "/videos/documentario-historia-clube",
-    planos_permitidos: ["premium", "vip"],
-    visualizacoes: 5670,
-    cliques: 234,
-    tempo_total_reproducao: 67800,
-    created_at: new Date().toISOString(),
-    conteudo_vinculado_id: "content4",
-    exibir_botao: true
+    title: "New Documentary: Club History",
+    layout: "hero",
+    text: "Discover the incredible journey of our club through exclusive interviews and never-before-seen footage.",
+    tag: "NEW",
+    buttonText: "Watch Trailer",
+    buttonRedirectionUrl: "/videos/documentary-club-history",
+    scheduleDate: new Date(Date.now() - 259200000).toISOString(),
+    isPublished: true,
+    bgImageUrl: "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
+    bgMobileUrl: "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
+    createdAt: new Date(Date.now() - 604800000).toISOString(),
+    updatedAt: new Date().toISOString(),
+    enabled: true
   },
   {
     id: "banner6",
-    titulo: "Banner Institucional - Novos Valores",
-    tipo_conteudo: "institucional",
-    layout_banner: "mini_card",
-    midia_url: "/lovable-uploads/7ec692e9-77df-4673-90f4-ed298d10760f.png",
-    midia_tipo: "imagem",
-    data_inicio: new Date(Date.now() - 604800000).toISOString(),
-    data_fim: new Date(Date.now() + 2592000000).toISOString(),
-    status: true,
-    ordem: 6,
-    texto_botao: "Saiba Mais",
-    url_acao: "/about/novos-valores",
-    planos_permitidos: ["gratuito", "basico", "premium", "vip"],
-    visualizacoes: 3450,
-    cliques: 123,
-    tempo_total_reproducao: 0,
-    created_at: new Date().toISOString(),
-    exibir_botao: true
+    title: "Exclusive Coach Interview",
+    layout: "standard",
+    text: "Hear directly from our coach about strategy, team dynamics, and what's next for the season.",
+    tag: "NEW EPISODES",
+    buttonText: "Watch Interview",
+    buttonRedirectionUrl: "/videos/coach-interview-december",
+    scheduleDate: new Date(Date.now() - 432000000).toISOString(),
+    isPublished: true,
+    bgImageUrl: "/lovable-uploads/a945b2ac-8b16-4c57-a844-122cc1e8170c.png",
+    bgMobileUrl: "/lovable-uploads/a945b2ac-8b16-4c57-a844-122cc1e8170c.png",
+    createdAt: new Date(Date.now() - 518400000).toISOString(),
+    updatedAt: new Date().toISOString(),
+    enabled: true
   },
   {
     id: "banner7",
-    titulo: "Entrevista Exclusiva com o Técnico",
-    tipo_conteudo: "vod",
-    layout_banner: "imagem_botao",
-    midia_url: "/lovable-uploads/a945b2ac-8b16-4c57-a844-122cc1e8170c.png",
-    midia_tipo: "video",
-    data_inicio: new Date(Date.now() - 432000000).toISOString(),
-    data_fim: new Date(Date.now() + 259200000).toISOString(),
-    status: true,
-    ordem: 7,
-    texto_botao: "Ver Entrevista",
-    url_acao: "/videos/entrevista-tecnico-dezembro",
-    planos_permitidos: ["basico", "premium", "vip"],
-    visualizacoes: 8920,
-    cliques: 445,
-    tempo_total_reproducao: 123600,
-    created_at: new Date().toISOString(),
-    conteudo_vinculado_id: "content5",
-    exibir_botao: true
+    title: "Special: Ticket + Jersey Combo",
+    layout: "hero",
+    text: "Perfect for true fans! Buy your game ticket and get an official jersey in this exclusive combo deal.",
+    buttonText: "Buy Combo",
+    buttonRedirectionUrl: "/campaigns/ticket-jersey-combo",
+    scheduleDate: new Date(Date.now() + 86400000).toISOString(),
+    isPublished: false,
+    bgImageUrl: "/lovable-uploads/b178263a-95eb-4d88-ad87-aa9de585a258.png",
+    bgMobileUrl: "/lovable-uploads/b178263a-95eb-4d88-ad87-aa9de585a258.png",
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    updatedAt: new Date().toISOString(),
+    enabled: false
   },
   {
     id: "banner8",
-    titulo: "Promoção: Ingresso + Camisa",
-    tipo_conteudo: "campanha",
-    layout_banner: "hero_cta",
-    midia_url: "/lovable-uploads/b178263a-95eb-4d88-ad87-aa9de585a258.png",
-    midia_tipo: "imagem",
-    data_inicio: new Date(Date.now() + 86400000).toISOString(),
-    data_fim: new Date(Date.now() + 1209600000).toISOString(),
-    status: false,
-    ordem: 8,
-    texto_botao: "Comprar Combo",
-    url_acao: "/campaigns/combo-ingresso-camisa",
-    planos_permitidos: ["gratuito", "basico", "premium"],
-    visualizacoes: 0,
-    cliques: 0,
-    tempo_total_reproducao: 0,
-    created_at: new Date().toISOString(),
-    exibir_botao: true
+    title: "Live Post-Match Analysis",
+    layout: "standard",
+    text: "Join our experts for in-depth analysis right after the final whistle. Interactive Q&A session included!",
+    tag: "LINE",
+    buttonText: "Join Live",
+    buttonRedirectionUrl: "/live/post-match-analysis",
+    scheduleDate: new Date(Date.now() + 10800000).toISOString(),
+    isPublished: false,
+    bgImageUrl: "/lovable-uploads/c77a6a4a-5568-4a9c-bdcc-34a53dca4782.png",
+    bgMobileUrl: "/lovable-uploads/c77a6a4a-5568-4a9c-bdcc-34a53dca4782.png",
+    createdAt: new Date(Date.now() - 43200000).toISOString(),
+    updatedAt: new Date().toISOString(),
+    enabled: false
   },
   {
     id: "banner9",
-    titulo: "Live de Análise Pós-Jogo",
-    tipo_conteudo: "live_programado",
-    layout_banner: "video_texto",
-    midia_url: "/lovable-uploads/c77a6a4a-5568-4a9c-bdcc-34a53dca4782.png",
-    midia_tipo: "imagem",
-    data_inicio: new Date(Date.now() + 10800000).toISOString(),
-    data_fim: new Date(Date.now() + 18000000).toISOString(),
-    status: true,
-    ordem: 9,
-    texto_botao: "Participar",
-    url_acao: "/live/analise-pos-jogo",
-    planos_permitidos: ["premium", "vip"],
-    visualizacoes: 2340,
-    cliques: 89,
-    tempo_total_reproducao: 0,
-    created_at: new Date().toISOString(),
-    exibir_botao: true
-  },
-  {
-    id: "banner10",
-    titulo: "Top 10 Gols da Temporada",
-    tipo_conteudo: "recomendado",
-    layout_banner: "mini_card",
-    midia_url: "/lovable-uploads/d5035e4b-b98c-4f58-a0b5-6c9da2398ab0.png",
-    midia_tipo: "video",
-    data_inicio: new Date(Date.now() - 604800000).toISOString(),
-    data_fim: new Date(Date.now() + 1209600000).toISOString(),
-    status: true,
-    ordem: 10,
-    texto_botao: "Ver Ranking",
-    url_acao: "/videos/top-10-gols-temporada",
-    planos_permitidos: ["gratuito", "basico", "premium", "vip"],
-    visualizacoes: 18930,
-    cliques: 923,
-    tempo_total_reproducao: 234500,
-    created_at: new Date().toISOString(),
-    exibir_botao: true
+    title: "Top 10 Goals of the Season",
+    layout: "standard",
+    text: "Vote for your favorite goal! Watch the most spectacular moments from this unforgettable season.",
+    tag: "NEW",
+    buttonText: "View Ranking",
+    buttonRedirectionUrl: "/videos/top-10-goals-season",
+    scheduleDate: new Date(Date.now() - 604800000).toISOString(),
+    isPublished: true,
+    bgImageUrl: "/lovable-uploads/d5035e4b-b98c-4f58-a0b5-6c9da2398ab0.png",
+    bgMobileUrl: "/lovable-uploads/d5035e4b-b98c-4f58-a0b5-6c9da2398ab0.png",
+    createdAt: new Date(Date.now() - 1209600000).toISOString(),
+    updatedAt: new Date().toISOString(),
+    enabled: true
   }
 ];
 
@@ -934,5 +926,82 @@ export const mockGenres: Genre[] = [
   { id: "genre-group-5", name: "Club Team", type: "group", createdAt: "2024-01-01T00:00:00Z" },
   { id: "genre-group-6", name: "Regional League", type: "group", createdAt: "2024-01-01T00:00:00Z" },
   { id: "genre-group-7", name: "International Competition", type: "group", createdAt: "2024-01-01T00:00:00Z" },
+  
+  // News genres (news types/categories)
+  { id: "genre-news-1", name: "Breaking News", type: "news", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-news-2", name: "Transfers", type: "news", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-news-3", name: "Match Updates", type: "news", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-news-4", name: "Team News", type: "news", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-news-5", name: "Club Announcements", type: "news", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-news-6", name: "Interviews", type: "news", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-news-7", name: "Analysis", type: "news", createdAt: "2024-01-01T00:00:00Z" },
+  { id: "genre-news-8", name: "Opinion", type: "news", createdAt: "2024-01-01T00:00:00Z" },
+]
+
+// Mock Events/Schedule
+export const mockEvents: Event[] = [
+  {
+    id: "1",
+    title: "Regional Classic - Main Team vs Rival FC",
+    description: "Don't miss the biggest match of the season! Main Team faces Rival FC in a decisive regional championship match. The game promises great emotions and could define the competition's leadership.",
+    date: "2025-11-25T20:00:00",
+    cardImageUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800",
+    redirectionUrl: "https://example.com/tickets/regional-classic",
+    createdAt: "2025-11-15T10:00:00",
+    updatedAt: "2025-11-15T10:00:00",
+    enabled: true
+  },
+  {
+    id: "2",
+    title: "Open Training Session with Fans",
+    description: "Come watch our team's training session! There will be autograph sessions, photos with players, and exclusive giveaways. Free entry for all fans.",
+    date: "2025-11-22T16:00:00",
+    cardImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800",
+    redirectionUrl: "https://example.com/events/open-training",
+    createdAt: "2025-11-10T14:00:00",
+    updatedAt: "2025-11-10T14:00:00",
+    enabled: true
+  },
+  {
+    id: "3",
+    title: "Press Conference - New Coach Announcement",
+    description: "Join us for the official presentation of our new coach. The event will be broadcast live and will feature Q&A with sports journalists.",
+    date: "2025-11-23T14:00:00",
+    cardImageUrl: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800",
+    createdAt: "2025-11-08T09:00:00",
+    updatedAt: "2025-11-08T09:00:00",
+    enabled: true
+  },
+  {
+    id: "4",
+    title: "U-20 Final - Youth Team vs Juventude FC",
+    description: "The final everyone was waiting for! Our U-20 team seeks the regional cup title against Juventude FC. Come support our young talents!",
+    date: "2025-12-05T15:00:00",
+    cardImageUrl: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800",
+    redirectionUrl: "https://example.com/tickets/u20-final",
+    createdAt: "2025-11-01T11:00:00",
+    updatedAt: "2025-11-01T11:00:00",
+    enabled: true
+  },
+  {
+    id: "5",
+    title: "New Signing Presentation - Marcus Silva",
+    description: "Official presentation of our new striker Marcus Silva, who arrives with great expectations for the season. The event will take place at the main stadium.",
+    date: "2025-11-20T11:00:00",
+    cardImageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800",
+    createdAt: "2025-11-05T08:00:00",
+    updatedAt: "2025-11-05T08:00:00",
+    enabled: false
+  },
+  {
+    id: "6",
+    title: "Women's Team Derby Preparation",
+    description: "Special training session for the women's team as they prepare for the city derby. The session will be open to the public.",
+    date: "2025-12-10T09:00:00",
+    cardImageUrl: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800",
+    createdAt: "2025-10-28T16:00:00",
+    updatedAt: "2025-10-28T16:00:00",
+    enabled: true
+  }
 ]
 ;

@@ -1,5 +1,5 @@
 // Genre types for different entities in the platform
-export type GenreType = "content" | "live" | "collection" | "agent" | "group"
+export type GenreType = "content" | "live" | "collection" | "agent" | "group" | "news"
 
 export interface Genre {
   id: string
@@ -16,7 +16,8 @@ export function getGenreTypeName(type: GenreType): string {
     live: "Live",
     collection: "Collection",
     agent: "Agent",
-    group: "Group"
+    group: "Group",
+    news: "News"
   }
   return typeNames[type]
 }

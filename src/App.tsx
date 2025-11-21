@@ -18,7 +18,9 @@ import GroupDetailsPage from "./pages/groups/GroupDetailsPage";
 import AgentDetailsPage from "./pages/agents/AgentDetailsPage";
 import ChampionshipDetailsPage from "./pages/championships/ChampionshipDetailsPage";
 import SchedulePage from "./pages/schedule/SchedulePage";
+import EventDetailPage from "./pages/schedule/EventDetailPage";
 import NewsPage from "./pages/news/NewsPage";
+import NewsDetailPage from "./pages/news/NewsDetailPage";
 import CarouselsPage from "./pages/carousels/CarouselsPage";
 import NewCarouselPage from "./pages/carousels/NewCarouselPage";
 import EditCarouselPage from "./pages/carousels/EditCarouselPage";
@@ -117,9 +119,19 @@ const App = () => (
                 <SchedulePage />
               </ProtectedRoute>
             } />
+            <Route path="/schedule/:id" element={
+              <ProtectedRoute>
+                <EventDetailPage />
+              </ProtectedRoute>
+            } />
             <Route path="/news" element={
               <ProtectedRoute>
                 <NewsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/news/:id" element={
+              <ProtectedRoute>
+                <NewsDetailPage />
               </ProtectedRoute>
             } />
             <Route path="/carousels" element={

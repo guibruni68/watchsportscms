@@ -1,25 +1,23 @@
-import React, { useState, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { useSearchParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Plus, Search, Edit, Trash2, Star, Eye } from "lucide-react"
-import { ImportButton } from "@/components/ui/import-button"
+import { Plus, Star } from "lucide-react"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { NewsForm } from "@/components/forms/NewsForm"
 import { toast } from "@/hooks/use-toast"
-import { mockNews, News } from "@/data/mockData"
+import { mockNews, News, mockGenres } from "@/data/mockData"
+import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils"
 
 export default function NewsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [news, setNews] = useState<News[]>(mockNews)
   const [searchTerm, setSearchTerm] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState<string>("all") 
+  const [genreFilter, setGenreFilter] = useState<string>("all") 
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [showForm, setShowForm] = useState(false)
   const [editingNews, setEditingNews] = useState<News | null>(null)
@@ -31,27 +29,33 @@ export default function NewsPage() {
     if (searchParams.get('new') === 'true') {
       setShowForm(true)
       setEditingNews(null)
-      // Remove the param from URL
       searchParams.delete('new')
       setSearchParams(searchParams)
     }
   }, [searchParams, setSearchParams])
 
-  const categories = [{ value: "all", label: "Todas as categorias" }]
+  // Get unique genres from mockGenres for filter
+  const newsGenres = mockGenres.filter(g => g.type === "news")
+  const genreOptions = [
+    { value: "all", label: "All Genres" },
+    ...newsGenres.map(g => ({ value: g.id, label: g.name }))
+  ]
+  
   const statuses = [
-    { value: "all", label: "Todos os status" },
-    { value: "highlight", label: "Apenas destaques" },
-    { value: "normal", label: "Apenas normais" }
+    { value: "all", label: "All Statuses" },
+    { value: "Active", label: "Active" },
+    { value: "Publishing", label: "Publishing" },
+    { value: "Inactive", label: "Inactive" }
   ]
 
   const filteredNews = news.filter(item => {
-    const matchesSearch = item.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.conteudo.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = categoryFilter === "all"
-    const matchesStatus = statusFilter === "all" || 
-      (statusFilter === "highlight" && item.destaque) ||
-      (statusFilter === "normal" && !item.destaque)
-    return matchesSearch && matchesCategory && matchesStatus
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.header.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.firstText.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesGenre = genreFilter === "all" || item.genres?.includes(genreFilter)
+    const itemStatus = getContentStatus(item.enabled, item.scheduleDate)
+    const matchesStatus = statusFilter === "all" || itemStatus === statusFilter
+    return matchesSearch && matchesGenre && matchesStatus
   })
 
   const totalPages = Math.ceil(filteredNews.length / itemsPerPage)
@@ -71,8 +75,8 @@ export default function NewsPage() {
   const handleDelete = (id: string) => {
     setNews(news.filter(item => item.id !== id))
     toast({
-      title: "Notícia excluída",
-      description: "A notícia foi removida com sucesso.",
+      title: "News deleted",
+      description: "The news item was removed successfully.",
     })
   }
 
@@ -80,10 +84,17 @@ export default function NewsPage() {
     return (
       <NewsForm 
         initialData={editingNews ? {
-          titulo: editingNews.titulo,
-          conteudo: editingNews.conteudo,
-          destaque: editingNews.destaque,
-          imagemCapa: editingNews.imagemCapa
+          title: editingNews.title,
+          header: editingNews.header,
+          firstText: editingNews.firstText,
+          lastText: editingNews.lastText,
+          firstImageUrl: editingNews.firstImageUrl,
+          secondImageUrl: editingNews.secondImageUrl,
+          highlighted: editingNews.highlighted,
+          date: new Date(editingNews.date),
+          scheduleDate: editingNews.scheduleDate ? new Date(editingNews.scheduleDate) : undefined,
+          enabled: editingNews.enabled,
+          genres: editingNews.genres,
         } : undefined}
         isEdit={!!editingNews}
       />
@@ -94,13 +105,12 @@ export default function NewsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Notícias</h1>
+          <h1 className="text-3xl font-bold">News</h1>
         </div>
         <div className="flex gap-2">
-          <ImportButton entityName="notícias" />
           <Button onClick={handleNewNews} className="gap-2">
             <Plus className="h-4 w-4" />
-            Nova Notícia
+            New News
           </Button>
         </div>
       </div>
@@ -108,67 +118,95 @@ export default function NewsPage() {
       <SearchFilters
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
-        categoryFilter={categoryFilter}
-        onCategoryChange={setCategoryFilter}
+        categoryFilter={genreFilter}
+        onCategoryChange={setGenreFilter}
         statusFilter={statusFilter}
         onStatusChange={setStatusFilter}
-        categories={categories}
+        categories={genreOptions}
         statuses={statuses}
-        searchPlaceholder="Buscar notícias..."
-        categoryPlaceholder="Categoria"
-        statusPlaceholder="Tipo"
+        searchPlaceholder="Search news..."
+        categoryPlaceholder="Genre"
+        statusPlaceholder="Status"
       />
 
       <Card>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Título</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead>Visualizações</TableHead>
-              <TableHead>Destaque</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+              <TableHead>Thumb</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Genres</TableHead>
+              <TableHead>Publish Date</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedNews.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>
-                  <div className="max-w-md">
-                    <p className="font-medium line-clamp-1">{item.titulo}</p>
-                    <p className="text-sm text-muted-foreground line-clamp-1">
-                      {item.conteudo.replace(/<[^>]*>/g, "")}
-                    </p>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {new Date(item.dataPublicacao).toLocaleDateString("pt-BR")}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Eye className="h-4 w-4" />
-                    {item.views.toLocaleString()}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {item.destaque ? (
-                    <Badge variant="default" className="gap-1">
-                      <Star className="h-3 w-3" />
-                      Destaque
+            {paginatedNews.map((item) => {
+              const status = getContentStatus(item.enabled, item.scheduleDate)
+              const newsGenres = item.genres?.map(genreId => 
+                mockGenres.find(g => g.id === genreId)?.name
+              ).filter(Boolean) || []
+              
+              return (
+                <TableRow key={item.id} className="cursor-pointer" onClick={() => navigate(`/news/${item.id}`)}>
+                  <TableCell>
+                    {item.firstImageUrl ? (
+                      <img 
+                        src={item.firstImageUrl} 
+                        alt={item.header}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-muted rounded flex items-center justify-center">
+                        <span className="text-xs text-muted-foreground">No image</span>
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-md">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium line-clamp-1">{item.header}</p>
+                        {item.highlighted && (
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 flex-shrink-0" />
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {item.firstText}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1 flex-wrap">
+                      {newsGenres.length > 0 ? (
+                        newsGenres.map(genre => (
+                          <Badge key={genre} variant="secondary" className="text-xs">
+                            {genre}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(item.date).toLocaleDateString("pt-BR")}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getStatusBadgeVariant(status)}>
+                      {status}
                     </Badge>
-                  ) : (
-                    <Badge variant="secondary">Normal</Badge>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <ActionDropdown
-                    onEdit={() => handleEdit(item)}
-                    onDelete={() => handleDelete(item.id)}
-                    showView={false}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <ActionDropdown
+                      onEdit={() => handleEdit(item)}
+                      onDelete={() => handleDelete(item.id)}
+                      onView={() => navigate(`/news/${item.id}`)}
+                    />
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </Card>
@@ -201,11 +239,11 @@ export default function NewsPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-muted-foreground">
-              {searchTerm || categoryFilter !== "all" || statusFilter !== "all" ? "Nenhuma notícia encontrada com os filtros aplicados." : "Nenhuma notícia cadastrada ainda."}
+              {searchTerm || genreFilter !== "all" || statusFilter !== "all" ? "No news found with the applied filters." : "No news registered yet."}
             </div>
-            {!searchTerm && categoryFilter === "all" && statusFilter === "all" && (
+            {!searchTerm && genreFilter === "all" && statusFilter === "all" && (
               <Button onClick={handleNewNews} className="mt-4">
-                Criar Primeira Notícia
+                Create First News
               </Button>
             )}
           </CardContent>

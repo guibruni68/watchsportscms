@@ -1,66 +1,71 @@
-import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import BannerForm from "@/components/forms/BannerForm";
+import { useState, useEffect } from "react";
+import { BannerForm } from "@/components/forms/BannerForm";
+import { mockBanners } from "@/data/mockData";
 import { toast } from "@/hooks/use-toast";
-import { mockBanners } from "@/data/mockCatalogues";
-import { format } from "date-fns";
 
 export default function EditBannerPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [banner, setBanner] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [initialData, setInitialData] = useState<any>(null);
-
-  const fetchBanner = async () => {
-    if (!id) return;
-    
-    try {
-      const data = mockBanners.find(b => b.id === id);
-      
-      if (!data) {
-        throw new Error("Banner not found");
-      }
-
-      // Converter as datas para o formato esperado pelo input datetime-local
-      const formattedData = {
-        ...data,
-        data_inicio: format(new Date(data.data_inicio), "yyyy-MM-dd'T'HH:mm"),
-        data_fim: format(new Date(data.data_fim), "yyyy-MM-dd'T'HH:mm"),
-      };
-
-      setInitialData(formattedData);
-    } catch (error) {
-      console.error('Erro ao carregar banner:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar o banner.",
-        variant: "destructive",
-      });
-      navigate('/banners');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
+    const fetchBanner = async () => {
+      if (!id) return;
+
+      try {
+        // Mock API call - replace with actual API
+        const bannerData = mockBanners.find(b => b.id === id);
+        
+        if (!bannerData) {
+          throw new Error("Banner not found");
+        }
+        
+        setBanner(bannerData);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Error loading banner data.",
+          variant: "destructive",
+        });
+        navigate('/banners');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchBanner();
-  }, [id]);
+  }, [id, navigate]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center h-96">
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     );
   }
 
-  if (!initialData) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">Banner não encontrado.</p>
-      </div>
-    );
+  if (!banner) {
+    return null;
   }
 
-  return <BannerForm bannerId={id} initialData={initialData} />;
+  return (
+    <BannerForm
+      initialData={{
+        title: banner.title,
+        layout: banner.layout,
+        text: banner.text,
+        tag: banner.tag,
+        buttonText: banner.buttonText,
+        buttonRedirectionUrl: banner.buttonRedirectionUrl,
+        scheduleDate: banner.scheduleDate ? new Date(banner.scheduleDate) : undefined,
+        isPublished: banner.isPublished,
+        bgImageUrl: banner.bgImageUrl,
+        bgMobileUrl: banner.bgMobileUrl,
+        enabled: banner.enabled
+      }}
+      isEdit
+    />
+  );
 }
