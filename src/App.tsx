@@ -24,6 +24,8 @@ import NewsDetailPage from "./pages/news/NewsDetailPage";
 import ShelvesPage from "./pages/shelves/ShelvesPage";
 import NewShelfPage from "./pages/shelves/NewShelfPage";
 import EditShelfPage from "./pages/shelves/EditShelfPage";
+import PagesPage from "./pages/pages/PagesPage";
+import EditPagePage from "./pages/pages/EditPagePage";
 import BannersPage from "./pages/banners/BannersPage";
 import BannerDetailsPage from "./pages/banners/BannerDetailsPage";
 import NewBannerPage from "./pages/banners/NewBannerPage";
@@ -147,6 +149,16 @@ const App = () => (
             <Route path="/shelves/:id/edit" element={
               <ProtectedRoute>
                 <EditShelfPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/pages" element={
+              <ProtectedRoute>
+                <PagesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/pages/:id/edit" element={
+              <ProtectedRoute>
+                <EditPagePage />
               </ProtectedRoute>
             } />
             <Route path="/banners" element={
