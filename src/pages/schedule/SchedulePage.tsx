@@ -298,7 +298,7 @@ export default function SchedulePage() {
       )}
 
       {viewMode === "list" && paginatedEvents.length > 0 ? (
-        <Card>
+        <Card className="border-0">
           <Table>
             <TableHeader>
               <TableRow>

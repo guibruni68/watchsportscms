@@ -63,7 +63,7 @@ export function CarouselManualSelector({
           const collections = getActiveCollections();
           results = collections
             .filter(c => 
-              c.titulo.toLowerCase().includes(search.toLowerCase())
+              c.titulo.toLowerCase().includes(term.toLowerCase())
             )
             .map(c => ({
               id: c.id,

@@ -242,7 +242,7 @@ export default function AgentsPage() {
         statusPlaceholder="Status"
       />
 
-      <Card className="bg-gradient-card border-border/50">
+      <Card className="bg-gradient-card border-0">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>

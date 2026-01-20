@@ -206,7 +206,7 @@ export default function GroupsPage() {
         statusPlaceholder="Status"
       />
       
-      <Card>
+      <Card className="border-0">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
