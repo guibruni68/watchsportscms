@@ -371,7 +371,7 @@ export default function VideosPage() {
       />
 
       {/* Tabela */}
-      <Card>
+      <Card className="border-0">
         <Table>
           <TableHeader>
             <TableRow>

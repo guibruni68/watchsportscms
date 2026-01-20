@@ -94,16 +94,16 @@ export function ContentMultiSelect({
 
       // Buscar notícias
       if (searchTerm) {
-        const filteredNews = mockNews
-          .filter(n => n.titulo.toLowerCase().includes(searchLower))
-          .slice(0, 10);
-        
-        contents.push(...filteredNews.map(n => ({
-          id: n.id,
-          titulo: n.titulo,
-          tipo: "news" as const,
-          thumbnail: n.imagemCapa
-        })));
+      const filteredNews = mockNews
+        .filter(n => n.title.toLowerCase().includes(searchLower))
+        .slice(0, 10);
+
+      contents.push(...filteredNews.map(n => ({
+        id: n.id,
+        titulo: n.title,
+        tipo: "news" as const,
+        thumbnail: n.firstImageUrl
+      })));
       }
 
       setAllContents(contents);

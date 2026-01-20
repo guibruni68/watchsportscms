@@ -124,7 +124,7 @@ export default function PagesPage() {
       </Card>
 
       {paginatedPages.length > 0 ? (
-        <Card>
+        <Card className="border-0">
           <Table>
             <TableHeader>
               <TableRow>

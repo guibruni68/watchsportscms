@@ -199,7 +199,7 @@ export default function LivesPage() {
         statusPlaceholder="Status"
       />
 
-      <Card>
+      <Card className="border-0">
         <Table>
           <TableHeader>
             <TableRow>

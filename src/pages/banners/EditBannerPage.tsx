@@ -51,20 +51,19 @@ export default function EditBannerPage() {
   }
 
   return (
-    <BannerForm
-      initialData={{
-        title: banner.title,
-        layout: banner.layout,
-        text: banner.text,
-        tag: banner.tag,
-        buttonText: banner.buttonText,
-        buttonRedirectionUrl: banner.buttonRedirectionUrl,
-        scheduleDate: banner.scheduleDate ? new Date(banner.scheduleDate) : undefined,
-        isPublished: banner.isPublished,
-        bgImageUrl: banner.bgImageUrl,
-        bgMobileUrl: banner.bgMobileUrl,
-        enabled: banner.enabled
-      }}
+      <BannerForm
+        initialData={{
+          title: banner.title,
+          layout: banner.layout,
+          text: banner.text,
+          tag: banner.tag,
+          buttonText: banner.buttonText,
+          buttonRedirectionUrl: banner.buttonRedirectionUrl,
+          scheduleDate: banner.scheduleDate ? new Date(banner.scheduleDate) : undefined,
+          bgImageUrl: banner.bgImageUrl,
+          bgMobileUrl: banner.bgMobileUrl,
+          enabled: banner.enabled
+        }}
       isEdit
     />
   );
