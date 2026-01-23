@@ -128,7 +128,7 @@ export function VideoForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="content" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-3 mb-3">
               <TabsTrigger value="content" className="flex items-center gap-2">
                 
                 Content Information
