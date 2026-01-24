@@ -40,6 +40,11 @@ const liveSchema = z.object({
   ageRating: z.string().optional(),
   enabled: z.boolean(),
   
+  // Live scheduling fields
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  liveToVod: z.boolean(),
+  
   // Legacy fields for backward compatibility
   nomeEvento: z.string().optional(),
   generos: z.array(z.string()).optional(),
@@ -106,6 +111,11 @@ export function LiveForm({
       streamUrl: initialData?.playerEmbed || "",
       ageRating: "",
       enabled: true,
+      
+      // Live scheduling fields
+      startDate: undefined,
+      endDate: undefined,
+      liveToVod: false,
       
       // Legacy fields
       nomeEvento: initialData?.nomeEvento || "",
@@ -321,6 +331,111 @@ export function LiveForm({
                   <CardTitle>Publishing</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  {/* Live Scheduling Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-medium text-foreground">Live Scheduling</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField control={form.control} name="startDate" render={({
+                        field
+                      }) => <FormItem className="flex flex-col">
+                              <FormLabel>Start Date & Time</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                      {field.value ? format(field.value, "dd/MM/yyyy HH:mm", { locale: ptBR }) : <span>Select start date</span>}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar mode="single" selected={field.value} onSelect={(date) => {
+                                    if (date) {
+                                      const currentTime = field.value || new Date();
+                                      date.setHours(currentTime.getHours(), currentTime.getMinutes());
+                                    }
+                                    field.onChange(date);
+                                  }} initialFocus className={cn("p-3 pointer-events-auto")} />
+                                  <div className="border-t p-3">
+                                    <div className="flex items-center gap-2">
+                                      <Input
+                                        type="time"
+                                        value={field.value ? format(field.value, "HH:mm") : ""}
+                                        onChange={(e) => {
+                                          const [hours, minutes] = e.target.value.split(':').map(Number);
+                                          const newDate = field.value ? new Date(field.value) : new Date();
+                                          newDate.setHours(hours, minutes);
+                                          field.onChange(newDate);
+                                        }}
+                                        className="flex-1"
+                                      />
+                                    </div>
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                              <FormMessage />
+                            </FormItem>} />
+
+                      <FormField control={form.control} name="endDate" render={({
+                        field
+                      }) => <FormItem className="flex flex-col">
+                              <FormLabel>End Date & Time</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                      {field.value ? format(field.value, "dd/MM/yyyy HH:mm", { locale: ptBR }) : <span>Select end date</span>}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar mode="single" selected={field.value} onSelect={(date) => {
+                                    if (date) {
+                                      const currentTime = field.value || new Date();
+                                      date.setHours(currentTime.getHours(), currentTime.getMinutes());
+                                    }
+                                    field.onChange(date);
+                                  }} initialFocus className={cn("p-3 pointer-events-auto")} />
+                                  <div className="border-t p-3">
+                                    <div className="flex items-center gap-2">
+                                      <Input
+                                        type="time"
+                                        value={field.value ? format(field.value, "HH:mm") : ""}
+                                        onChange={(e) => {
+                                          const [hours, minutes] = e.target.value.split(':').map(Number);
+                                          const newDate = field.value ? new Date(field.value) : new Date();
+                                          newDate.setHours(hours, minutes);
+                                          field.onChange(newDate);
+                                        }}
+                                        className="flex-1"
+                                      />
+                                    </div>
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                              <FormMessage />
+                            </FormItem>} />
+                    </div>
+
+                    <FormField control={form.control} name="liveToVod" render={({
+                      field
+                    }) => <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">Live to VOD</FormLabel>
+                              <div className="text-sm text-muted-foreground">
+                                Automatically convert live stream to VOD after it ends
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Switch 
+                                checked={field.value} 
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </FormItem>} />
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="visibility" render={({
               field
