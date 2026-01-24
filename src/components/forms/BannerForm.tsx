@@ -43,6 +43,8 @@ export function BannerForm({ initialData, isEdit = false, onClose }: BannerFormP
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [uploadingBgImage, setUploadingBgImage] = useState(false);
   const [uploadingMobileImage, setUploadingMobileImage] = useState(false);
   const [bgImagePreview, setBgImagePreview] = useState<string | undefined>(initialData?.bgImageUrl);
@@ -64,7 +66,23 @@ export function BannerForm({ initialData, isEdit = false, onClose }: BannerFormP
     }
   });
 
+  const {
+    formState: { isDirty }
+  } = form;
 
+  const handleNavigation = (navigateFn: () => void) => {
+    if (isDirty) {
+      setPendingNavigation(() => navigateFn);
+      setShowExitConfirmation(true);
+    } else {
+      navigateFn();
+    }
+  };
+
+  const handleConfirmExit = () => {
+    setShowExitConfirmation(false);
+    pendingNavigation?.();
+  };
 
   const handleBgImageUpload = async (file: File) => {
     setUploadingBgImage(true);
@@ -129,7 +147,7 @@ export function BannerForm({ initialData, isEdit = false, onClose }: BannerFormP
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => (onClose ? onClose() : navigate("/banners"))}
+          onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/banners"))}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -475,20 +493,40 @@ export function BannerForm({ initialData, isEdit = false, onClose }: BannerFormP
 
           {/* Actions */}
           <div className="flex gap-4">
-            <Button type="submit" className="flex-1">
-              {isEdit ? "Update Banner" : "Create Banner"}
-            </Button>
             <Button
               type="button"
               variant="outline"
-              onClick={() => (onClose ? onClose() : navigate("/banners"))}
+              onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/banners"))}
               className="flex-1"
             >
               Cancel
             </Button>
+            <Button type="submit" className="flex-1">
+              {isEdit ? "Update Banner" : "Create Banner"}
+            </Button>
           </div>
         </form>
       </Form>
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
+              Continue Editing
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmExit}>
+              Discard Changes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

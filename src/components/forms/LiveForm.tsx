@@ -12,6 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { mockGenres } from "@/data/mockData";
@@ -84,6 +85,8 @@ export function LiveForm({
   } = useToast();
   const [imageUploadMode, setImageUploadMode] = useState<"file" | "url">("file");
   const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
 
   // Parse initial datetime if provided
   const initialDateTime = initialData?.dataHora ? new Date(initialData.dataHora) : new Date();
@@ -113,6 +116,23 @@ export function LiveForm({
       agentesRelacionados: initialData?.agentesRelacionados || [],
     }
   });
+  const {
+    formState: {
+      isDirty
+    }
+  } = form;
+  const handleNavigation = (navigateFn: () => void) => {
+    if (isDirty) {
+      setPendingNavigation(() => navigateFn);
+      setShowExitConfirmation(true);
+    } else {
+      navigateFn();
+    }
+  };
+  const handleConfirmExit = () => {
+    setShowExitConfirmation(false);
+    pendingNavigation?.();
+  };
   const onSubmit = (data: LiveFormData) => {
     console.log("Saving live:", data);
     toast({
@@ -122,7 +142,7 @@ export function LiveForm({
     if (onClose) {
       onClose();
     } else {
-      navigate("/lives");
+    navigate("/lives");
     }
   };
 
@@ -138,7 +158,7 @@ export function LiveForm({
   ];
   return <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => onClose ? onClose() : navigate("/lives")} className="text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="sm" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/lives"))} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Live Streams
         </Button>
@@ -146,239 +166,284 @@ export function LiveForm({
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Section 1: Content Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Content Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <Tabs defaultValue="information" className="w-full">
+            <div className="rounded-lg bg-transparent p-0 border-0 pb-4">
+              <TabsList className="inline-flex h-auto items-center justify-start rounded-t-lg bg-transparent p-0 text-muted-foreground border-0 w-full">
+                <TabsTrigger 
+                  value="information" 
+                  className="relative flex items-center justify-center whitespace-nowrap rounded-t-lg px-6 py-3 text-base font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:opacity-0 data-[state=active]:after:opacity-100"
+                >
+                  Information
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="media" 
+                  className="relative flex items-center justify-center whitespace-nowrap rounded-t-lg px-6 py-3 text-base font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:opacity-0 data-[state=active]:after:opacity-100"
+                >
+                  Media
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="publishing" 
+                  className="relative flex items-center justify-center whitespace-nowrap rounded-t-lg px-6 py-3 text-base font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:opacity-0 data-[state=active]:after:opacity-100"
+                >
+                  Publishing
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Tab 1: Information */}
+            <TabsContent value="information">
+      <Card>
+        <CardHeader>
+                  <CardTitle>Information</CardTitle>
+        </CardHeader>
+                <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="titulo" render={({
+                    <FormField control={form.control} name="titulo" render={({
                   field
                 }) => <FormItem>
-                        <FormLabel>Title *</FormLabel>
+                            <FormLabel>Title *</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ex: State Championship Final" {...field} />
+                              <Input placeholder="Ex: State Championship Final" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>} />
 
-                <FormField control={form.control} name="label" render={({
+                    <FormField control={form.control} name="label" render={({
                   field
                 }) => <FormItem>
-                        <FormLabel>Label *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled>
-                          <FormControl>
+                            <FormLabel>Label *</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled>
+                              <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="LIVE" />
+                                  <SelectValue placeholder="LIVE" />
                             </SelectTrigger>
+                              </FormControl>
+                            <SelectContent>
+                                <SelectItem value="LIVE">LIVE</SelectItem>
+                            </SelectContent>
+                          </Select>
+                            <FormMessage />
+                          </FormItem>} />
+                            </div>
+
+                  <FormField control={form.control} name="descricao" render={({
+                    field
+                  }) => <FormItem>
+                          <FormLabel>Description *</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="Describe the event..." className="min-h-24" {...field} />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="LIVE">LIVE</SelectItem>
-                          </SelectContent>
-                        </Select>
                         <FormMessage />
                       </FormItem>} />
-              </div>
 
-              <FormField control={form.control} name="descricao" render={({
+                  <FormField control={form.control} name="anoLancamento" render={({
+                  field
+                }) => <FormItem>
+                          <FormLabel>Release Year</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="Ex: 2025" 
+                              {...field} 
+                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                        <FormMessage />
+                      </FormItem>} />
+
+                  <FormField control={form.control} name="generos" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Description *</FormLabel>
+                          <FormLabel>Genres</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Describe the event..." className="min-h-24" {...field} />
-                      </FormControl>
+                            <GenreMultiSelect
+                              selectedGenres={field.value || []}
+                              onGenresChange={field.onChange}
+                              genreType="live"
+                              availableGenres={mockGenres}
+                              placeholder="Select or create genres..."
+                            />
+                          </FormControl>
+                          <p className="text-sm text-muted-foreground">
+                            Add genres to categorize this live event
+                          </p>
                       <FormMessage />
                     </FormItem>} />
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="cardImageUrl" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Card Image URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://example.com/card.jpg" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
+            {/* Tab 2: Media */}
+            <TabsContent value="media">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Media</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <FormField control={form.control} name="cardImageUrl" render={({
+              field
+            }) => <FormItem>
+                          <FormLabel>Card Image URL</FormLabel>
+                    <FormControl>
+                            <Input placeholder="https://example.com/card.jpg" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>} />
 
-                <FormField control={form.control} name="bannerImageUrl" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Banner Image URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://example.com/banner.jpg" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="streamUrl" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Stream URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://example.com/stream.m3u8" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
-
-                <FormField control={form.control} name="ageRating" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Age Rating</FormLabel>
-                        <FormControl>
-                          <Input placeholder="G, PG, PG-13, R, etc." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
-              </div>
-
-              <FormField control={form.control} name="anoLancamento" render={({
+                  <FormField control={form.control} name="bannerImageUrl" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Release Year</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="Ex: 2025" 
-                          {...field} 
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                          value={field.value || ""}
-                        />
-                      </FormControl>
+                          <FormLabel>Banner Image URL</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://example.com/banner.jpg" {...field} />
+                          </FormControl>
                       <FormMessage />
                     </FormItem>} />
 
-              <FormField control={form.control} name="generos" render={({
+                  <FormField control={form.control} name="streamUrl" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Genres</FormLabel>
-                      <FormControl>
-                        <GenreMultiSelect
-                          selectedGenres={field.value || []}
-                          onGenresChange={field.onChange}
-                          genreType="live"
-                          availableGenres={mockGenres}
-                          placeholder="Select or create genres..."
-                        />
-                      </FormControl>
-                      <p className="text-sm text-muted-foreground">
-                        Add genres to categorize this live event
-                      </p>
+                          <FormLabel>Stream URL</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://example.com/stream.m3u8" {...field} />
+                          </FormControl>
                       <FormMessage />
                     </FormItem>} />
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          {/* Section 2: Publishing & Visibility */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Publishing & Visibility</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="visibility" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Visibility *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select visibility tier" />
-                            </SelectTrigger>
-                          </FormControl>
+            {/* Tab 3: Publishing */}
+            <TabsContent value="publishing">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Publishing</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField control={form.control} name="visibility" render={({
+              field
+            }) => <FormItem>
+                            <FormLabel>Visibility *</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select visibility tier" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="FREE">FREE</SelectItem>
+                                <SelectItem value="BASIC">BASIC</SelectItem>
+                                <SelectItem value="PREMIUM">PREMIUM</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>} />
+
+                    <FormField control={form.control} name="badge" render={({
+                      field
+                    }) => <FormItem>
+                            <FormLabel>Badge</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                          <SelectTrigger>
+                                  <SelectValue placeholder="Select badge (optional)" />
+                          </SelectTrigger>
+                              </FormControl>
                           <SelectContent>
-                            <SelectItem value="FREE">FREE</SelectItem>
-                            <SelectItem value="BASIC">BASIC</SelectItem>
-                            <SelectItem value="PREMIUM">PREMIUM</SelectItem>
+                                <SelectItem value="NEW">NEW</SelectItem>
+                                <SelectItem value="NEW EPISODES">NEW EPISODES</SelectItem>
+                                <SelectItem value="SOON">SOON</SelectItem>
                           </SelectContent>
                         </Select>
-                        <FormMessage />
-                      </FormItem>} />
-
-                <FormField control={form.control} name="badge" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Badge</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select badge (optional)" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="NEW">NEW</SelectItem>
-                            <SelectItem value="NEW EPISODES">NEW EPISODES</SelectItem>
-                            <SelectItem value="SOON">SOON</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>} />
-              </div>
-
-              <FormField control={form.control} name="scheduleDate" render={({
-                field
-              }) => <FormItem className="flex flex-col">
-                      <FormLabel>Schedule Date (Optional)</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                              {field.value ? format(field.value, "PPP") : <span>No schedule date</span>}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus className={cn("p-3 pointer-events-auto")} />
-                        </PopoverContent>
-                      </Popover>
-                      <p className="text-sm text-muted-foreground">
-                        If set, content will be automatically disabled until this date
-                      </p>
-                      <FormMessage />
-                    </FormItem>} />
-
-              <FormField control={form.control} name="enabled" render={({
-                field
-              }) => {
-                const hasScheduledDate = !!form.watch("scheduleDate");
-                const scheduleDatePassed = hasScheduledDate && form.watch("scheduleDate") && new Date(form.watch("scheduleDate")!) < new Date();
-                
-                return <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Enabled</FormLabel>
-                        <div className="text-sm text-muted-foreground">
-                          {hasScheduledDate 
-                            ? scheduleDatePassed 
-                              ? "Schedule date has passed - you can enable manually"
-                              : "Content with future schedule date is automatically disabled"
-                            : "Enable or disable this content manually"}
-                        </div>
+                            <FormMessage />
+                          </FormItem>} />
                       </div>
-                      <FormControl>
-                        <Switch 
-                          checked={hasScheduledDate && !scheduleDatePassed ? false : field.value} 
-                          onCheckedChange={field.onChange}
-                          disabled={hasScheduledDate && !scheduleDatePassed}
-                        />
-                      </FormControl>
-                    </FormItem>
-              }} />
-            </CardContent>
-          </Card>
+
+                  <FormField control={form.control} name="scheduleDate" render={({
+                    field
+                  }) => <FormItem className="flex flex-col">
+                          <FormLabel>Schedule Date (Optional)</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                  {field.value ? format(field.value, "PPP") : <span>No schedule date</span>}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus className={cn("p-3 pointer-events-auto")} />
+                            </PopoverContent>
+                          </Popover>
+                          <p className="text-sm text-muted-foreground">
+                            If set, content will be automatically disabled until this date
+                          </p>
+                    <FormMessage />
+                  </FormItem>} />
+
+                  <FormField control={form.control} name="enabled" render={({
+              field
+                  }) => {
+                    const hasScheduledDate = !!form.watch("scheduleDate");
+                    const scheduleDatePassed = hasScheduledDate && form.watch("scheduleDate") && new Date(form.watch("scheduleDate")!) < new Date();
+                    
+                    return <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">Enabled</FormLabel>
+                            <div className="text-sm text-muted-foreground">
+                              {hasScheduledDate 
+                                ? scheduleDatePassed 
+                                  ? "Schedule date has passed - you can enable manually"
+                                  : "Content with future schedule date is automatically disabled"
+                                : "Enable or disable this content manually"}
+                            </div>
+                          </div>
+                    <FormControl>
+                            <Switch 
+                              checked={hasScheduledDate && !scheduleDatePassed ? false : field.value} 
+                              onCheckedChange={field.onChange}
+                              disabled={hasScheduledDate && !scheduleDatePassed}
+                            />
+                    </FormControl>
+                        </FormItem>
+                  }} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
 
           <div className="flex gap-4">
+            <Button type="button" variant="outline" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/lives"))} className="flex-1">
+              Cancel
+            </Button>
             <Button type="submit" className="flex-1">
               {isEdit ? "Update Live Stream" : "Create Live Stream"}
-            </Button>
-            <Button type="button" variant="outline" onClick={() => onClose ? onClose() : navigate("/lives")} className="flex-1">
-              Cancel
             </Button>
           </div>
         </form>
       </Form>
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
+              Continue Editing
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmExit}>
+              Discard Changes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>;
 }

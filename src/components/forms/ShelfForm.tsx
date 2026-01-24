@@ -778,9 +778,6 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
 
           {/* Actions */}
           <div className="flex gap-4">
-            <Button type="submit" className="flex-1">
-              {isEdit ? "Update Shelf" : "Create Shelf"}
-            </Button>
             <Button
               type="button"
               variant="outline"
@@ -788,6 +785,9 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
               className="flex-1"
             >
               Cancel
+            </Button>
+            <Button type="submit" className="flex-1">
+              {isEdit ? "Update Shelf" : "Create Shelf"}
             </Button>
           </div>
         </form>

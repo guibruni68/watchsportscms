@@ -215,7 +215,7 @@ export default function LivesPage() {
             {paginatedLives.map((live) => (
               <TableRow key={live.id}>
                 <TableCell>
-                  <div className="w-16 aspect-[3/4] bg-muted rounded-md flex items-center justify-center overflow-hidden">
+                  <div className="w-24 aspect-[3/2] bg-muted rounded-md flex items-center justify-center overflow-hidden">
                     {live.thumbnail ? (
                       <img 
                         src={live.thumbnail} 

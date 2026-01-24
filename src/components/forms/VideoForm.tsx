@@ -128,20 +128,28 @@ export function VideoForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="content" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-3">
-              <TabsTrigger value="content" className="flex items-center gap-2">
-                
-                Content Information
-              </TabsTrigger>
-              <TabsTrigger value="images" className="flex items-center gap-2">
-                
-                Images
-              </TabsTrigger>
-              <TabsTrigger value="publishing" className="flex items-center gap-2">
-                
-                Publishing & Visibility
-              </TabsTrigger>
-            </TabsList>
+            <div className="rounded-lg bg-transparent p-0 border-0 pb-4">
+              <TabsList className="inline-flex h-auto items-center justify-start rounded-t-lg bg-transparent p-0 text-muted-foreground border-0 w-full">
+                <TabsTrigger 
+                  value="content" 
+                  className="relative flex items-center justify-center whitespace-nowrap rounded-t-lg px-6 py-3 text-base font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:opacity-0 data-[state=active]:after:opacity-100"
+                >
+                  Content Information
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="images" 
+                  className="relative flex items-center justify-center whitespace-nowrap rounded-t-lg px-6 py-3 text-base font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:opacity-0 data-[state=active]:after:opacity-100"
+                >
+                  Images
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="publishing" 
+                  className="relative flex items-center justify-center whitespace-nowrap rounded-t-lg px-6 py-3 text-base font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:opacity-0 data-[state=active]:after:opacity-100"
+                >
+                  Publishing & Visibility
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Tab 1: Content Information */}
             <TabsContent value="content">
@@ -366,11 +374,11 @@ export function VideoForm({
           </Tabs>
 
           <div className="flex gap-4">
-            <Button type="submit" className="flex-1">
-              {isEdit ? "Update Video" : "Create Video"}
-            </Button>
             <Button type="button" variant="outline" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/videos"))} className="flex-1">
               Cancel
+            </Button>
+            <Button type="submit" className="flex-1">
+              {isEdit ? "Update Video" : "Create Video"}
             </Button>
           </div>
         </form>
