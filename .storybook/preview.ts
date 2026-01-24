@@ -6,7 +6,7 @@ const preview: Preview = {
     controls: { expanded: true },
     actions: { argTypesRegex: '^on.*' },
     layout: 'centered',
-  },
+      },
   decorators: [
     (Story) => (
       <div style={{ padding: 24, width: '100%', maxWidth: 1200 }}>
