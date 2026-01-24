@@ -128,26 +128,11 @@ export function VideoForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="content" className="w-full">
-            <div className="rounded-lg bg-transparent p-0 border-0 pb-4">
-              <TabsList className="inline-flex h-auto items-center justify-start rounded-t-lg bg-transparent p-0 text-muted-foreground border-0 w-full">
-                <TabsTrigger 
-                  value="content" 
-                  className="relative flex items-center justify-center whitespace-nowrap rounded-t-lg px-6 py-3 text-base font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:opacity-0 data-[state=active]:after:opacity-100"
-                >
-                  Content Information
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="images" 
-                  className="relative flex items-center justify-center whitespace-nowrap rounded-t-lg px-6 py-3 text-base font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:opacity-0 data-[state=active]:after:opacity-100"
-                >
-                  Images
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="publishing" 
-                  className="relative flex items-center justify-center whitespace-nowrap rounded-t-lg px-6 py-3 text-base font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:opacity-0 data-[state=active]:after:opacity-100"
-                >
-                  Publishing & Visibility
-                </TabsTrigger>
+            <div className="pb-4">
+              <TabsList>
+                <TabsTrigger value="content">Content Information</TabsTrigger>
+                <TabsTrigger value="images">Images</TabsTrigger>
+                <TabsTrigger value="publishing">Publishing & Visibility</TabsTrigger>
               </TabsList>
             </div>
 
