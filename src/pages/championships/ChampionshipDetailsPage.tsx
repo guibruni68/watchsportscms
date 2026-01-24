@@ -178,13 +178,15 @@ export default function ChampionshipDetailsPage() {
 
       {/* Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="classification">Classificação</TabsTrigger>
-          <TabsTrigger value="matches">Partidas</TabsTrigger>
-          <TabsTrigger value="statistics">Estatísticas</TabsTrigger>
-          <TabsTrigger value="live">Transmissões</TabsTrigger>
-        </TabsList>
+        <div className="pb-4">
+          <TabsList>
+            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+            <TabsTrigger value="classification">Classificação</TabsTrigger>
+            <TabsTrigger value="matches">Partidas</TabsTrigger>
+            <TabsTrigger value="statistics">Estatísticas</TabsTrigger>
+            <TabsTrigger value="live">Transmissões</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
