@@ -233,12 +233,8 @@ export default function LivesPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-1 flex-wrap">
-                    {(live.genre || []).map((g, idx) => (
-                      <Badge key={idx} variant="secondary">
-                        <span>{g}</span>
-                      </Badge>
-                    ))}
+                  <div className="text-sm text-muted-foreground">
+                    {(live.genre || []).join(", ")}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -253,9 +249,9 @@ export default function LivesPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getStatusBadgeVariant(getContentStatus(live.available, live.dateTime))}>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                     {getContentStatus(live.available, live.dateTime)}
-                  </Badge>
+                  </span>
                 </TableCell>
                 <TableCell className="text-right">
                   <ActionDropdown
