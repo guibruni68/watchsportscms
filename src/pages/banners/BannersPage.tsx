@@ -140,14 +140,14 @@ export default function BannersPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">
+                      <span className="text-sm text-muted-foreground">
                         {getLayoutLabel(banner.layout)}
-                      </Badge>
+                      </span>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={statusVariant}>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                         {status}
-                      </Badge>
+                      </span>
                     </TableCell>
                     <TableCell className="text-right">
                       <ActionDropdown

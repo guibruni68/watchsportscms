@@ -222,12 +222,8 @@ export default function CollectionsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-1 flex-wrap">
-                      {(collection.genre || []).map((genre, index) => (
-                        <Badge key={index} variant="secondary">
-                          <span>{genre}</span>
-                        </Badge>
-                      ))}
+                    <div className="text-sm text-muted-foreground">
+                      {(collection.genre || []).join(", ")}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -236,9 +232,9 @@ export default function CollectionsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeVariant(getContentStatus(collection.status, collection.published_at))}>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                       {getContentStatus(collection.status, collection.published_at)}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell>
                     <ActionDropdown
