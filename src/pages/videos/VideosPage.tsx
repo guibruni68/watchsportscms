@@ -405,17 +405,8 @@ export default function VideosPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-1 flex-wrap">
-                    {(video.genre || []).map((g, idx) => {
-                      console.log(`Video ${video.id} - Genre ${idx}:`, g);
-                      return (
-                        <Badge key={idx} variant="secondary">
-                          <span>
-                            {g}
-                          </span>
-                        </Badge>
-                      );
-                    })}
+                  <div className="text-sm text-muted-foreground">
+                    {(video.genre || []).join(", ")}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -424,9 +415,9 @@ export default function VideosPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getStatusBadgeVariant(getContentStatus(video.available, video.publishDate))}>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                     {getContentStatus(video.available, video.publishDate)}
-                  </Badge>
+                  </span>
                 </TableCell>
                 <TableCell>
                   <ActionDropdown

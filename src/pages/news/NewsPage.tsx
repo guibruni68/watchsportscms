@@ -177,25 +177,17 @@ export default function NewsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-1 flex-wrap">
-                      {newsGenres.length > 0 ? (
-                        newsGenres.map(genre => (
-                          <Badge key={genre} variant="secondary" className="text-xs">
-                            {genre}
-                          </Badge>
-                        ))
-                      ) : (
-                        <span className="text-sm text-muted-foreground">-</span>
-                      )}
+                    <div className="text-sm text-muted-foreground">
+                      {newsGenres.length > 0 ? newsGenres.join(", ") : "-"}
                     </div>
                   </TableCell>
                   <TableCell>
                     {new Date(item.date).toLocaleDateString("pt-BR")}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeVariant(status)}>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                       {status}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

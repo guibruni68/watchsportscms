@@ -349,7 +349,7 @@ export default function GroupDetailsPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Genre</p>
-                  <Badge variant="outline" className="capitalize">{group.genre}</Badge>
+                  <p className="text-base capitalize">{group.genre}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Description</p>

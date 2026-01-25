@@ -90,23 +90,35 @@ export default function NewsDetailPage() {
       </div>
 
       {/* Status Badges */}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2 items-center">
         {newsItem.highlighted && (
-          <Badge variant="default">Highlighted</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+            Highlighted
+          </span>
         )}
         {newsItem.published ? (
-          <Badge variant="default">Published</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+            Published
+          </span>
         ) : (
-          <Badge variant="secondary">Draft</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+            Draft
+          </span>
         )}
         {newsItem.enabled ? (
-          <Badge variant="default">Enabled</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+            Enabled
+          </span>
         ) : (
-          <Badge variant="destructive">Disabled</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+            Disabled
+          </span>
         )}
-        {newsGenres.map(genre => (
-          <Badge key={genre} variant="secondary">{genre}</Badge>
-        ))}
+        {newsGenres.length > 0 && (
+          <span className="text-sm text-muted-foreground">
+            {newsGenres.join(", ")}
+          </span>
+        )}
       </div>
 
       {/* Main Content Card - Public View */}
@@ -191,11 +203,9 @@ export default function NewsDetailPage() {
             {newsGenres.length > 0 && (
               <div>
                 <p className="text-sm text-muted-foreground mb-1">News Types</p>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {newsGenres.map(genre => (
-                    <Badge key={genre} variant="secondary">{genre}</Badge>
-                  ))}
-                </div>
+                <p className="text-sm">
+                  {newsGenres.join(", ")}
+                </p>
               </div>
             )}
           </div>

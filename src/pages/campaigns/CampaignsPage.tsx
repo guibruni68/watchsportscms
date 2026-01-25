@@ -176,14 +176,14 @@ export default function CampaignsPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">
+                  <span className="text-sm text-muted-foreground">
                     {typeLabels[campaign.type]}
-                  </Badge>
+                  </span>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={campaign.status === "active" ? "default" : "outline"}>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                     {campaign.status === "active" ? "Ativo" : "Inativo"}
-                  </Badge>
+                  </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
