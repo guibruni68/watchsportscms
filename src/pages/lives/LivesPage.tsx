@@ -262,7 +262,9 @@ export default function LivesPage() {
                     onView={() => handleView(live.id)}
                     onEdit={() => handleEdit(live)}
                     onDelete={() => handleDelete(live.id)}
+                    onStats={() => navigate(`/lives/${live.id}?tab=stats`)}
                     showView={true}
+                    showStats={true}
                   />
                 </TableCell>
               </TableRow>

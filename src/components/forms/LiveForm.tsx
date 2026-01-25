@@ -182,6 +182,7 @@ export function LiveForm({
                 <TabsTrigger value="information">Information</TabsTrigger>
                 <TabsTrigger value="media">Media</TabsTrigger>
                 <TabsTrigger value="publishing">Publishing</TabsTrigger>
+                {isEdit && <TabsTrigger value="stats">Stats</TabsTrigger>}
               </TabsList>
             </div>
 
@@ -513,6 +514,38 @@ export function LiveForm({
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* Tab 4: Stats (only in edit mode) */}
+            {isEdit && (
+              <TabsContent value="stats">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Stats</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="rounded-lg border p-4 text-center">
+                        <p className="text-2xl font-bold text-foreground">0</p>
+                        <p className="text-sm text-muted-foreground">Total Views</p>
+                      </div>
+                      <div className="rounded-lg border p-4 text-center">
+                        <p className="text-2xl font-bold text-foreground">0</p>
+                        <p className="text-sm text-muted-foreground">Peak Viewers</p>
+                      </div>
+                      <div className="rounded-lg border p-4 text-center">
+                        <p className="text-2xl font-bold text-foreground">0h 0m</p>
+                        <p className="text-sm text-muted-foreground">Avg. Watch Time</p>
+                      </div>
+                    </div>
+                    <div className="rounded-lg border p-4">
+                      <p className="text-sm text-muted-foreground text-center">
+                        Detailed statistics will be available after the live stream ends.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            )}
           </Tabs>
 
           <div className="flex gap-4">
