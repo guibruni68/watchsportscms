@@ -1,32 +1,28 @@
-import { useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Edit, Calendar, ExternalLink } from "lucide-react"
-import { EventForm } from "@/components/forms/EventForm"
-import { mockEvents } from "@/data/mockData"
-import { format } from "date-fns"
-import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils"
-
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Edit, Calendar, ExternalLink } from "lucide-react";
+import { EventForm } from "@/components/forms/EventForm";
+import { mockEvents } from "@/data/mockData";
+import { format } from "date-fns";
+import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils";
 export default function EventDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [showEditForm, setShowEditForm] = useState(false)
+  const {
+    id
+  } = useParams<{
+    id: string;
+  }>();
+  const navigate = useNavigate();
+  const [showEditForm, setShowEditForm] = useState(false);
 
   // Find the event
-  const event = mockEvents.find(e => e.id === id)
-
+  const event = mockEvents.find(e => e.id === id);
   if (!event) {
-    return (
-      <div className="space-y-6">
+    return <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/schedule")}
-            className="text-muted-foreground hover:text-foreground"
-          >
+          <Button variant="ghost" size="sm" onClick={() => navigate("/schedule")} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Schedule
           </Button>
@@ -36,41 +32,25 @@ export default function EventDetailPage() {
             <p className="text-muted-foreground">Event not found</p>
           </CardContent>
         </Card>
-      </div>
-    )
+      </div>;
   }
-
-  const status = getContentStatus(event.enabled, undefined)
-  const statusVariant = getStatusBadgeVariant(status)
-
+  const status = getContentStatus(event.enabled, undefined);
+  const statusVariant = getStatusBadgeVariant(status);
   if (showEditForm) {
-    return (
-      <EventForm
-        initialData={{
-          title: event.title,
-          description: event.description,
-          date: new Date(event.date),
-          cardImageUrl: event.cardImageUrl,
-          redirectionUrl: event.redirectionUrl,
-          enabled: event.enabled,
-        }}
-        isEdit={true}
-        onClose={() => setShowEditForm(false)}
-      />
-    )
+    return <EventForm initialData={{
+      title: event.title,
+      description: event.description,
+      date: new Date(event.date),
+      cardImageUrl: event.cardImageUrl,
+      redirectionUrl: event.redirectionUrl,
+      enabled: event.enabled
+    }} isEdit={true} onClose={() => setShowEditForm(false)} />;
   }
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/schedule")}
-            className="text-muted-foreground hover:text-foreground"
-          >
+          <Button variant="ghost" size="sm" onClick={() => navigate("/schedule")} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Schedule
           </Button>
@@ -82,29 +62,20 @@ export default function EventDetailPage() {
       </div>
 
       {/* Status Badge */}
-      <div className="flex gap-2">
-        <Badge variant={statusVariant}>{status}</Badge>
-      </div>
+      
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Event Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Event Image */}
-          {event.cardImageUrl && (
-            <Card>
+          {event.cardImageUrl && <Card>
               <CardContent className="p-0">
-                <img
-                  src={event.cardImageUrl}
-                  alt={event.title}
-                  className="w-full h-96 object-cover rounded-lg"
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder.svg"
-                  }}
-                />
+                <img src={event.cardImageUrl} alt={event.title} className="w-full h-96 object-cover rounded-lg" onError={e => {
+              e.currentTarget.src = "/placeholder.svg";
+            }} />
               </CardContent>
-            </Card>
-          )}
+            </Card>}
 
           {/* Event Header */}
           <div>
@@ -174,31 +145,20 @@ export default function EventDetailPage() {
             <CardContent className="p-6">
               <h3 className="font-semibold mb-3">Quick Actions</h3>
               <div className="space-y-2">
-                <Button 
-                  onClick={() => setShowEditForm(true)} 
-                  variant="outline" 
-                  className="w-full"
-                >
+                <Button onClick={() => setShowEditForm(true)} variant="outline" className="w-full">
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Event
                 </Button>
-                {event.redirectionUrl && (
-                  <Button asChild variant="outline" className="w-full">
-                    <a 
-                      href={event.redirectionUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
+                {event.redirectionUrl && <Button asChild variant="outline" className="w-full">
+                    <a href={event.redirectionUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Visit Link
                     </a>
-                  </Button>
-                )}
+                  </Button>}
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
-  )
+    </div>;
 }
