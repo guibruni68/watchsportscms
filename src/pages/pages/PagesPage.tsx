@@ -141,7 +141,7 @@ export default function PagesPage() {
                     <div className="font-medium">{getPageNameLabel(page.name)}</div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{page.shelves.length} shelves</Badge>
+                    <span className="text-sm text-muted-foreground">{page.shelves.length} shelves</span>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm text-muted-foreground">

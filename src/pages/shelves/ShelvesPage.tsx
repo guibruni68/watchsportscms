@@ -206,18 +206,18 @@ export default function ShelvesPage() {
                     <div className="font-medium">{shelf.title}</div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{getTypeLabel(shelf.type)}</Badge>
+                    <span className="text-sm">{getTypeLabel(shelf.type)}</span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{getLayoutLabel(shelf.layout)}</Badge>
+                    <span className="text-sm">{getLayoutLabel(shelf.layout)}</span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{getDomainLabel(shelf.domain)}</Badge>
+                    <span className="text-sm">{getDomainLabel(shelf.domain)}</span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={shelf.enabled ? "default" : "secondary"}>
+                    <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
                       {shelf.enabled ? "Active" : "Inactive"}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

@@ -239,20 +239,11 @@ export default function VideoDetailsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Label</label>
-                  <div className="text-sm">
-                    <Badge variant="outline">{video.label}</Badge>
-                  </div>
+                  <p className="text-sm">{video.label}</p>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Visibility</label>
-                  <div className="text-sm">
-                    <Badge variant={
-                      video.visibility === "FREE" ? "default" :
-                      video.visibility === "BASIC" ? "secondary" : "outline"
-                    }>
-                      {video.visibility}
-                    </Badge>
-                  </div>
+                  <p className="text-sm">{video.visibility}</p>
                 </div>
               </div>
 
@@ -266,11 +257,13 @@ export default function VideoDetailsPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Status</label>
                   <div className="flex items-center gap-2">
-                    <Badge variant={video.enabled ? "default" : "outline"}>
+                    <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
                       {video.enabled ? "Enabled" : "Disabled"}
-                    </Badge>
+                    </span>
                     {video.isPublished && (
-                      <Badge variant="secondary">Published</Badge>
+                      <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
+                        Published
+                      </span>
                     )}
                   </div>
                 </div>
@@ -286,9 +279,7 @@ export default function VideoDetailsPage() {
                 {video.ageRating && (
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-muted-foreground">Age Rating</label>
-                    <div className="text-sm">
-                      <Badge variant="outline">{video.ageRating}</Badge>
-                    </div>
+                    <p className="text-sm">{video.ageRating}</p>
                   </div>
                 )}
               </div>
@@ -296,9 +287,7 @@ export default function VideoDetailsPage() {
               {video.badge && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Badge</label>
-                  <div className="text-sm">
-                    <Badge variant="secondary">{video.badge}</Badge>
-                  </div>
+                  <p className="text-sm">{video.badge}</p>
                 </div>
               )}
 
@@ -321,14 +310,9 @@ export default function VideoDetailsPage() {
               {video.genre && video.genre.length > 0 && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Genres</label>
-                  <div className="flex flex-wrap gap-2">
-                    {video.genre.map((genre, index) => (
-                      <Badge key={index} variant="secondary">
-                        <Tag className="h-3 w-3 mr-1" />
-                        {genre}
-                      </Badge>
-                    ))}
-                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {video.genre.join(", ")}
+                  </p>
                 </div>
               )}
 
