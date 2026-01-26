@@ -211,14 +211,14 @@ export default function CollectionDetailsPage() {
             </div>
 
             {/* Collection Info */}
-            <div className="flex-1 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Label</label>
+            <div className="flex-1 space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
                   <p className="text-sm">{collection.label || "COLLECTION"}</p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Visibility</label>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Visibility</p>
                   <p className="text-sm">{collection.visibility || "FREE"}</p>
                 </div>
               </div>
@@ -240,25 +240,25 @@ export default function CollectionDetailsPage() {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {collection.releaseYear && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Release Year</label>
-                    <div className="text-sm">{collection.releaseYear}</div>
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Release Year</p>
+                    <p className="text-sm">{collection.releaseYear}</p>
                   </div>
                 )}
                 {collection.ageRating && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Age Rating</label>
-                    <div className="text-sm">{collection.ageRating}</div>
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Age Rating</p>
+                    <p className="text-sm">{collection.ageRating}</p>
                   </div>
                 )}
               </div>
 
               {collection.scheduleDate && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Schedule Date</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Schedule Date</p>
                     <div className="text-sm flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       {new Date(collection.scheduleDate).toLocaleDateString("en-US", {
@@ -272,33 +272,33 @@ export default function CollectionDetailsPage() {
               )}
 
               {collection.genres && collection.genres.length > 0 && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Genres</label>
-                  <p className="text-sm text-muted-foreground">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Genres</p>
+                  <p className="text-sm">
                     {collection.genres.join(", ")}
                   </p>
                 </div>
               )}
 
               {collection.description && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Description</label>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Description</p>
                   <p className="text-sm bg-muted/50 p-3 rounded-md">{collection.description}</p>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Created At</label>
-                  <div className="text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Created At</p>
+                  <p className="text-sm text-muted-foreground">
                     {new Date(collection.createdAt || collection.published_at).toLocaleDateString("en-US")}
-                  </div>
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
-                  <div className="text-sm">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Last Updated</p>
+                  <p className="text-sm text-muted-foreground">
                     {new Date(collection.updatedAt || collection.updated_at).toLocaleDateString("en-US")}
-                  </div>
+                  </p>
                 </div>
               </div>
             </div>

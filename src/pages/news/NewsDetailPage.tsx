@@ -177,32 +177,32 @@ export default function NewsDetailPage() {
           <CardTitle>Metadata</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Internal Title</p>
-              <p className="font-medium">{newsItem.title}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-foreground uppercase tracking-wide">Internal Title</p>
+              <p className="text-sm">{newsItem.title}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Publication Date</p>
-              <p className="font-medium">{format(new Date(newsItem.date), "PPP")}</p>
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-foreground uppercase tracking-wide">Publication Date</p>
+              <p className="text-sm">{format(new Date(newsItem.date), "PPP")}</p>
             </div>
             {newsItem.scheduleDate && (
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Scheduled Date</p>
-                <p className="font-medium">{format(new Date(newsItem.scheduleDate), "PPP")}</p>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Scheduled Date</p>
+                <p className="text-sm">{format(new Date(newsItem.scheduleDate), "PPP")}</p>
               </div>
             )}
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Created At</p>
-              <p className="font-medium">{format(new Date(newsItem.createdAt), "PPP")}</p>
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-foreground uppercase tracking-wide">Created At</p>
+              <p className="text-sm text-muted-foreground">{format(new Date(newsItem.createdAt), "PPP")}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Updated At</p>
-              <p className="font-medium">{format(new Date(newsItem.updatedAt), "PPP")}</p>
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-foreground uppercase tracking-wide">Updated At</p>
+              <p className="text-sm text-muted-foreground">{format(new Date(newsItem.updatedAt), "PPP")}</p>
             </div>
             {newsGenres.length > 0 && (
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">News Types</p>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-foreground uppercase tracking-wide">News Types</p>
                 <p className="text-sm">
                   {newsGenres.join(", ")}
                 </p>

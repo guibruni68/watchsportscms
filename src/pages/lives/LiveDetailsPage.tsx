@@ -231,21 +231,21 @@ export default function LiveDetailsPage() {
             </div>
 
             {/* Live Stream Info */}
-            <div className="flex-1 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Label</label>
+            <div className="flex-1 space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
                   <p className="text-sm">{live.label}</p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Visibility</label>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Visibility</p>
                   <p className="text-sm">{live.visibility}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Schedule Date</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Schedule Date</p>
                   <div className="text-sm flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     <div>
@@ -259,8 +259,8 @@ export default function LiveDetailsPage() {
                     </div>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Status</label>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Status</p>
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
                       {live.enabled ? "Enabled" : "Disabled"}
@@ -274,65 +274,65 @@ export default function LiveDetailsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {live.releaseYear && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Release Year</label>
-                    <div className="text-sm">{live.releaseYear}</div>
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Release Year</p>
+                    <p className="text-sm">{live.releaseYear}</p>
                   </div>
                 )}
                 {live.ageRating && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Age Rating</label>
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Age Rating</p>
                     <p className="text-sm">{live.ageRating}</p>
                   </div>
                 )}
               </div>
 
               {live.badge && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Badge</label>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Badge</p>
                   <p className="text-sm">{live.badge}</p>
                 </div>
               )}
 
               {live.genre && live.genre.length > 0 && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Genres</label>
-                  <p className="text-sm text-muted-foreground">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Genres</p>
+                  <p className="text-sm">
                     {live.genre.join(", ")}
                   </p>
                 </div>
               )}
 
               {live.streamUrl && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Stream URL</label>
-                  <div className="text-sm text-muted-foreground font-mono text-xs break-all bg-muted/50 p-2 rounded">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Stream URL</p>
+                  <p className="text-sm text-muted-foreground font-mono text-xs break-all bg-muted/50 p-2 rounded">
                     {live.streamUrl}
-                  </div>
+                  </p>
                 </div>
               )}
 
               {live.description && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Description</label>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Description</p>
                   <p className="text-sm bg-muted/50 p-3 rounded-md">{live.description}</p>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Created At</label>
-                  <div className="text-sm text-muted-foreground">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Created At</p>
+                  <p className="text-sm text-muted-foreground">
                     {new Date(live.createdAt).toLocaleString("en-US")}
-                  </div>
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Updated At</label>
-                  <div className="text-sm text-muted-foreground">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Updated At</p>
+                  <p className="text-sm text-muted-foreground">
                     {new Date(live.updatedAt).toLocaleString("en-US")}
-                  </div>
+                  </p>
                 </div>
               </div>
             </div>
