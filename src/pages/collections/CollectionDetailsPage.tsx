@@ -215,20 +215,11 @@ export default function CollectionDetailsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Label</label>
-                  <div className="text-sm">
-                    <Badge variant="outline">{collection.label || "COLLECTION"}</Badge>
-                  </div>
+                  <p className="text-sm">{collection.label || "COLLECTION"}</p>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Visibility</label>
-                  <div className="text-sm">
-                    <Badge variant={
-                      collection.visibility === "FREE" ? "default" :
-                      collection.visibility === "BASIC" ? "secondary" : "outline"
-                    }>
-                      {collection.visibility || "FREE"}
-                    </Badge>
-                  </div>
+                  <p className="text-sm">{collection.visibility || "FREE"}</p>
                 </div>
               </div>
 
@@ -236,17 +227,15 @@ export default function CollectionDetailsPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Status</label>
                   <div className="flex items-center gap-2">
-                    <Badge variant={getStatusBadgeVariant(getContentStatus(collection.enabled ?? collection.available, collection.scheduleDate || collection.published_at))}>
+                    <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
                       {getContentStatus(collection.enabled ?? collection.available, collection.scheduleDate || collection.published_at)}
-                    </Badge>
+                    </span>
                   </div>
                 </div>
                 {collection.badge && (
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-muted-foreground">Badge</label>
-                    <div className="text-sm">
-                      <Badge>{collection.badge}</Badge>
-                    </div>
+                    <p className="text-sm">{collection.badge}</p>
                   </div>
                 )}
               </div>
@@ -285,14 +274,9 @@ export default function CollectionDetailsPage() {
               {collection.genres && collection.genres.length > 0 && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Genres</label>
-                  <div className="flex flex-wrap gap-2">
-                    {collection.genres.map((genre, index) => (
-                      <Badge key={index} variant="secondary">
-                        <Tag className="h-3 w-3 mr-1" />
-                        {genre}
-                      </Badge>
-                    ))}
-                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {collection.genres.join(", ")}
+                  </p>
                 </div>
               )}
 
@@ -385,9 +369,9 @@ export default function CollectionDetailsPage() {
                                 </div>
                               </TableCell>
                               <TableCell>
-                                <Badge variant={getStatusBadgeVariant(getContentStatus(content.available, content.published_at))}>
+                                <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
                                   {getContentStatus(content.available, content.published_at)}
-                                </Badge>
+                                </span>
                               </TableCell>
                             </TableRow>
                           ))}
