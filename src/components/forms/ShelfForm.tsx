@@ -249,12 +249,11 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={() => (onClose ? onClose() : navigate("/shelves"))}
           className="text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Shelves
+          <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
 

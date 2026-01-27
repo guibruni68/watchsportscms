@@ -119,28 +119,25 @@ export function VideoForm({
   };
   return <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/videos"))} className="text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Videos
+        <Button variant="ghost" size="icon" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/videos"))} className="text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="content" className="w-full">
-            <div className="pb-4">
-              <TabsList>
-                <TabsTrigger value="content">Content Information</TabsTrigger>
-                <TabsTrigger value="images">Images</TabsTrigger>
-                <TabsTrigger value="publishing">Publishing & Visibility</TabsTrigger>
-              </TabsList>
-            </div>
+            <TabsList className="mb-6">
+              <TabsTrigger value="content">Information</TabsTrigger>
+              <TabsTrigger value="images">Media</TabsTrigger>
+              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+            </TabsList>
 
-            {/* Tab 1: Content Information */}
+            {/* Tab 1: Information */}
             <TabsContent value="content">
               <Card>
                 <CardHeader>
-                  <CardTitle>Content Information</CardTitle>
+                  <CardTitle>Video Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -230,11 +227,11 @@ export function VideoForm({
               </Card>
             </TabsContent>
 
-            {/* Tab 2: Images */}
+            {/* Tab 2: Media */}
             <TabsContent value="images">
               <Card>
                 <CardHeader>
-                  <CardTitle>Images</CardTitle>
+                  <CardTitle>Video Media</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <FormField control={form.control} name="cardImageUrl" render={({
@@ -266,11 +263,11 @@ export function VideoForm({
               </Card>
             </TabsContent>
 
-            {/* Tab 3: Publishing & Visibility */}
+            {/* Tab 3: Publishing */}
             <TabsContent value="publishing">
               <Card>
                 <CardHeader>
-                  <CardTitle>Publishing & Visibility</CardTitle>
+                  <CardTitle>Publishing</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

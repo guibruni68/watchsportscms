@@ -15,7 +15,7 @@ const mainNavItems = [{
   url: "/",
   icon: Home
 }, {
-  title: "Content Management",
+  title: "Content",
   icon: Folder,
   items: [
     {

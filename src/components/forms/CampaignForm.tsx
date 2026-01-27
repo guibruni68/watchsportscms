@@ -129,12 +129,10 @@ export function CampaignForm({ initialData, isEdit, onClose }: CampaignFormProps
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={() => navigate(-1)}
-          className="gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar
         </Button>
         <div>
           <h1 className="text-3xl font-bold">

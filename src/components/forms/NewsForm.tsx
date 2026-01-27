@@ -114,26 +114,23 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/news"))}
           className="text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to News
+          <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
-            <div className="pb-4">
-              <TabsList>
-                <TabsTrigger value="information">Information</TabsTrigger>
-                <TabsTrigger value="media">Media</TabsTrigger>
-                <TabsTrigger value="classification">Classification</TabsTrigger>
-                <TabsTrigger value="publishing">Publishing</TabsTrigger>
-              </TabsList>
-            </div>
+            <TabsList className="mb-6">
+              <TabsTrigger value="information">Information</TabsTrigger>
+              <TabsTrigger value="media">Media</TabsTrigger>
+              <TabsTrigger value="classification">Classification</TabsTrigger>
+              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+            </TabsList>
 
             {/* Tab 1: Information */}
             <TabsContent value="information">
