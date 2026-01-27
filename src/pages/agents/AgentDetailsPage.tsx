@@ -165,7 +165,7 @@ export default function AgentDetailsPage() {
                       {agent.genres.map(genreId => {
                         const genre = mockGenres.find(g => g.id === genreId)
                         return genre ? (
-                          <Badge key={genreId} variant="secondary">
+                          <Badge key={genreId} variant="neutral">
                             {genre.name}
                           </Badge>
                         ) : null

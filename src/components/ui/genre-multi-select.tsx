@@ -131,7 +131,7 @@ export function GenreMultiSelect({
               selectedGenreObjects.map(genre => (
                 <Badge
                   key={genre.id}
-                  variant="secondary"
+                  variant="neutral"
                   className="mr-1"
                 >
                   {genre.name}
