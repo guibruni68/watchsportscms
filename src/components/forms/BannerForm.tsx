@@ -146,12 +146,11 @@ export function BannerForm({ initialData, isEdit = false, onClose }: BannerFormP
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/banners"))}
           className="text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Banners
+          <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
 

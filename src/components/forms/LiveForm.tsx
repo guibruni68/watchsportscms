@@ -168,23 +168,20 @@ export function LiveForm({
   ];
   return <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/lives"))} className="text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Live Streams
+        <Button variant="ghost" size="icon" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/lives"))} className="text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
-            <div className="pb-4">
-              <TabsList>
-                <TabsTrigger value="information">Information</TabsTrigger>
-                <TabsTrigger value="media">Media</TabsTrigger>
-                <TabsTrigger value="publishing">Publishing</TabsTrigger>
-                {isEdit && <TabsTrigger value="stats">Stats</TabsTrigger>}
-              </TabsList>
-            </div>
+            <TabsList className="mb-6">
+              <TabsTrigger value="information">Information</TabsTrigger>
+              <TabsTrigger value="media">Media</TabsTrigger>
+              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+              {isEdit && <TabsTrigger value="stats">Stats</TabsTrigger>}
+            </TabsList>
 
             {/* Tab 1: Information */}
             <TabsContent value="information">

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowLeft, Save, AlertCircle, Upload } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 
@@ -100,12 +101,10 @@ export function TeamForm({ initialData, isEdit, onClose }: TeamFormProps) {
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={() => navigate(-1)}
-          className="gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar
         </Button>
         <div>
           <h1 className="text-3xl font-bold">
@@ -117,119 +116,139 @@ export function TeamForm({ initialData, isEdit, onClose }: TeamFormProps) {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Informações do Time</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome do Time</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Ex: City Sparks FC"
-                />
-                {errors.name && (
-                  <div className="flex items-center gap-1 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.name}
-                  </div>
-                )}
-              </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Tabs defaultValue="information" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="information">Information</TabsTrigger>
+            <TabsTrigger value="media">Media</TabsTrigger>
+          </TabsList>
 
-              <div className="space-y-2">
-                <Label htmlFor="city">Cidade</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                  placeholder="Ex: São Paulo"
-                />
-                {errors.city && (
-                  <div className="flex items-center gap-1 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.city}
+          {/* Tab 1: Information */}
+          <TabsContent value="information">
+            <Card>
+              <CardHeader>
+                <CardTitle>Team Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome do Time</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Ex: City Sparks FC"
+                    />
+                    {errors.name && (
+                      <div className="flex items-center gap-1 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        {errors.name}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="category">Categoria</Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="profissional">Profissional</SelectItem>
-                    <SelectItem value="sub-20">Sub-20</SelectItem>
-                    <SelectItem value="sub-17">Sub-17</SelectItem>
-                    <SelectItem value="feminino">Feminino</SelectItem>
-                    <SelectItem value="futsal">Futsal</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.category && (
-                  <div className="flex items-center gap-1 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.category}
+                  <div className="space-y-2">
+                    <Label htmlFor="city">Cidade</Label>
+                    <Input
+                      id="city"
+                      value={formData.city}
+                      onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                      placeholder="Ex: São Paulo"
+                    />
+                    {errors.city && (
+                      <div className="flex items-center gap-1 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        {errors.city}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="logo">Escudo do Time</Label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    id="logo"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="flex-1"
-                  />
-                  <Button type="button" variant="outline" size="sm">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload
-                  </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Categoria</Label>
+                    <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="profissional">Profissional</SelectItem>
+                        <SelectItem value="sub-20">Sub-20</SelectItem>
+                        <SelectItem value="sub-17">Sub-17</SelectItem>
+                        <SelectItem value="feminino">Feminino</SelectItem>
+                        <SelectItem value="futsal">Futsal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.category && (
+                      <div className="flex items-center gap-1 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        {errors.category}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {formData.logo && (
-                  <p className="text-sm text-muted-foreground">
-                    Arquivo selecionado: {formData.logo.name}
-                  </p>
-                )}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            <div className="flex gap-4 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    Salvando...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    {isEdit ? "Atualizar" : "Criar"} Time
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          {/* Tab 2: Media */}
+          <TabsContent value="media">
+            <Card>
+              <CardHeader>
+                <CardTitle>Team Logo</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="logo">Escudo do Time</Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      id="logo"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="flex-1"
+                    />
+                    <Button type="button" variant="outline" size="sm">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload
+                    </Button>
+                  </div>
+                  {formData.logo && (
+                    <p className="text-sm text-muted-foreground">
+                      Arquivo selecionado: {formData.logo.name}
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        <div className="flex gap-4 pt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="gap-2"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Salvando...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                {isEdit ? "Atualizar" : "Criar"} Time
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }

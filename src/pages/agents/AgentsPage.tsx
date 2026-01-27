@@ -275,12 +275,12 @@ export default function AgentsPage() {
                   </TableCell>
                   <TableCell className="font-medium">{agent.name}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">{agent.label}</Badge>
+                    <span className="capitalize">{agent.label}</span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={agent.enabled ? "default" : "secondary"}>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                       {agent.enabled ? "Enabled" : "Disabled"}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

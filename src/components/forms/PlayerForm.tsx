@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowLeft, Save, AlertCircle, Upload } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 
@@ -123,12 +124,10 @@ export function PlayerForm({ initialData, isEdit, onClose }: PlayerFormProps) {
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={() => navigate(-1)}
-          className="gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar
         </Button>
         <div>
           <h1 className="text-3xl font-bold">
@@ -140,168 +139,188 @@ export function PlayerForm({ initialData, isEdit, onClose }: PlayerFormProps) {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Informações do Jogador</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome do Jogador</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Ex: Marcus Johnson"
-                />
-                {errors.name && (
-                  <div className="flex items-center gap-1 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.name}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Tabs defaultValue="information" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="information">Information</TabsTrigger>
+            <TabsTrigger value="media">Media</TabsTrigger>
+          </TabsList>
+
+          {/* Tab 1: Information */}
+          <TabsContent value="information">
+            <Card>
+              <CardHeader>
+                <CardTitle>Player Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome do Jogador</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Ex: Marcus Johnson"
+                    />
+                    {errors.name && (
+                      <div className="flex items-center gap-1 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        {errors.name}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="position">Posição</Label>
-                <Select value={formData.position} onValueChange={(value) => setFormData(prev => ({ ...prev, position: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a posição" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="goleiro">Goleiro</SelectItem>
-                    <SelectItem value="zagueiro">Zagueiro</SelectItem>
-                    <SelectItem value="lateral-direito">Lateral Direito</SelectItem>
-                    <SelectItem value="lateral-esquerdo">Lateral Esquerdo</SelectItem>
-                    <SelectItem value="volante">Volante</SelectItem>
-                    <SelectItem value="meia">Meia</SelectItem>
-                    <SelectItem value="atacante">Atacante</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.position && (
-                  <div className="flex items-center gap-1 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.position}
+                  <div className="space-y-2">
+                    <Label htmlFor="position">Posição</Label>
+                    <Select value={formData.position} onValueChange={(value) => setFormData(prev => ({ ...prev, position: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a posição" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="goleiro">Goleiro</SelectItem>
+                        <SelectItem value="zagueiro">Zagueiro</SelectItem>
+                        <SelectItem value="lateral-direito">Lateral Direito</SelectItem>
+                        <SelectItem value="lateral-esquerdo">Lateral Esquerdo</SelectItem>
+                        <SelectItem value="volante">Volante</SelectItem>
+                        <SelectItem value="meia">Meia</SelectItem>
+                        <SelectItem value="atacante">Atacante</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.position && (
+                      <div className="flex items-center gap-1 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        {errors.position}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="number">Número da Camisa</Label>
-                <Input
-                  id="number"
-                  value={formData.number}
-                  onChange={(e) => setFormData(prev => ({ ...prev, number: e.target.value }))}
-                  placeholder="Ex: 10"
-                  type="number"
-                  min="1"
-                  max="99"
-                />
-                {errors.number && (
-                  <div className="flex items-center gap-1 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.number}
+                  <div className="space-y-2">
+                    <Label htmlFor="number">Número da Camisa</Label>
+                    <Input
+                      id="number"
+                      value={formData.number}
+                      onChange={(e) => setFormData(prev => ({ ...prev, number: e.target.value }))}
+                      placeholder="Ex: 10"
+                      type="number"
+                      min="1"
+                      max="99"
+                    />
+                    {errors.number && (
+                      <div className="flex items-center gap-1 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        {errors.number}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="teamId">Time</Label>
-                <Select value={formData.teamId} onValueChange={(value) => setFormData(prev => ({ ...prev, teamId: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockTeams.map(team => (
-                      <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.teamId && (
-                  <div className="flex items-center gap-1 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    {errors.teamId}
+                  <div className="space-y-2">
+                    <Label htmlFor="teamId">Time</Label>
+                    <Select value={formData.teamId} onValueChange={(value) => setFormData(prev => ({ ...prev, teamId: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {mockTeams.map(team => (
+                          <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.teamId && (
+                      <div className="flex items-center gap-1 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        {errors.teamId}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select value={formData.status} onValueChange={(value: "active" | "inactive") => setFormData(prev => ({ ...prev, status: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Ativo</SelectItem>
-                    <SelectItem value="inactive">Inativo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="photo">Foto do Jogador</Label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    id="photo"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="flex-1"
-                  />
-                  <Button type="button" variant="outline" size="sm">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload
-                  </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select value={formData.status} onValueChange={(value: "active" | "inactive") => setFormData(prev => ({ ...prev, status: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Ativo</SelectItem>
+                        <SelectItem value="inactive">Inativo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                {formData.photo && (
-                  <p className="text-sm text-muted-foreground">
-                    Arquivo selecionado: {formData.photo.name}
-                  </p>
-                )}
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio/Resumo</Label>
-              <Textarea
-                id="bio"
-                value={formData.bio}
-                onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                placeholder="Breve descrição sobre o jogador, suas características e experiência..."
-                rows={4}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Bio/Resumo</Label>
+                  <Textarea
+                    id="bio"
+                    value={formData.bio}
+                    onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                    placeholder="Breve descrição sobre o jogador, suas características e experiência..."
+                    rows={4}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            <div className="flex gap-4 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    Salvando...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    {isEdit ? "Atualizar" : "Criar"} Jogador
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          {/* Tab 2: Media */}
+          <TabsContent value="media">
+            <Card>
+              <CardHeader>
+                <CardTitle>Player Photo</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="photo">Foto do Jogador</Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      id="photo"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="flex-1"
+                    />
+                    <Button type="button" variant="outline" size="sm">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload
+                    </Button>
+                  </div>
+                  {formData.photo && (
+                    <p className="text-sm text-muted-foreground">
+                      Arquivo selecionado: {formData.photo.name}
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        <div className="flex gap-4 pt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="gap-2"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Salvando...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                {isEdit ? "Atualizar" : "Criar"} Jogador
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }

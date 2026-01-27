@@ -109,31 +109,28 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/groups"))}
           className="text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Groups
+          <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
-            <div className="pb-4">
-              <TabsList>
-                <TabsTrigger value="information">Information</TabsTrigger>
-                <TabsTrigger value="media">Media</TabsTrigger>
-                <TabsTrigger value="agents">Agents</TabsTrigger>
-              </TabsList>
-            </div>
+            <TabsList className="mb-6">
+              <TabsTrigger value="information">Information</TabsTrigger>
+              <TabsTrigger value="media">Media</TabsTrigger>
+              <TabsTrigger value="agents">Agents</TabsTrigger>
+            </TabsList>
 
             {/* Tab 1: Information */}
             <TabsContent value="information">
               <Card>
                 <CardHeader>
-                  <CardTitle>Basic Information</CardTitle>
+                  <CardTitle>Group Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -300,7 +297,7 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
             <TabsContent value="media">
               <Card>
                 <CardHeader>
-                  <CardTitle>Images</CardTitle>
+                  <CardTitle>Group Media</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Logo */}
