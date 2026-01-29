@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
+import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres } from "@/data/mockData";
 import { ArrowLeft, CalendarIcon, Upload, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -33,17 +34,20 @@ const liveSchema = z.object({
   anoLancamento: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 10, "Year cannot be too far in the future").optional(),
   scheduleDate: z.date().optional(),
   badge: z.enum(["NEW", "NEW EPISODES", "SOON"]).optional(),
-  visibility: z.enum(["FREE", "BASIC", "PREMIUM"]),
   cardImageUrl: z.string().optional(),
   bannerImageUrl: z.string().optional(),
   streamUrl: z.string().optional(),
   ageRating: z.string().optional(),
   enabled: z.boolean(),
-  
+
   // Live scheduling fields
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   liveToVod: z.boolean(),
+
+  // Streaming configuration
+  rtmpServerUrl: z.string().optional(),
+  streamKey: z.string().optional(),
   
   // Legacy fields for backward compatibility
   nomeEvento: z.string().optional(),
@@ -105,7 +109,6 @@ export function LiveForm({
       anoLancamento: new Date().getFullYear(),
       scheduleDate: initialDateTime,
       badge: undefined,
-      visibility: "FREE",
       cardImageUrl: initialData?.imagemCapa || "",
       bannerImageUrl: "",
       streamUrl: initialData?.playerEmbed || "",
@@ -116,7 +119,11 @@ export function LiveForm({
       startDate: undefined,
       endDate: undefined,
       liveToVod: false,
-      
+
+      // Streaming configuration
+      rtmpServerUrl: "",
+      streamKey: "",
+
       // Legacy fields
       nomeEvento: initialData?.nomeEvento || "",
       generos: initialData?.generos || [],
@@ -179,6 +186,7 @@ export function LiveForm({
             <TabsList className="mb-6">
               <TabsTrigger value="information">Information</TabsTrigger>
               <TabsTrigger value="media">Media</TabsTrigger>
+              <TabsTrigger value="stream">Stream</TabsTrigger>
               <TabsTrigger value="publishing">Publishing</TabsTrigger>
               {isEdit && <TabsTrigger value="stats">Stats</TabsTrigger>}
             </TabsList>
@@ -277,20 +285,36 @@ export function LiveForm({
                   <FormField control={form.control} name="cardImageUrl" render={({
               field
             }) => <FormItem>
-                          <FormLabel>Card Image URL</FormLabel>
+                          <FormLabel>Card Image</FormLabel>
                     <FormControl>
-                            <Input placeholder="https://example.com/card.jpg" {...field} />
+                            <FileUpload
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              label="Choose a file or drag & drop it here"
+                              description="JPEG, PNG, and WEBP formats, up to 50MB"
+                            />
                     </FormControl>
+                    <p className="text-sm text-muted-foreground">
+                      Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
+                    </p>
                     <FormMessage />
                   </FormItem>} />
 
                   <FormField control={form.control} name="bannerImageUrl" render={({
                 field
               }) => <FormItem>
-                          <FormLabel>Banner Image URL</FormLabel>
+                          <FormLabel>Banner Image</FormLabel>
                           <FormControl>
-                            <Input placeholder="https://example.com/banner.jpg" {...field} />
+                            <FileUpload
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              label="Choose a file or drag & drop it here"
+                              description="JPEG, PNG, and WEBP formats, up to 50MB"
+                            />
                           </FormControl>
+                          <p className="text-sm text-muted-foreground">
+                            Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
+                          </p>
                       <FormMessage />
                     </FormItem>} />
 
@@ -307,7 +331,54 @@ export function LiveForm({
               </Card>
             </TabsContent>
 
-            {/* Tab 3: Publishing */}
+            {/* Tab 3: Stream */}
+            <TabsContent value="stream">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Streaming Configuration</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <FormField control={form.control} name="rtmpServerUrl" render={({
+                    field
+                  }) => <FormItem>
+                        <FormLabel>RTMP Server URL</FormLabel>
+                        <FormControl>
+                          <Input placeholder="rtmp://live.example.com/app" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>} />
+
+                  <FormField control={form.control} name="streamKey" render={({
+                    field
+                  }) => <FormItem>
+                        <FormLabel>Stream Key</FormLabel>
+                        <FormControl>
+                          <Input placeholder="your-stream-key-here" type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>} />
+
+                  <FormField control={form.control} name="liveToVod" render={({
+                    field
+                  }) => <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">Live to VOD</FormLabel>
+                            <div className="text-sm text-muted-foreground">
+                              Automatically convert live stream to VOD after it ends
+                            </div>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Tab 4: Publishing */}
             <TabsContent value="publishing">
               <Card>
                 <CardHeader>
@@ -400,46 +471,9 @@ export function LiveForm({
                               <FormMessage />
                             </FormItem>} />
                     </div>
-
-                    <FormField control={form.control} name="liveToVod" render={({
-                      field
-                    }) => <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel className="text-base">Live to VOD</FormLabel>
-                              <div className="text-sm text-muted-foreground">
-                                Automatically convert live stream to VOD after it ends
-                              </div>
-                            </div>
-                            <FormControl>
-                              <Switch 
-                                checked={field.value} 
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          </FormItem>} />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={form.control} name="visibility" render={({
-              field
-            }) => <FormItem>
-                            <FormLabel>Visibility *</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select visibility tier" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="FREE">FREE</SelectItem>
-                                <SelectItem value="BASIC">BASIC</SelectItem>
-                                <SelectItem value="PREMIUM">PREMIUM</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>} />
-
-                    <FormField control={form.control} name="badge" render={({
+                  <FormField control={form.control} name="badge" render={({
                       field
                     }) => <FormItem>
                             <FormLabel>Badge</FormLabel>
@@ -457,7 +491,6 @@ export function LiveForm({
                         </Select>
                             <FormMessage />
                           </FormItem>} />
-                      </div>
 
                   <FormField control={form.control} name="scheduleDate" render={({
                     field
@@ -512,7 +545,7 @@ export function LiveForm({
               </Card>
             </TabsContent>
 
-            {/* Tab 4: Stats (only in edit mode) */}
+            {/* Tab 5: Stats (only in edit mode) */}
             {isEdit && (
               <TabsContent value="stats">
                 <Card>

@@ -91,6 +91,26 @@ const App = () => (
                 <EditLivePage />
               </ProtectedRoute>
             } />
+            <Route path="/players" element={
+              <ProtectedRoute>
+                <AgentsPage agentType="player" />
+              </ProtectedRoute>
+            } />
+            <Route path="/players/:id" element={
+              <ProtectedRoute>
+                <AgentDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/coaches" element={
+              <ProtectedRoute>
+                <AgentsPage agentType="coach" />
+              </ProtectedRoute>
+            } />
+            <Route path="/coaches/:id" element={
+              <ProtectedRoute>
+                <AgentDetailsPage />
+              </ProtectedRoute>
+            } />
             <Route path="/agents" element={
               <ProtectedRoute>
                 <AgentsPage />

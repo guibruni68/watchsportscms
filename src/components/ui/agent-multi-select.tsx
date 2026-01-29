@@ -1,7 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { User, Users, Search, Plus, X, CheckCircle2 } from "lucide-react";
+import { User, Users, Search, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Command,
   CommandEmpty,
@@ -201,12 +200,7 @@ export function AgentMultiSelect({
                                   ? "border-primary bg-primary"
                                   : "border-muted-foreground/50"
                               )}
-                            >
-                              {isSelected && (
-                                <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
-                              )}
-                            </div>
-                            <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                            />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">
                                 {agent.name}
@@ -249,12 +243,7 @@ export function AgentMultiSelect({
                                   ? "border-primary bg-primary"
                                   : "border-muted-foreground/50"
                               )}
-                            >
-                              {isSelected && (
-                                <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
-                              )}
-                            </div>
-                            <Users className="h-4 w-4 text-muted-foreground shrink-0" />
+                            />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">
                                 {agent.name}
@@ -324,12 +313,6 @@ export function AgentMultiSelect({
                         </span>
                       )}
                     </p>
-                    <Badge
-                      variant="secondary"
-                      className="text-xs mt-1"
-                    >
-                      {agent.type === "agent" ? "Agent" : "Group"}
-                    </Badge>
                   </div>
                 </div>
                 <Button

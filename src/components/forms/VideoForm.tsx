@@ -15,7 +15,9 @@ import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
-import { mockGenres } from "@/data/mockData";
+import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
+import { FileUpload } from "@/components/ui/file-upload";
+import { mockGenres, mockPlayers, mockTeams } from "@/data/mockData";
 import { ArrowLeft, CalendarIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -27,7 +29,6 @@ const videoSchema = z.object({
   anoLancamento: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 10, "Year cannot be too far in the future").optional(),
   scheduleDate: z.date().optional(),
   badge: z.enum(["NEW", "NEW EPISODES", "SOON"]).optional(),
-  visibility: z.enum(["FREE", "BASIC", "PREMIUM"]),
   cardImageUrl: z.string().optional(),
   bannerImageUrl: z.string().optional(),
   streamUrl: z.string().optional(),
@@ -72,7 +73,6 @@ export function VideoForm({
       anoLancamento: initialData?.anoLancamento || new Date().getFullYear(),
       scheduleDate: initialData?.scheduleDate,
       badge: initialData?.badge,
-      visibility: initialData?.visibility || "FREE",
       cardImageUrl: initialData?.cardImageUrl,
       bannerImageUrl: initialData?.bannerImageUrl,
       streamUrl: initialData?.streamUrl,
@@ -131,6 +131,7 @@ export function VideoForm({
               <TabsTrigger value="content">Information</TabsTrigger>
               <TabsTrigger value="images">Media</TabsTrigger>
               <TabsTrigger value="publishing">Publishing</TabsTrigger>
+              <TabsTrigger value="agents">Agents</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
@@ -237,12 +238,17 @@ export function VideoForm({
                   <FormField control={form.control} name="cardImageUrl" render={({
                   field
                 }) => <FormItem>
-                        <FormLabel>Card Image URL</FormLabel>
+                        <FormLabel>Card Image</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com/card.jpg" {...field} />
+                          <FileUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Choose a file or drag & drop it here"
+                            description="JPEG, PNG, and WEBP formats, up to 50MB"
+                          />
                         </FormControl>
                         <p className="text-sm text-muted-foreground">
-                          Image displayed on content cards and thumbnails
+                          Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
                         </p>
                         <FormMessage />
                       </FormItem>} />
@@ -250,12 +256,17 @@ export function VideoForm({
                   <FormField control={form.control} name="bannerImageUrl" render={({
                   field
                 }) => <FormItem>
-                        <FormLabel>Banner Image URL</FormLabel>
+                        <FormLabel>Banner Image</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com/banner.jpg" {...field} />
+                          <FileUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Choose a file or drag & drop it here"
+                            description="JPEG, PNG, and WEBP formats, up to 50MB"
+                          />
                         </FormControl>
                         <p className="text-sm text-muted-foreground">
-                          Image displayed on detail pages and featured sections
+                          Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
                         </p>
                         <FormMessage />
                       </FormItem>} />
@@ -270,27 +281,7 @@ export function VideoForm({
                   <CardTitle>Publishing</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={form.control} name="visibility" render={({
-                    field
-                  }) => <FormItem>
-                          <FormLabel>Visibility *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select visibility tier" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="FREE">FREE</SelectItem>
-                              <SelectItem value="BASIC">BASIC</SelectItem>
-                              <SelectItem value="PREMIUM">PREMIUM</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>} />
-
-                    <FormField control={form.control} name="badge" render={({
+                  <FormField control={form.control} name="badge" render={({
                     field
                   }) => <FormItem>
                           <FormLabel>Badge</FormLabel>
@@ -308,7 +299,6 @@ export function VideoForm({
                           </Select>
                           <FormMessage />
                         </FormItem>} />
-                  </div>
 
                   <FormField control={form.control} name="scheduleDate" render={({
                   field
@@ -350,6 +340,39 @@ export function VideoForm({
                           </FormControl>
                         </FormItem>;
                 }} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Tab 4: Agents */}
+            <TabsContent value="agents">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Related Agents</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="agentesRelacionados"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Agents</FormLabel>
+                        <FormControl>
+                          <AgentMultiSelect
+                            value={field.value || []}
+                            onChange={field.onChange}
+                            players={mockPlayers}
+                            teams={mockTeams}
+                            placeholder="Search and select agents..."
+                          />
+                        </FormControl>
+                        <p className="text-sm text-muted-foreground">
+                          Add agents (players, coaches, writers) related to this video content
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>

@@ -16,7 +16,6 @@ interface Video {
   scheduleDate: string;
   isPublished: boolean;
   badge?: "NEW" | "NEW EPISODES" | "SOON";
-  visibility: "FREE" | "BASIC" | "PREMIUM";
   cardImageUrl?: string;
   bannerImageUrl?: string;
   streamUrl?: string;
@@ -46,7 +45,6 @@ const mockVideos: Video[] = [
     scheduleDate: "2024-01-15T20:30:00",
     isPublished: true,
     badge: "NEW",
-    visibility: "FREE",
     cardImageUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400",
     bannerImageUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1200",
     streamUrl: "https://example.com/stream1",
@@ -71,7 +69,6 @@ const mockVideos: Video[] = [
     scheduleDate: "2025-12-15T14:00:00",
     isPublished: false,
     badge: "SOON",
-    visibility: "PREMIUM",
     cardImageUrl: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400",
     bannerImageUrl: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200",
     streamUrl: "https://example.com/stream2",
@@ -95,7 +92,6 @@ const mockVideos: Video[] = [
     releaseYear: 2024,
     scheduleDate: "2024-01-10T16:45:00",
     isPublished: true,
-    visibility: "BASIC",
     cardImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400",
     bannerImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200",
     streamUrl: "https://example.com/stream3",
@@ -236,15 +232,9 @@ export default function VideoDetailsPage() {
 
             {/* Video Info */}
             <div className="flex-1 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
-                  <p className="text-sm">{video.label}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Visibility</p>
-                  <p className="text-sm">{video.visibility}</p>
-                </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
+                <p className="text-sm">{video.label}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

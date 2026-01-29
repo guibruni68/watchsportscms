@@ -11,6 +11,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { FileUpload } from "@/components/ui/file-upload"
 import { ArrowLeft, CalendarIcon, X } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
@@ -140,44 +141,22 @@ export function EventForm({ initialData, isEdit = false, onClose }: EventFormPro
                     name="cardImageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Card Image URL</FormLabel>
+                        <FormLabel>Card Image</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="https://example.com/event-card.jpg"
-                            {...field}
+                          <FileUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Choose a file or drag & drop it here"
+                            description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
                         <FormDescription>
-                          Image displayed on the event card
+                          Image displayed on the event card (3:4 aspect ratio recommended)
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
-                  {form.watch("cardImageUrl") && (
-                    <div className="space-y-2">
-                      <div className="relative rounded-lg overflow-hidden border">
-                        <img
-                          src={form.watch("cardImageUrl")}
-                          alt="Event card preview"
-                          className="w-full h-48 object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = "/placeholder.svg"
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2"
-                          onClick={() => form.setValue("cardImageUrl", "")}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
 
                   <FormField
                     control={form.control}

@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select"
+import { FileUpload } from "@/components/ui/file-upload"
 import { mockGenres } from "@/data/mockData"
 import { cn } from "@/lib/utils"
 
@@ -35,10 +36,11 @@ type AgentFormData = z.infer<typeof agentSchema>
 interface AgentFormProps {
   initialData?: Partial<AgentFormData>
   isEdit?: boolean
+  defaultLabel?: "player" | "coach" | "writer" | null
   onClose: () => void
 }
 
-export function AgentForm({ initialData, isEdit = false, onClose }: AgentFormProps) {
+export function AgentForm({ initialData, isEdit = false, defaultLabel, onClose }: AgentFormProps) {
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   
   const {
@@ -87,7 +89,7 @@ export function AgentForm({ initialData, isEdit = false, onClose }: AgentFormPro
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">
-          {isEdit ? "Edit Agent" : "New Agent"}
+          {isEdit ? "Edit Agent" : defaultLabel ? `New ${defaultLabel.charAt(0).toUpperCase() + defaultLabel.slice(1)}` : "New Agent"}
         </h1>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="h-5 w-5" />
@@ -121,25 +123,35 @@ export function AgentForm({ initialData, isEdit = false, onClose }: AgentFormPro
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="label">Label *</Label>
-                    <Select
-                      value={watchLabel}
-                      onValueChange={handleLabelChange}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select label" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="player">Player</SelectItem>
-                        <SelectItem value="coach">Coach</SelectItem>
-                        <SelectItem value="writer">Writer</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.label && (
-                      <p className="text-sm text-destructive">{errors.label.message}</p>
-                    )}
-                  </div>
+                  {/* Show label selector only when editing or when no defaultLabel is set */}
+                  {(isEdit || !defaultLabel) ? (
+                    <div className="space-y-2">
+                      <Label htmlFor="label">Label *</Label>
+                      <Select
+                        value={watchLabel}
+                        onValueChange={handleLabelChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select label" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="player">Player</SelectItem>
+                          <SelectItem value="coach">Coach</SelectItem>
+                          <SelectItem value="writer">Writer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors.label && (
+                        <p className="text-sm text-destructive">{errors.label.message}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label>Type</Label>
+                      <div className="h-10 px-3 py-2 rounded-md border bg-muted text-muted-foreground flex items-center capitalize">
+                        {watchLabel}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -228,49 +240,35 @@ export function AgentForm({ initialData, isEdit = false, onClose }: AgentFormPro
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="imagePrimaryUrl">Primary Image URL (Square)</Label>
-                  <Input
-                    id="imagePrimaryUrl"
-                    {...register("imagePrimaryUrl")}
-                    placeholder="https://example.com/image.jpg"
+                  <Label htmlFor="imagePrimaryUrl">Primary Image (Square)</Label>
+                  <FileUpload
+                    value={watchImagePrimary || ""}
+                    onChange={(url) => setValue("imagePrimaryUrl", url)}
+                    label="Choose a file or drag & drop it here"
+                    description="JPEG, PNG, and WEBP formats, up to 50MB"
                   />
                   {errors.imagePrimaryUrl && (
                     <p className="text-sm text-destructive">{errors.imagePrimaryUrl.message}</p>
                   )}
-                  {watchImagePrimary && (
-                    <div className="mt-2">
-                      <p className="text-sm text-muted-foreground mb-2">Preview:</p>
-                      <img
-                        src={watchImagePrimary}
-                        alt="Primary preview"
-                        className="h-32 w-32 object-cover border rounded cursor-pointer hover:opacity-75 transition-opacity"
-                        onClick={() => setLightboxImage(watchImagePrimary)}
-                      />
-                    </div>
-                  )}
+                  <p className="text-sm text-muted-foreground">
+                    Square image for profile display (1:1 aspect ratio recommended)
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="imageSecondaryUrl">Secondary Image URL (Banner)</Label>
-                  <Input
-                    id="imageSecondaryUrl"
-                    {...register("imageSecondaryUrl")}
-                    placeholder="https://example.com/banner.jpg"
+                  <Label htmlFor="imageSecondaryUrl">Secondary Image (Banner)</Label>
+                  <FileUpload
+                    value={watchImageSecondary || ""}
+                    onChange={(url) => setValue("imageSecondaryUrl", url)}
+                    label="Choose a file or drag & drop it here"
+                    description="JPEG, PNG, and WEBP formats, up to 50MB"
                   />
                   {errors.imageSecondaryUrl && (
                     <p className="text-sm text-destructive">{errors.imageSecondaryUrl.message}</p>
                   )}
-                  {watchImageSecondary && (
-                    <div className="mt-2">
-                      <p className="text-sm text-muted-foreground mb-2">Preview:</p>
-                      <img
-                        src={watchImageSecondary}
-                        alt="Secondary preview"
-                        className="h-32 w-full object-cover border rounded cursor-pointer hover:opacity-75 transition-opacity"
-                        onClick={() => setLightboxImage(watchImageSecondary)}
-                      />
-                    </div>
-                  )}
+                  <p className="text-sm text-muted-foreground">
+                    Banner image for detail pages (16:9 aspect ratio recommended)
+                  </p>
                 </div>
               </CardContent>
             </Card>

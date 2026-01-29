@@ -16,7 +16,6 @@ interface Live {
   scheduleDate: string;
   isPublished: boolean;
   badge?: "NEW" | "NEW EPISODES" | "SOON";
-  visibility: "FREE" | "BASIC" | "PREMIUM";
   cardImageUrl?: string;
   bannerImageUrl?: string;
   streamUrl?: string;
@@ -46,7 +45,6 @@ const mockLives: Live[] = [
     scheduleDate: "2025-12-20T16:00:00",
     isPublished: true,
     badge: "SOON",
-    visibility: "PREMIUM",
     cardImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400",
     bannerImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200",
     streamUrl: "https://example.com/stream/championship-final",
@@ -70,7 +68,6 @@ const mockLives: Live[] = [
     scheduleDate: "2024-01-18T10:00:00",
     isPublished: true,
     badge: "NEW",
-    visibility: "FREE",
     cardImageUrl: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=400",
     bannerImageUrl: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=1200",
     streamUrl: "https://example.com/stream/squad-presentation",
@@ -93,7 +90,6 @@ const mockLives: Live[] = [
     releaseYear: 2024,
     scheduleDate: "2024-01-15T15:00:00",
     isPublished: true,
-    visibility: "BASIC",
     cardImageUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400",
     streamUrl: "https://example.com/stream/practice-match",
     ageRating: "PG",
@@ -232,15 +228,9 @@ export default function LiveDetailsPage() {
 
             {/* Live Stream Info */}
             <div className="flex-1 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
-                  <p className="text-sm">{live.label}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Visibility</p>
-                  <p className="text-sm">{live.visibility}</p>
-                </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
+                <p className="text-sm">{live.label}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

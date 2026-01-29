@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Loader2 } from "lucide-react"
+import { Plus, Loader2, ChevronDown, User, Briefcase } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { ListPagination } from "@/components/ui/list-controls"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
@@ -93,7 +94,11 @@ const mockAgents: Agent[] = [
   }
 ]
 
-export default function AgentsPage() {
+interface AgentsPageProps {
+  agentType?: "player" | "coach"
+}
+
+export default function AgentsPage({ agentType }: AgentsPageProps) {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const [currentPage, setCurrentPage] = useState(1)
@@ -101,14 +106,19 @@ export default function AgentsPage() {
   
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState<string>("all")
+  const [categoryFilter, setCategoryFilter] = useState<string>(agentType || "all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
+
+  // Get page title based on agentType
+  const pageTitle = agentType === "player" ? "Players" : agentType === "coach" ? "Coaches" : "Agents"
+  const basePath = agentType === "player" ? "/players" : agentType === "coach" ? "/coaches" : "/agents"
   
   // Data states
   const [agents, setAgents] = useState<Agent[]>(mockAgents)
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null)
+  const [newAgentLabel, setNewAgentLabel] = useState<"player" | "coach" | "writer" | null>(null)
   
   const { toast } = useToast()
 
@@ -148,11 +158,14 @@ export default function AgentsPage() {
     const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       agent.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
       agent.nationality.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = categoryFilter === "all" || agent.label === categoryFilter
-    const matchesStatus = statusFilter === "all" || 
+    // When agentType is set, always filter by it; otherwise use categoryFilter
+    const matchesCategory = agentType
+      ? agent.label === agentType
+      : (categoryFilter === "all" || agent.label === categoryFilter)
+    const matchesStatus = statusFilter === "all" ||
       (statusFilter === "Enabled" && agent.enabled) ||
       (statusFilter === "Disabled" && !agent.enabled)
-    
+
     return matchesSearch && matchesCategory && matchesStatus
   })
 
@@ -161,8 +174,9 @@ export default function AgentsPage() {
     setShowForm(true)
   }
 
-  const handleNewAgent = () => {
+  const handleNewAgent = (label: "player" | "coach" | "writer") => {
     setEditingAgent(null)
+    setNewAgentLabel(label)
     setShowForm(true)
   }
 
@@ -186,9 +200,15 @@ export default function AgentsPage() {
           imagePrimaryUrl: editingAgent.imagePrimaryUrl,
           imageSecondaryUrl: editingAgent.imageSecondaryUrl,
           enabled: editingAgent.enabled
+        } : newAgentLabel ? {
+          label: newAgentLabel
         } : undefined}
         isEdit={!!editingAgent}
-        onClose={() => setShowForm(false)}
+        defaultLabel={!editingAgent ? newAgentLabel : undefined}
+        onClose={() => {
+          setShowForm(false)
+          setNewAgentLabel(null)
+        }}
       />
     )
   }
@@ -209,13 +229,35 @@ export default function AgentsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Agents</h1>
+          <h1 className="text-3xl font-bold">{pageTitle}</h1>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleNewAgent} className="gap-2">
-            <Plus className="h-4 w-4" />
-            New Agent
-          </Button>
+          {agentType ? (
+            <Button onClick={() => handleNewAgent(agentType)} className="gap-2">
+              <Plus className="h-4 w-4" />
+              New {agentType === "player" ? "Player" : "Coach"}
+            </Button>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  New Agent
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleNewAgent("player")} className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  New Player
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleNewAgent("coach")} className="cursor-pointer">
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  New Coach
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
 
@@ -226,7 +268,7 @@ export default function AgentsPage() {
         onCategoryChange={setCategoryFilter}
         statusFilter={statusFilter}
         onStatusChange={setStatusFilter}
-        categories={[
+        categories={agentType ? undefined : [
           { value: "all", label: "All labels" },
           { value: "player", label: "Player" },
           { value: "coach", label: "Coach" },
@@ -237,7 +279,7 @@ export default function AgentsPage() {
           { value: "Enabled", label: "Enabled" },
           { value: "Disabled", label: "Disabled" }
         ]}
-        searchPlaceholder="Search agents..."
+        searchPlaceholder={`Search ${pageTitle.toLowerCase()}...`}
         categoryPlaceholder="Label"
         statusPlaceholder="Status"
       />
@@ -284,7 +326,7 @@ export default function AgentsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown
-                      onView={() => navigate(`/agents/${agent.id}`)}
+                      onView={() => navigate(`${basePath}/${agent.id}`)}
                       onEdit={() => handleEditAgent(agent)}
                       onDelete={() => handleDelete(agent.id)}
                     />

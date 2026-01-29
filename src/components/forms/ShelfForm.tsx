@@ -12,6 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, CalendarIcon, GripVertical, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -259,521 +260,540 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Section 1: Shelf Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Shelf Info</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Shelf title..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          <Tabs defaultValue="information" className="w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger value="information">Information</TabsTrigger>
+              <TabsTrigger value="configuration">Configuration</TabsTrigger>
+              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+            </TabsList>
 
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type *</FormLabel>
-                      <Select 
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          handleTypeChange(value as ShelfFormData["type"]);
-                        }} 
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select type..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="MANUAL">Manual</SelectItem>
-                          <SelectItem value="AUTOMATIC">Automatic</SelectItem>
-                          <SelectItem value="PERSONALIZED">Personalized</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        Manual: Select items manually | Automatic: Use filters | Personalized: Use algorithms
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            {/* Tab 1: Information */}
+            <TabsContent value="information">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Shelf Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Shelf title..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="layout"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Layout *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select layout..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="CAROUSEL">Carousel</SelectItem>
-                          <SelectItem value="LIST">List</SelectItem>
-                          <SelectItem value="HERO_BANNER">Hero Banner</SelectItem>
-                          <SelectItem value="MID_BANNER">Mid Banner</SelectItem>
-                          <SelectItem value="AD_BANNER">Ad Banner</SelectItem>
-                          <SelectItem value="GRID">Grid</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type *</FormLabel>
+                          <Select
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              handleTypeChange(value as ShelfFormData["type"]);
+                            }}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select type..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="MANUAL">Manual</SelectItem>
+                              <SelectItem value="AUTOMATIC">Automatic</SelectItem>
+                              <SelectItem value="PERSONALIZED">Personalized</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            Manual: Select items manually | Automatic: Use filters | Personalized: Use algorithms
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <FormField
-                  control={form.control}
-                  name="domain"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Domain *</FormLabel>
-                      <Select 
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          handleDomainChange(value as ShelfFormData["domain"]);
-                        }} 
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select domain..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="CONTENT">Content</SelectItem>
-                          <SelectItem value="COLLECTION">Collection</SelectItem>
-                          <SelectItem value="NEWS">News</SelectItem>
-                          <SelectItem value="AGENT">Agent</SelectItem>
-                          <SelectItem value="GROUP">Group</SelectItem>
-                          <SelectItem value="AGENDA">Agenda</SelectItem>
-                          {watchType === "MANUAL" && (
-                            <SelectItem value="BANNER">Banner</SelectItem>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="layout"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Layout *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select layout..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="CAROUSEL">Carousel</SelectItem>
+                              <SelectItem value="LIST">List</SelectItem>
+                              <SelectItem value="HERO_BANNER">Hero Banner</SelectItem>
+                              <SelectItem value="MID_BANNER">Mid Banner</SelectItem>
+                              <SelectItem value="AD_BANNER">Ad Banner</SelectItem>
+                              <SelectItem value="GRID">Grid</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="domain"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Domain *</FormLabel>
+                          <Select
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              handleDomainChange(value as ShelfFormData["domain"]);
+                            }}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select domain..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="CONTENT">Content</SelectItem>
+                              <SelectItem value="COLLECTION">Collection</SelectItem>
+                              <SelectItem value="NEWS">News</SelectItem>
+                              <SelectItem value="AGENT">Agent</SelectItem>
+                              <SelectItem value="GROUP">Group</SelectItem>
+                              <SelectItem value="AGENDA">Agenda</SelectItem>
+                              {watchType === "MANUAL" && (
+                                <SelectItem value="BANNER">Banner</SelectItem>
+                              )}
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            The type of content this shelf will display
+                            {watchType !== "MANUAL" && " (Banner only available for Manual type)"}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="hasSeeMore"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">Show "See More" Button</FormLabel>
+                            <FormDescription>
+                              Display a button to view more items
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    {form.watch("hasSeeMore") && (
+                      <FormField
+                        control={form.control}
+                        name="seeMoreUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>See More URL</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Tab 2: Configuration */}
+            <TabsContent value="configuration">
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    {watchType === "MANUAL" && "Manual Selection"}
+                    {watchType === "AUTOMATIC" && "Automatic Filter Configuration"}
+                    {watchType === "PERSONALIZED" && "Personalized Configuration"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Manual type configuration */}
+                  {watchType === "MANUAL" && (
+                    <FormField
+                      control={form.control}
+                      name="selectedItems"
+                      render={({ field }) => {
+                        const handleDragEnd = (event: DragEndEvent) => {
+                          const { active, over } = event;
+
+                          if (active.id !== over?.id && over?.id) {
+                            const oldIndex = field.value?.indexOf(active.id as string) ?? -1;
+                            const newIndex = field.value?.indexOf(over.id as string) ?? -1;
+
+                            if (oldIndex !== -1 && newIndex !== -1) {
+                              const newOrder = arrayMove(field.value || [], oldIndex, newIndex);
+                              field.onChange(newOrder);
+
+                              // Also reorder the details
+                              const newDetailsOrder = arrayMove(selectedDetails, oldIndex, newIndex);
+                              setSelectedDetails(newDetailsOrder);
+                            }
+                          }
+                        };
+
+                        const handleRemoveItem = (itemId: string) => {
+                          const newIds = (field.value || []).filter(id => id !== itemId);
+                          const newDetails = selectedDetails.filter(item => item.id !== itemId);
+                          field.onChange(newIds);
+                          setSelectedDetails(newDetails);
+                        };
+
+                        return (
+                          <FormItem>
+                            <FormLabel>Select {watchDomain.toLowerCase()} items</FormLabel>
+                            <FormControl>
+                              <div className="space-y-4">
+                                <UnifiedContentSelector
+                                  domain={watchDomain.toLowerCase() as any}
+                                  value={field.value || []}
+                                  onChange={(ids, details) => {
+                                    field.onChange(ids);
+                                    setSelectedDetails(details);
+                                  }}
+                                  placeholder={`Search ${watchDomain.toLowerCase()} items...`}
+                                  hideSelectedList={true}
+                                />
+
+                                {selectedDetails.length > 0 && (
+                                  <div className="space-y-3">
+                                    <p className="text-sm font-medium">
+                                      Selected items ({selectedDetails.length}) - Drag to reorder
+                                    </p>
+                                    <DndContext
+                                      sensors={sensors}
+                                      collisionDetection={closestCenter}
+                                      onDragEnd={handleDragEnd}
+                                    >
+                                      <SortableContext
+                                        items={field.value || []}
+                                        strategy={verticalListSortingStrategy}
+                                      >
+                                        <div className="space-y-2">
+                                          {selectedDetails.map((item) => (
+                                            <SortableItem
+                                              key={item.id}
+                                              id={item.id}
+                                              item={item}
+                                              onRemove={handleRemoveItem}
+                                            />
+                                          ))}
+                                        </div>
+                                      </SortableContext>
+                                    </DndContext>
+                                  </div>
+                                )}
+                              </div>
+                            </FormControl>
+                            <FormDescription>
+                              Manually select items from the {watchDomain.toLowerCase()} domain and drag to reorder
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  )}
+
+                  {/* Automatic type configuration */}
+                  {watchType === "AUTOMATIC" && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField
+                          control={form.control}
+                          name="filterRule"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Filter Rule *</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select rule..." />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="RANDOM">Random</SelectItem>
+                                  <SelectItem value="RECENT">Recent</SelectItem>
+                                  <SelectItem value="ALPHABETICAL">Alphabetical</SelectItem>
+                                  <SelectItem value="TOP">Top</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
                           )}
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        The type of content this shelf will display
-                        {watchType !== "MANUAL" && " (Banner only available for Manual type)"}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                        />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="hasSeeMore"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Show "See More" Button</FormLabel>
-                        <FormDescription>
-                          Display a button to view more items
-                        </FormDescription>
+                        <FormField
+                          control={form.control}
+                          name="filterDomain"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Filter Domain *</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select domain..." />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="CONTENT">Content</SelectItem>
+                                  <SelectItem value="COLLECTION">Collection</SelectItem>
+                                  <SelectItem value="NEWS">News</SelectItem>
+                                  <SelectItem value="AGENT">Agent</SelectItem>
+                                  <SelectItem value="GROUP">Group</SelectItem>
+                                  <SelectItem value="AGENDA">Agenda</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
 
-                {form.watch("hasSeeMore") && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField
+                          control={form.control}
+                          name="filterDomainField"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Domain Field</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select field..." />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {getDomainFieldOptions(form.watch("filterDomain") || "CONTENT").map((option) => (
+                                    <SelectItem key={option} value={option}>
+                                      {option}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormDescription>
+                                The field to filter on
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="filterValue"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Filter Value</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter filter value..." {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                The value to match against the field
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name="limit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Item Limit *</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={100}
+                                placeholder="12"
+                                {...field}
+                                onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Maximum number of filtered items to display (1-100)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+
+                  {/* Personalized type configuration */}
+                  {watchType === "PERSONALIZED" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="algorithm"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Algorithm *</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select algorithm..." />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="BECAUSE_YOU_WATCHED">Because You Watched</SelectItem>
+                                <SelectItem value="SUGGESTIONS_FOR_YOU">Suggestions For You</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              The personalization algorithm to use
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="limit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Item Limit *</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={100}
+                                placeholder="10"
+                                {...field}
+                                onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Maximum number of items to display (1-100)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Tab 3: Publishing */}
+            <TabsContent value="publishing">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Publishing</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <FormField
                     control={form.control}
-                    name="seeMoreUrl"
+                    name="scheduleDate"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>See More URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://..." {...field} />
-                        </FormControl>
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Schedule Date (Optional)</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>No schedule date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormDescription>
+                          If set, shelf will be automatically disabled until this date
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                )}
-              </div>
 
-              {/* Conditional sections based on shelf type */}
-              {watchType === "MANUAL" && (
-                <div className="border-t pt-6 mt-6">
-                  <h3 className="text-lg font-medium mb-4">Manual Selection</h3>
                   <FormField
                     control={form.control}
-                    name="selectedItems"
+                    name="enabled"
                     render={({ field }) => {
-                      const handleDragEnd = (event: DragEndEvent) => {
-                        const { active, over } = event;
-                        
-                        if (active.id !== over?.id && over?.id) {
-                          const oldIndex = field.value?.indexOf(active.id as string) ?? -1;
-                          const newIndex = field.value?.indexOf(over.id as string) ?? -1;
-                          
-                          if (oldIndex !== -1 && newIndex !== -1) {
-                            const newOrder = arrayMove(field.value || [], oldIndex, newIndex);
-                            field.onChange(newOrder);
-                            
-                            // Also reorder the details
-                            const newDetailsOrder = arrayMove(selectedDetails, oldIndex, newIndex);
-                            setSelectedDetails(newDetailsOrder);
-                          }
-                        }
-                      };
-
-                      const handleRemoveItem = (itemId: string) => {
-                        const newIds = (field.value || []).filter(id => id !== itemId);
-                        const newDetails = selectedDetails.filter(item => item.id !== itemId);
-                        field.onChange(newIds);
-                        setSelectedDetails(newDetails);
-                      };
+                      const hasScheduledDate = !!form.watch("scheduleDate");
+                      const scheduleDatePassed = hasScheduledDate && form.watch("scheduleDate") && new Date(form.watch("scheduleDate")!) < new Date();
 
                       return (
-                        <FormItem>
-                          <FormLabel>Select {watchDomain.toLowerCase()} items</FormLabel>
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">Enabled</FormLabel>
+                            <FormDescription>
+                              {hasScheduledDate
+                                ? scheduleDatePassed
+                                  ? "Schedule date has passed - you can enable manually"
+                                  : "Shelf with future schedule date is automatically disabled"
+                                : "Enable or disable this shelf manually"}
+                            </FormDescription>
+                          </div>
                           <FormControl>
-                            <div className="space-y-4">
-                              <UnifiedContentSelector
-                                domain={watchDomain.toLowerCase() as any}
-                                value={field.value || []}
-                                onChange={(ids, details) => {
-                                  field.onChange(ids);
-                                  setSelectedDetails(details);
-                                }}
-                                placeholder={`Search ${watchDomain.toLowerCase()} items...`}
-                                hideSelectedList={true}
-                              />
-                              
-                              {selectedDetails.length > 0 && (
-                                <div className="space-y-3">
-                                  <p className="text-sm font-medium">
-                                    Selected items ({selectedDetails.length}) - Drag to reorder
-                                  </p>
-                                  <DndContext
-                                    sensors={sensors}
-                                    collisionDetection={closestCenter}
-                                    onDragEnd={handleDragEnd}
-                                  >
-                                    <SortableContext
-                                      items={field.value || []}
-                                      strategy={verticalListSortingStrategy}
-                                    >
-                                      <div className="space-y-2">
-                                        {selectedDetails.map((item) => (
-                                          <SortableItem
-                                            key={item.id}
-                                            id={item.id}
-                                            item={item}
-                                            onRemove={handleRemoveItem}
-                                          />
-                                        ))}
-                                      </div>
-                                    </SortableContext>
-                                  </DndContext>
-                                </div>
-                              )}
-                            </div>
+                            <Switch
+                              checked={hasScheduledDate && !scheduleDatePassed ? false : field.value}
+                              onCheckedChange={field.onChange}
+                              disabled={hasScheduledDate && !scheduleDatePassed}
+                            />
                           </FormControl>
-                          <FormDescription>
-                            Manually select items from the {watchDomain.toLowerCase()} domain and drag to reorder
-                          </FormDescription>
-                          <FormMessage />
                         </FormItem>
                       );
                     }}
                   />
-                </div>
-              )}
-
-              {watchType === "AUTOMATIC" && (
-                <div className="border-t pt-6 mt-6">
-                  <h3 className="text-lg font-medium mb-4">Automatic Filter Configuration</h3>
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="filterRule"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Filter Rule *</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select rule..." />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="RANDOM">Random</SelectItem>
-                                <SelectItem value="RECENT">Recent</SelectItem>
-                                <SelectItem value="ALPHABETICAL">Alphabetical</SelectItem>
-                                <SelectItem value="TOP">Top</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="filterDomain"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Filter Domain *</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select domain..." />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="CONTENT">Content</SelectItem>
-                                <SelectItem value="COLLECTION">Collection</SelectItem>
-                                <SelectItem value="NEWS">News</SelectItem>
-                                <SelectItem value="AGENT">Agent</SelectItem>
-                                <SelectItem value="GROUP">Group</SelectItem>
-                                <SelectItem value="AGENDA">Agenda</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="filterDomainField"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Domain Field</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select field..." />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {getDomainFieldOptions(form.watch("filterDomain") || "CONTENT").map((option) => (
-                                  <SelectItem key={option} value={option}>
-                                    {option}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormDescription>
-                              The field to filter on
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="filterValue"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Filter Value</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter filter value..." {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              The value to match against the field
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="limit"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Item Limit *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              min={1} 
-                              max={100} 
-                              placeholder="12" 
-                              {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Maximum number of filtered items to display (1-100)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {watchType === "PERSONALIZED" && (
-                <div className="border-t pt-6 mt-6">
-                  <h3 className="text-lg font-medium mb-4">Personalized Configuration</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="algorithm"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Algorithm *</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select algorithm..." />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="BECAUSE_YOU_WATCHED">Because You Watched</SelectItem>
-                              <SelectItem value="SUGGESTIONS_FOR_YOU">Suggestions For You</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormDescription>
-                            The personalization algorithm to use
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="limit"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Item Limit *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              min={1} 
-                              max={100} 
-                              placeholder="10" 
-                              {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Maximum number of items to display (1-100)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Section 2: Visibility and Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Visibility and Status</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <FormField
-                control={form.control}
-                name="scheduleDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Schedule Date (Optional)</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>No schedule date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormDescription>
-                      If set, shelf will be automatically disabled until this date
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="enabled"
-                render={({ field }) => {
-                  const hasScheduledDate = !!form.watch("scheduleDate");
-                  const scheduleDatePassed = hasScheduledDate && form.watch("scheduleDate") && new Date(form.watch("scheduleDate")!) < new Date();
-                  
-                  return (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Enabled</FormLabel>
-                        <FormDescription>
-                          {hasScheduledDate 
-                            ? scheduleDatePassed 
-                              ? "Schedule date has passed - you can enable manually"
-                              : "Shelf with future schedule date is automatically disabled"
-                            : "Enable or disable this shelf manually"}
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={hasScheduledDate && !scheduleDatePassed ? false : field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={hasScheduledDate && !scheduleDatePassed}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  );
-                }}
-              />
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
 
           {/* Actions */}
           <div className="flex gap-4">

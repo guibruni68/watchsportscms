@@ -15,6 +15,7 @@ interface SearchFiltersProps {
   searchPlaceholder?: string
   categoryPlaceholder?: string
   statusPlaceholder?: string
+  hideStatusFilter?: boolean
 }
 
 export function SearchFilters({
@@ -28,7 +29,8 @@ export function SearchFilters({
   statuses,
   searchPlaceholder = "Buscar...",
   categoryPlaceholder = "Categoria",
-  statusPlaceholder = "Status"
+  statusPlaceholder = "Status",
+  hideStatusFilter = false
 }: SearchFiltersProps) {
   return (
     <Card className="p-6">
@@ -57,18 +59,20 @@ export function SearchFilters({
               ))}
             </SelectContent>
           </Select>
-          <Select value={statusFilter} onValueChange={onStatusChange}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder={statusPlaceholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {statuses.map(status => (
-                <SelectItem key={status.value} value={status.value}>
-                  {status.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {!hideStatusFilter && (
+            <Select value={statusFilter} onValueChange={onStatusChange}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder={statusPlaceholder} />
+              </SelectTrigger>
+              <SelectContent>
+                {statuses.map(status => (
+                  <SelectItem key={status.value} value={status.value}>
+                    {status.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
       </div>
     </Card>

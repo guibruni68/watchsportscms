@@ -31,7 +31,6 @@ export interface Catalogue {
   updated_at: string;
   releaseYear?: number;
   badge?: "NEW" | "NEW EPISODES" | "SOON";
-  visibility?: "FREE" | "BASIC" | "PREMIUM";
   ageRating?: string;
   enabled?: boolean;
   scheduleDate?: string;
@@ -47,7 +46,6 @@ export const mockCatalogues: Catalogue[] = [
     cover_url: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400",
     bannerImageUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1200",
     badge: "NEW",
-    visibility: "FREE",
     ageRating: "L",
     enabled: true,
     status: true,
@@ -116,7 +114,6 @@ export const mockCatalogues: Catalogue[] = [
     cover_url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
     bannerImageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1200",
     badge: "NEW EPISODES",
-    visibility: "PREMIUM",
     ageRating: "12+",
     enabled: true,
     status: true,
@@ -277,7 +274,6 @@ export const mockBanners = [
     status: true,
     ordem: 1,
     ordem_exibicao: 1,
-    planos_permitidos: ["gratuito", "basico", "premium", "vip"],
     visualizacoes: 15420,
     cliques: 3842,
     tempo_total_reproducao: 245680,
@@ -300,7 +296,6 @@ export const mockBanners = [
     status: true,
     ordem: 2,
     ordem_exibicao: 2,
-    planos_permitidos: ["gratuito", "basico", "premium"],
     visualizacoes: 8935,
     cliques: 1256,
     tempo_total_reproducao: 0,

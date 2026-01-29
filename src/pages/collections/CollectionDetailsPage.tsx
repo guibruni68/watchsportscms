@@ -41,7 +41,6 @@ interface Collection {
   scheduleDate?: string;
   isPublished?: boolean;
   badge?: "NEW" | "NEW EPISODES" | "SOON";
-  visibility?: "FREE" | "BASIC" | "PREMIUM";
   cardImageUrl?: string;
   bannerImageUrl?: string;
   ageRating?: string;
@@ -85,7 +84,6 @@ export default function CollectionDetailsPage() {
           scheduleDate: collectionData.published_at,
           isPublished: collectionData.status,
           badge: collectionData.badge as "NEW" | "NEW EPISODES" | "SOON" | undefined,
-          visibility: (collectionData.visibility || "FREE") as "FREE" | "BASIC" | "PREMIUM",
           cardImageUrl: collectionData.cover_url,
           bannerImageUrl: collectionData.bannerImageUrl,
           ageRating: collectionData.ageRating,
@@ -212,15 +210,9 @@ export default function CollectionDetailsPage() {
 
             {/* Collection Info */}
             <div className="flex-1 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
-                  <p className="text-sm">{collection.label || "COLLECTION"}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Visibility</p>
-                  <p className="text-sm">{collection.visibility || "FREE"}</p>
-                </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
+                <p className="text-sm">{collection.label || "COLLECTION"}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -326,12 +318,11 @@ export default function CollectionDetailsPage() {
                   <AccordionTrigger className="hover:no-underline">
                     <div className="flex items-center justify-between w-full pr-4">
                       <div className="flex items-center gap-3">
-                        <Badge variant="secondary">Season {season.season_number}</Badge>
                         <span className="font-medium">{season.title}</span>
                       </div>
-                      <Badge variant="outline" className="ml-auto mr-2">
+                      <span className="text-sm text-muted-foreground ml-auto mr-2">
                         {season.contents.length} {season.contents.length === 1 ? 'episode' : 'episodes'}
-                      </Badge>
+                      </span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>

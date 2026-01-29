@@ -193,8 +193,8 @@ export default function SchedulePage() {
                     fontWeight: '600'
                   },
                   selected: {
-                    backgroundColor: 'hsl(var(--secondary))',
-                    color: 'hsl(var(--secondary-foreground))',
+                    backgroundColor: 'hsl(var(--primary))',
+                    color: 'hsl(var(--primary-foreground))',
                     fontWeight: 'bold'
                   }
                 }}

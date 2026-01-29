@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, GripVertical, X, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -336,72 +337,85 @@ export function PageForm({ initialData, isEdit = false, onClose }: PageFormProps
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Page Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Page Name</FormLabel>
-                    <FormControl>
-                      <div className="p-3 bg-muted rounded-md">
-                        <Badge variant="outline">{field.value || "Not selected"}</Badge>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
+          <Tabs defaultValue="information" className="w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger value="information">Information</TabsTrigger>
+              <TabsTrigger value="shelves">Shelves</TabsTrigger>
+            </TabsList>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Page Shelves</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Add and reorder shelves that will appear on this page. Drag to reorder.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Add Shelf Section */}
-              <ShelfSelector
-                availableShelves={availableShelves}
-                onSelect={handleAddShelf}
-              />
+            {/* Tab 1: Information */}
+            <TabsContent value="information">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Page Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Page Name</FormLabel>
+                        <FormControl>
+                          <div className="p-3 bg-muted rounded-md">
+                            <Badge variant="outline">{field.value || "Not selected"}</Badge>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-              {/* Shelves List */}
-              {shelves.length > 0 ? (
-                <div className="space-y-2">
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext
-                      items={shelves.map(s => s.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {shelves.map((shelf) => (
-                        <SortableShelfItem
-                          key={shelf.id}
-                          shelf={shelf}
-                          onRemove={handleRemoveShelf}
-                        />
-                      ))}
-                    </SortableContext>
-                  </DndContext>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No shelves added yet. Add shelves from the dropdown above.
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            {/* Tab 2: Shelves */}
+            <TabsContent value="shelves">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Page Shelves</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Add and reorder shelves that will appear on this page. Drag to reorder.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Add Shelf Section */}
+                  <ShelfSelector
+                    availableShelves={availableShelves}
+                    onSelect={handleAddShelf}
+                  />
+
+                  {/* Shelves List */}
+                  {shelves.length > 0 ? (
+                    <div className="space-y-2">
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                      >
+                        <SortableContext
+                          items={shelves.map(s => s.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {shelves.map((shelf) => (
+                            <SortableShelfItem
+                              key={shelf.id}
+                              shelf={shelf}
+                              onRemove={handleRemoveShelf}
+                            />
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No shelves added yet. Add shelves from the dropdown above.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
 
           <div className="flex gap-2 justify-end">
             <Button type="button" variant="outline" onClick={handleCancel}>

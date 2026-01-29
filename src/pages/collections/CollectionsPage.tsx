@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Eye, Edit, Trash2, Play } from "lucide-react";
-import { ImportButton } from "@/components/ui/import-button";
+import { Plus, Play } from "lucide-react";
 import { ActionDropdown } from "@/components/ui/action-dropdown";
 import { SearchFilters } from "@/components/ui/search-filters";
 import { toast } from "@/hooks/use-toast";
 import { mockCatalogues } from "@/data/mockCatalogues";
-import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils";
+import { getContentStatus } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,7 +38,6 @@ export default function CollectionsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [collectionToDelete, setCollectionToDelete] = useState<Collection | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,9 +46,9 @@ export default function CollectionsPage() {
   const fetchCollections = async () => {
     setLoading(true);
     try {
-      const data = mockCatalogues.map(cat => ({
+      const data = mockCatalogues.map((cat) => ({
         ...cat,
-        content_count: cat.conteudos?.length || 0
+        content_count: cat.conteudos?.length || 0,
       }));
 
       setCollections(data);
@@ -70,22 +67,17 @@ export default function CollectionsPage() {
     fetchCollections();
   }, []);
 
-  const categories = Array.from(new Set(collections.flatMap(c => c.genre || [])));
+  const categories = Array.from(new Set(collections.flatMap((c) => c.genre || [])));
 
-  const filteredCollections = collections.filter(collection => {
-    const matchesSearch = collection.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredCollections = collections.filter((collection) => {
+    const matchesSearch =
+      collection.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (collection.descricao && collection.descricao.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (collection.genre || []).some(g => g.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+      (collection.genre || []).some((g) => g.toLowerCase().includes(searchTerm.toLowerCase()));
+
     const matchesCategory = categoryFilter === "all" || (collection.genre || []).includes(categoryFilter);
-    
-    const collectionStatus = getContentStatus(collection.status, collection.published_at);
-    const matchesStatus = statusFilter === "all" || 
-      (statusFilter === "Active" && collectionStatus === "Active") ||
-      (statusFilter === "Inactive" && collectionStatus === "Inactive") ||
-      (statusFilter === "Publishing" && collectionStatus === "Publishing");
-    
-    return matchesSearch && matchesCategory && matchesStatus;
+
+    return matchesSearch && matchesCategory;
   });
 
   const totalPages = Math.ceil(filteredCollections.length / itemsPerPage);
@@ -108,7 +100,6 @@ export default function CollectionsPage() {
   const handleDelete = async () => {
     if (!collectionToDelete) return;
 
-    // Check if there are linked contents
     if (collectionToDelete.content_count && collectionToDelete.content_count > 0) {
       toast({
         title: "Error",
@@ -120,7 +111,6 @@ export default function CollectionsPage() {
       return;
     }
 
-    // Mock deletion
     toast({
       title: "Success",
       description: "Collection deleted successfully! (Sample data)",
@@ -132,7 +122,7 @@ export default function CollectionsPage() {
   };
 
   const handleNewCollection = () => {
-    navigate('/collections/novo');
+    navigate("/collections/novo");
   };
 
   return (
@@ -152,24 +142,26 @@ export default function CollectionsPage() {
       {/* Filters */}
       <SearchFilters
         searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
+        onSearchChange={(v) => {
+          setSearchTerm(v);
+          setCurrentPage(1);
+        }}
         categoryFilter={categoryFilter}
-        onCategoryChange={setCategoryFilter}
-        statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
+        onCategoryChange={(v) => {
+          setCategoryFilter(v);
+          setCurrentPage(1);
+        }}
+        statusFilter="all"
+        onStatusChange={() => {}}
         categories={[
           { value: "all", label: "All Genres" },
-          ...categories.map(cat => ({ value: cat, label: cat }))
+          ...categories.map((cat) => ({ value: cat, label: cat })),
         ]}
-        statuses={[
-          { value: "all", label: "All statuses" },
-          { value: "Active", label: "Active" },
-          { value: "Inactive", label: "Inactive" },
-          { value: "Publishing", label: "Publishing" }
-        ]}
+        statuses={[{ value: "all", label: "All statuses" }]}
         searchPlaceholder="Search collections..."
         categoryPlaceholder="Genre"
         statusPlaceholder="Status"
+        hideStatusFilter={true}
       />
 
       {/* Table */}
@@ -195,8 +187,8 @@ export default function CollectionsPage() {
             ) : paginatedCollections.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8">
-                  {filteredCollections.length === 0 && searchTerm === "" && categoryFilter === "all" && statusFilter === "all" 
-                    ? "No collections registered yet." 
+                  {filteredCollections.length === 0 && searchTerm === "" && categoryFilter === "all"
+                    ? "No collections registered yet."
                     : "No collections found with the applied filters."}
                 </TableCell>
               </TableRow>
@@ -206,11 +198,7 @@ export default function CollectionsPage() {
                   <TableCell>
                     <div className="w-16 aspect-[3/4] bg-muted rounded-md flex items-center justify-center overflow-hidden">
                       {collection.cover_url ? (
-                        <img 
-                          src={collection.cover_url} 
-                          alt={collection.titulo}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={collection.cover_url} alt={collection.titulo} className="w-full h-full object-cover" />
                       ) : (
                         <Play className="h-4 w-4 text-muted-foreground" />
                       )}
@@ -222,14 +210,10 @@ export default function CollectionsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm text-muted-foreground">
-                      {(collection.genre || []).join(", ")}
-                    </div>
+                    <div className="text-sm text-muted-foreground">{(collection.genre || []).join(", ")}</div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm">
-                      {new Date(collection.published_at).toLocaleDateString("en-US")}
-                    </div>
+                    <div className="text-sm">{new Date(collection.published_at).toLocaleDateString("en-US")}</div>
                   </TableCell>
                   <TableCell>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
@@ -255,7 +239,8 @@ export default function CollectionsPage() {
       {filteredCollections.length > 0 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredCollections.length)} of {filteredCollections.length} collections
+            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredCollections.length)} of{" "}
+            {filteredCollections.length} collections
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -291,9 +276,10 @@ export default function CollectionsPage() {
             <AlertDialogDescription>
               {collectionToDelete?.content_count && collectionToDelete.content_count > 0 ? (
                 <>
-                  Cannot delete collection "{collectionToDelete.titulo}" because it has{' '}
+                  Cannot delete collection "{collectionToDelete.titulo}" because it has{" "}
                   <strong>{collectionToDelete.content_count} linked content(s)</strong>.
-                  <br /><br />
+                  <br />
+                  <br />
                   Remove the linked contents before deleting the collection.
                 </>
               ) : (
@@ -308,7 +294,10 @@ export default function CollectionsPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             {(!collectionToDelete?.content_count || collectionToDelete.content_count === 0) && (
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
                 Delete
               </AlertDialogAction>
             )}

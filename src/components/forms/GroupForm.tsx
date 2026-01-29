@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select"
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select"
+import { FileUpload } from "@/components/ui/file-upload"
 import { mockGenres, mockPlayers, mockTeams } from "@/data/mockData"
 import { ArrowLeft, CalendarIcon, X } from "lucide-react"
 import { useNavigate } from "react-router-dom"
@@ -334,23 +335,18 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                     name="cardImageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Card Image URL</FormLabel>
+                        <FormLabel>Card Image</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="https://example.com/card-image.png"
-                            {...field}
+                          <FileUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Choose a file or drag & drop it here"
+                            description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        {field.value && (
-                          <div className="mt-2 relative group">
-                            <img
-                              src={field.value}
-                              alt="Card preview"
-                              className="h-48 w-auto object-contain border rounded cursor-pointer hover:opacity-75 transition-opacity"
-                              onClick={() => setLightboxImage(field.value)}
-                            />
-                          </div>
-                        )}
+                        <p className="text-sm text-muted-foreground">
+                          Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -362,23 +358,18 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                     name="bannerImageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Banner Image URL</FormLabel>
+                        <FormLabel>Banner Image</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="https://example.com/banner.png"
-                            {...field}
+                          <FileUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Choose a file or drag & drop it here"
+                            description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        {field.value && (
-                          <div className="mt-2 relative group">
-                            <img
-                              src={field.value}
-                              alt="Banner preview"
-                              className="h-32 w-full object-cover border rounded cursor-pointer hover:opacity-75 transition-opacity"
-                              onClick={() => setLightboxImage(field.value)}
-                            />
-                          </div>
-                        )}
+                        <p className="text-sm text-muted-foreground">
+                          Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}

@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select"
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select"
+import { FileUpload } from "@/components/ui/file-upload"
 import { ArrowLeft, CalendarIcon, X } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
@@ -226,35 +227,19 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
                     name="firstImageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Main Image URL</FormLabel>
+                        <FormLabel>Main Image</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="https://example.com/image.jpg" 
-                            {...field} 
+                          <FileUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Choose a file or drag & drop it here"
+                            description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
                         <FormDescription>
-                          Primary image shown at the top of the article
+                          Primary image shown at the top of the article (16:9 aspect ratio recommended)
                         </FormDescription>
                         <FormMessage />
-                        {field.value && (
-                          <div className="relative mt-2">
-                            <img 
-                              src={field.value} 
-                              alt="Main preview" 
-                              className="w-full h-48 object-cover rounded-lg border"
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              className="absolute top-2 right-2"
-                              onClick={() => field.onChange("")}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
                       </FormItem>
                     )}
                   />
@@ -264,35 +249,19 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
                     name="secondImageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Mid-Banner Image URL</FormLabel>
+                        <FormLabel>Mid-Banner Image</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="https://example.com/banner.jpg" 
-                            {...field} 
+                          <FileUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Choose a file or drag & drop it here"
+                            description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
                         <FormDescription>
-                          Secondary image shown between content blocks
+                          Secondary image shown between content blocks (16:9 aspect ratio recommended)
                         </FormDescription>
                         <FormMessage />
-                        {field.value && (
-                          <div className="relative mt-2">
-                            <img 
-                              src={field.value} 
-                              alt="Banner preview" 
-                              className="w-full h-48 object-cover rounded-lg border"
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              className="absolute top-2 right-2"
-                              onClick={() => field.onChange("")}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
                       </FormItem>
                     )}
                   />

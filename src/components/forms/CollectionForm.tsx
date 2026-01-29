@@ -13,8 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
+import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres } from "@/data/mockData";
 import { ArrowLeft, Plus, X, Upload, CalendarIcon, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -80,7 +82,6 @@ const collectionSchema = z.object({
   releaseYear: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 10, "Year cannot be too far in the future").optional(),
   scheduleDate: z.date().optional(),
   badge: z.enum(["NEW", "NEW EPISODES", "SOON"]).optional(),
-  visibility: z.enum(["FREE", "BASIC", "PREMIUM"]),
   cardImageUrl: z.string().optional(),
   bannerImageUrl: z.string().optional(),
   ageRating: z.string().optional(),
@@ -144,7 +145,6 @@ export default function CollectionForm({
       releaseYear: new Date().getFullYear(),
       scheduleDate: undefined,
       badge: undefined,
-      visibility: "FREE",
       cardImageUrl: "",
       bannerImageUrl: "",
       ageRating: "",
@@ -248,22 +248,20 @@ export default function CollectionForm({
         </div>
       )}
 
-      <Card>
-        {isInline && (
-          <CardHeader>
-            <CardTitle>
-              {collectionId ? 'Edit Collection' : 'New Collection'}
-            </CardTitle>
-          </CardHeader>
-        )}
-        <CardContent className={isInline ? "pt-0" : ""}>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              
-              {/* Section 1: Content Information */}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <Tabs defaultValue="information" className="w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger value="information">Information</TabsTrigger>
+              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+              <TabsTrigger value="seasons">Seasons</TabsTrigger>
+            </TabsList>
+
+            {/* Tab 1: Information */}
+            <TabsContent value="information">
               <Card>
                 <CardHeader>
-                  <CardTitle>{collectionId ? 'Edit Collection' : 'New Collection'} - Content Information</CardTitle>
+                  <CardTitle>Content Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Title and Label */}
@@ -271,48 +269,48 @@ export default function CollectionForm({
                     <FormField
                       control={form.control}
                       name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Title *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ex: Best Moments 2024" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: Best Moments 2024" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <FormField
+                <FormField
                       control={form.control}
                       name="label"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Label *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value || "COLLECTION"} disabled>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="COLLECTION" />
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Label *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value || "COLLECTION"} disabled>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="COLLECTION" />
                               </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="COLLECTION">COLLECTION</SelectItem>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="COLLECTION">COLLECTION</SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormMessage />
-                        </FormItem>
+                      <FormMessage />
+                    </FormItem>
                       )}
                     />
-                  </div>
+              </div>
 
-                  {/* Description */}
-                  <FormField
+              {/* Description */}
+              <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea 
+                            <Textarea 
                             placeholder="Describe the collection..." 
                             className="min-h-24" 
                             {...field} 
@@ -328,38 +326,47 @@ export default function CollectionForm({
                     <FormField
                       control={form.control}
                       name="cover_url"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Card Image URL</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="https://example.com/card.jpg" 
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(e.target.value);
-                                form.setValue("cardImageUrl", e.target.value);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Card Image</FormLabel>
+                      <FormControl>
+                        <FileUpload
+                          value={field.value || ""}
+                          onChange={(url) => {
+                            field.onChange(url);
+                            form.setValue("cardImageUrl", url);
+                          }}
+                          label="Choose a file or drag & drop it here"
+                          description="JPEG, PNG, and WEBP formats, up to 50MB"
+                        />
+                      </FormControl>
+                      <p className="text-sm text-muted-foreground">
+                        Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <FormField
+                <FormField
                       control={form.control}
                       name="bannerImageUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Banner Image URL</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="https://example.com/banner.jpg"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Banner Image</FormLabel>
+                      <FormControl>
+                        <FileUpload
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          label="Choose a file or drag & drop it here"
+                          description="JPEG, PNG, and WEBP formats, up to 50MB"
+                        />
+                      </FormControl>
+                      <p className="text-sm text-muted-foreground">
+                        Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
+                      </p>
+                      <FormMessage />
+                    </FormItem>
                       )}
                     />
                   </div>
@@ -369,37 +376,37 @@ export default function CollectionForm({
                     <FormField
                       control={form.control}
                       name="ageRating"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Age Rating</FormLabel>
-                          <FormControl>
-                            <Input 
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Age Rating</FormLabel>
+                      <FormControl>
+                        <Input 
                               placeholder="G, PG, PG-13, R, etc."
                               {...field}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <FormField
+                <FormField
                       control={form.control}
                       name="releaseYear"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Release Year</FormLabel>
-                          <FormControl>
-                            <Input 
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Release Year</FormLabel>
+                      <FormControl>
+                        <Input 
                               type="number"
                               placeholder="Ex: 2025"
                               {...field}
                               onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                               value={field.value || ""}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                       )}
                     />
                   </div>
@@ -427,62 +434,39 @@ export default function CollectionForm({
                       </FormItem>
                     )}
                   />
-                </CardContent>
-              </Card>
+            </CardContent>
+          </Card>
+            </TabsContent>
 
-              {/* Section 2: Publishing & Visibility */}
+            {/* Tab 2: Publishing & Visibility */}
+            <TabsContent value="publishing">
               <Card>
-                <CardHeader>
-                  <CardTitle>Publishing & Visibility</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="visibility"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Visibility *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select visibility tier" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="FREE">FREE</SelectItem>
-                              <SelectItem value="BASIC">BASIC</SelectItem>
-                              <SelectItem value="PREMIUM">PREMIUM</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
+            <CardHeader>
+              <CardTitle>Publishing & Visibility</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <FormField
                       control={form.control}
                       name="badge"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Badge</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select badge (optional)" />
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Badge</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select badge (optional)" />
                               </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="NEW">NEW</SelectItem>
-                              <SelectItem value="NEW EPISODES">NEW EPISODES</SelectItem>
-                              <SelectItem value="SOON">SOON</SelectItem>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="NEW">NEW</SelectItem>
+                          <SelectItem value="NEW EPISODES">NEW EPISODES</SelectItem>
+                          <SelectItem value="SOON">SOON</SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormMessage />
-                        </FormItem>
+                      <FormMessage />
+                    </FormItem>
                       )}
                     />
-                  </div>
 
                   <FormField
                     control={form.control}
@@ -492,7 +476,7 @@ export default function CollectionForm({
                         <FormLabel>Schedule Date (Optional)</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
-                            <FormControl>
+                        <FormControl>
                               <Button
                                 variant={"outline"}
                                 className={cn(
@@ -507,7 +491,7 @@ export default function CollectionForm({
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
-                            </FormControl>
+                        </FormControl>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
@@ -546,20 +530,23 @@ export default function CollectionForm({
                                 : "Enable or disable this content manually"}
                             </FormDescription>
                           </div>
-                          <FormControl>
+                      <FormControl>
                             <Switch 
                               checked={hasScheduledDate && !scheduleDatePassed ? false : field.value} 
                               onCheckedChange={field.onChange}
                               disabled={hasScheduledDate && !scheduleDatePassed}
                             />
-                          </FormControl>
-                        </FormItem>
+                      </FormControl>
+                    </FormItem>
                       );
                     }}
                   />
-                </CardContent>
-              </Card>
+            </CardContent>
+          </Card>
+            </TabsContent>
 
+            {/* Tab 3: Seasons */}
+            <TabsContent value="seasons">
               <div className="space-y-4 border rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-medium">Seasons</h3>
@@ -585,13 +572,12 @@ export default function CollectionForm({
                         <AccordionTrigger className="hover:no-underline">
                           <div className="flex items-center justify-between w-full pr-4">
                             <div className="flex items-center gap-3">
-                              <Badge variant="secondary">Season {season.season_number}</Badge>
                               <span className="font-medium">{season.title}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Badge variant="outline">
+                              <span className="text-sm text-muted-foreground">
                                 {season.contents?.length || 0} {season.contents?.length === 1 ? 'episode' : 'episodes'}
-                              </Badge>
+                              </span>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -611,22 +597,22 @@ export default function CollectionForm({
                           <div className="space-y-4 pt-4">
                             {/* Season Title */}
                             <FormField
-                              control={form.control}
-                              name={`seasons.${index}.title`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Season Title *</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Enter season title..." {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
+                          control={form.control}
+                          name={`seasons.${index}.title`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Season Title *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter season title..." {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
                               )}
                             />
 
                             {/* Season Contents */}
                             <div className="space-y-2">
-                              <FormLabel>Season Content (Episodes)</FormLabel>
+                          <FormLabel>Season Content (Episodes)</FormLabel>
                               <ContentMultiSelect 
                                 value={season.contents.map(c => ({
                                   id: c.id,
@@ -641,14 +627,14 @@ export default function CollectionForm({
 
                             {/* Schedule Date */}
                             <FormField
-                              control={form.control}
-                              name={`seasons.${index}.scheduleDate`}
-                              render={({ field }) => (
+                          control={form.control}
+                          name={`seasons.${index}.scheduleDate`}
+                          render={({ field }) => (
                                 <FormItem className="flex flex-col">
-                                  <FormLabel>Schedule Date (Optional)</FormLabel>
+                              <FormLabel>Schedule Date (Optional)</FormLabel>
                                   <Popover>
                                     <PopoverTrigger asChild>
-                                      <FormControl>
+                                  <FormControl>
                                         <Button
                                           variant={"outline"}
                                           className={cn(
@@ -663,7 +649,7 @@ export default function CollectionForm({
                                           )}
                                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                         </Button>
-                                      </FormControl>
+                                  </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0" align="start">
                                       <Calendar
@@ -679,16 +665,16 @@ export default function CollectionForm({
                                   <p className="text-sm text-muted-foreground">
                                     If set, the season will automatically become enabled when this date is reached
                                   </p>
-                                  <FormMessage />
-                                </FormItem>
+                              <FormMessage />
+                            </FormItem>
                               )}
                             />
 
                             {/* Enabled Toggle */}
                             <FormField
-                              control={form.control}
-                              name={`seasons.${index}.enabled`}
-                              render={({ field }) => {
+                          control={form.control}
+                          name={`seasons.${index}.enabled`}
+                          render={({ field }) => {
                                 const scheduleDate = form.watch(`seasons.${index}.scheduleDate`);
                                 const hasScheduledDate = !!scheduleDate;
                                 const scheduleDatePassed = hasScheduledDate && new Date(scheduleDate) < new Date();
@@ -704,7 +690,7 @@ export default function CollectionForm({
                                           : "Make this season available to users"}
                                       </p>
                                     </div>
-                                    <FormControl>
+                                <FormControl>
                                       <Switch
                                         checked={isDisabled ? false : field.value}
                                         onCheckedChange={(checked) => {
@@ -714,8 +700,8 @@ export default function CollectionForm({
                                         }}
                                         disabled={isDisabled}
                                       />
-                                    </FormControl>
-                                  </FormItem>
+                                </FormControl>
+                              </FormItem>
                                 );
                               }}
                             />
@@ -724,22 +710,22 @@ export default function CollectionForm({
                       </AccordionItem>
                     ))}
                   </Accordion>
-                )}
+            )}
               </div>
+            </TabsContent>
+          </Tabs>
 
-              {/* Form Actions */}
-              <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Saving..." : collectionId ? "Update" : "Create"} Collection
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+          {/* Form Actions */}
+          <div className="flex justify-end gap-4">
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Saving..." : collectionId ? "Update" : "Create"} Collection
+            </Button>
+          </div>
+        </form>
+      </Form>
 
       {/* Alert Dialog for Publishing */}
       <AlertDialog open={showPublishAlert} onOpenChange={setShowPublishAlert}>

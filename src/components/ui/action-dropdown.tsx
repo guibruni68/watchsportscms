@@ -31,28 +31,28 @@ export function ActionDropdown({
           <span className="sr-only">Open options menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-52 p-2">
         {showView && onView && (
-          <DropdownMenuItem onClick={onView}>
-            <Eye className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={onView} className="py-2 px-3 cursor-pointer">
+            <Eye className="mr-3 h-4 w-4" />
             View
           </DropdownMenuItem>
         )}
         {showEdit && onEdit && (
-          <DropdownMenuItem onClick={onEdit}>
-            <Edit className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={onEdit} className="py-2 px-3 cursor-pointer">
+            <Edit className="mr-3 h-4 w-4" />
             Edit
           </DropdownMenuItem>
         )}
         {showStats && onStats && (
-          <DropdownMenuItem onClick={onStats}>
-            <BarChart3 className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={onStats} className="py-2 px-3 cursor-pointer">
+            <BarChart3 className="mr-3 h-4 w-4" />
             Stats
           </DropdownMenuItem>
         )}
         {showDelete && onDelete && (
-          <DropdownMenuItem onClick={onDelete} className="text-destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={onDelete} className="py-2 px-3 cursor-pointer">
+            <Trash2 className="mr-3 h-4 w-4" />
             Delete
           </DropdownMenuItem>
         )}

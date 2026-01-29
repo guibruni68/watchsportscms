@@ -85,31 +85,58 @@ export default function DashboardIndex() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="bg-gradient-card border-border/50">
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/videos?new=true')}>
-              <Video className="h-6 w-6" />
-              <span className="text-sm">Upload Video</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/lives?new=true')}>
-              <Radio className="h-6 w-6" />
-              <span className="text-sm">New Livestream</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/news?new=true')}>
-              <Newspaper className="h-6 w-6" />
-              <span className="text-sm">Create News</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => navigate('/pages')}>
-              <LayoutPanelTop className="h-6 w-6" />
-              <span className="text-sm">Manage Pages</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold text-foreground">Quick Actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card
+            className="bg-gradient-card border-border/50 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-lg"
+            onClick={() => navigate('/videos?new=true')}
+          >
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-muted/50">
+                <Video className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <span className="text-base font-medium text-foreground">Upload Video</span>
+            </CardContent>
+          </Card>
+
+          <Card
+            className="bg-gradient-card border-border/50 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-lg"
+            onClick={() => navigate('/lives?new=true')}
+          >
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-muted/50">
+                <Radio className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <span className="text-base font-medium text-foreground">New Livestream</span>
+            </CardContent>
+          </Card>
+
+          <Card
+            className="bg-gradient-card border-border/50 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-lg"
+            onClick={() => navigate('/news?new=true')}
+          >
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-muted/50">
+                <Newspaper className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <span className="text-base font-medium text-foreground">Create News</span>
+            </CardContent>
+          </Card>
+
+          <Card
+            className="bg-gradient-card border-border/50 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-lg"
+            onClick={() => navigate('/pages')}
+          >
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-muted/50">
+                <LayoutPanelTop className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <span className="text-base font-medium text-foreground">Manage Pages</span>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Videos */}
