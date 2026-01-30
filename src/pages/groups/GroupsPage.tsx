@@ -242,9 +242,9 @@ export default function GroupsPage() {
                     <Badge variant="outline">{group.acronym}</Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={group.enabled ? "default" : "secondary"}>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                       {group.enabled ? "Enabled" : "Disabled"}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

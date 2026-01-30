@@ -2,7 +2,6 @@ import { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
@@ -109,9 +108,9 @@ export default function CoachDetailsPage() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-4xl font-bold">{coach.name}</h1>
-              <Badge variant={coach.enabled ? "default" : "secondary"}>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                 {coach.enabled ? "Enabled" : "Disabled"}
-              </Badge>
+              </span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               {coach.role && (
@@ -173,9 +172,9 @@ export default function CoachDetailsPage() {
                 )}
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Status</p>
-                  <Badge variant={coach.enabled ? "default" : "secondary"} className="mt-1">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border mt-1">
                     {coach.enabled ? "Enabled" : "Disabled"}
-                  </Badge>
+                  </span>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Created At</p>

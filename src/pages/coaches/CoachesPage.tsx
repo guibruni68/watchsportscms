@@ -2,7 +2,6 @@ import { useState, useEffect } from "react"
 import { useSearchParams, useNavigate, Link } from "react-router-dom"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -252,9 +251,9 @@ export default function CoachesPage() {
                   <TableCell>{coach.role || "-"}</TableCell>
                   <TableCell>{coach.nationality}</TableCell>
                   <TableCell>
-                    <Badge variant={coach.enabled ? "default" : "secondary"}>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                       {coach.enabled ? "Enabled" : "Disabled"}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

@@ -298,9 +298,9 @@ export default function GroupDetailsPage() {
               <Badge variant="outline" className="text-base px-3 py-1">
                 {group.acronym}
               </Badge>
-              <Badge variant={group.enabled ? "default" : "secondary"}>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                 {group.enabled ? "Enabled" : "Disabled"}
-              </Badge>
+              </span>
             </div>
             <p className="text-muted-foreground mb-4 max-w-2xl">{group.description}</p>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
@@ -363,9 +363,9 @@ export default function GroupDetailsPage() {
                 )}
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Status</p>
-                  <Badge variant={group.enabled ? "default" : "secondary"} className="mt-1">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border mt-1">
                     {group.enabled ? "Enabled" : "Disabled"}
-                  </Badge>
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -460,9 +460,9 @@ export default function GroupDetailsPage() {
                       </TableCell>
                       <TableCell>{agent.nationality}</TableCell>
                       <TableCell>
-                        <Badge variant={agent.enabled ? "default" : "secondary"}>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                           {agent.enabled ? "Enabled" : "Disabled"}
-                        </Badge>
+                        </span>
                       </TableCell>
                       <TableCell>{new Date(agent.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
@@ -536,9 +536,9 @@ export default function GroupDetailsPage() {
                         <p className="font-medium">{agent.name}</p>
                         <p className="text-sm text-muted-foreground capitalize">{agent.label} • {agent.nationality}</p>
                       </div>
-                      <Badge variant={agent.enabled ? "default" : "secondary"}>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
                         {agent.enabled ? "Enabled" : "Disabled"}
-                      </Badge>
+                      </span>
                     </div>
                   ))
                 )}
