@@ -16,6 +16,10 @@ import AgentsPage from "./pages/agents/AgentsPage";
 import GroupsPage from "./pages/groups/GroupsPage";
 import GroupDetailsPage from "./pages/groups/GroupDetailsPage";
 import AgentDetailsPage from "./pages/agents/AgentDetailsPage";
+import PlayersPage from "./pages/players/PlayersPage";
+import PlayerDetailsPage from "./pages/players/PlayerDetailsPage";
+import CoachesPage from "./pages/coaches/CoachesPage";
+import CoachDetailsPage from "./pages/coaches/CoachDetailsPage";
 import ChampionshipDetailsPage from "./pages/championships/ChampionshipDetailsPage";
 import SchedulePage from "./pages/schedule/SchedulePage";
 import EventDetailPage from "./pages/schedule/EventDetailPage";
@@ -93,22 +97,22 @@ const App = () => (
             } />
             <Route path="/players" element={
               <ProtectedRoute>
-                <AgentsPage agentType="player" />
+                <PlayersPage />
               </ProtectedRoute>
             } />
             <Route path="/players/:id" element={
               <ProtectedRoute>
-                <AgentDetailsPage agentType="player" />
+                <PlayerDetailsPage />
               </ProtectedRoute>
             } />
             <Route path="/coaches" element={
               <ProtectedRoute>
-                <AgentsPage agentType="coach" />
+                <CoachesPage />
               </ProtectedRoute>
             } />
             <Route path="/coaches/:id" element={
               <ProtectedRoute>
-                <AgentDetailsPage agentType="coach" />
+                <CoachDetailsPage />
               </ProtectedRoute>
             } />
             <Route path="/agents" element={

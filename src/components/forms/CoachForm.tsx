@@ -19,9 +19,9 @@ import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
-const playerSchema = z.object({
+const coachSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  position: z.string().optional(),
+  role: z.string().optional(),
   nationality: z.string().min(1, "Nationality is required"),
   birthDate: z.date().optional(),
   imagePrimaryUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
@@ -29,26 +29,26 @@ const playerSchema = z.object({
   enabled: z.boolean(),
 })
 
-type PlayerFormData = z.infer<typeof playerSchema>
+type CoachFormData = z.infer<typeof coachSchema>
 
-interface PlayerFormProps {
-  initialData?: Partial<PlayerFormData>
+interface CoachFormProps {
+  initialData?: Partial<CoachFormData>
   isEdit?: boolean
   onClose?: () => void
 }
 
-export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormProps) {
+export function CoachForm({ initialData, isEdit = false, onClose }: CoachFormProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   const [showExitConfirmation, setShowExitConfirmation] = useState(false)
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
 
-  const form = useForm<PlayerFormData>({
-    resolver: zodResolver(playerSchema),
+  const form = useForm<CoachFormData>({
+    resolver: zodResolver(coachSchema),
     defaultValues: {
       name: initialData?.name || "",
-      position: initialData?.position || "",
+      role: initialData?.role || "",
       nationality: initialData?.nationality || "",
       birthDate: initialData?.birthDate,
       imagePrimaryUrl: initialData?.imagePrimaryUrl || "",
@@ -73,18 +73,18 @@ export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormP
     pendingNavigation?.()
   }
 
-  const onSubmit = (data: PlayerFormData) => {
-    console.log("Saving player:", data)
+  const onSubmit = (data: CoachFormData) => {
+    console.log("Saving coach:", data)
 
     toast({
-      title: isEdit ? "Player updated!" : "Player created!",
+      title: isEdit ? "Coach updated!" : "Coach created!",
       description: `${data.name} was ${isEdit ? "updated" : "created"} successfully.`,
     })
 
     if (onClose) {
       onClose()
     } else {
-      navigate("/players")
+      navigate("/coaches")
     }
   }
 
@@ -94,12 +94,12 @@ export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormP
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/players"))}
+          onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/coaches"))}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-bold">{isEdit ? "Edit Player" : "New Player"}</h1>
+        <h1 className="text-2xl font-bold">{isEdit ? "Edit Coach" : "New Coach"}</h1>
       </div>
 
       <Form {...form}>
@@ -114,7 +114,7 @@ export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormP
             <TabsContent value="information">
               <Card>
                 <CardHeader>
-                  <CardTitle>Player Information</CardTitle>
+                  <CardTitle>Coach Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -125,7 +125,7 @@ export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormP
                         <FormItem>
                           <FormLabel>Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: Lionel Messi" {...field} />
+                            <Input placeholder="Ex: Pep Guardiola" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -134,12 +134,12 @@ export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormP
 
                     <FormField
                       control={form.control}
-                      name="position"
+                      name="role"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Position</FormLabel>
+                          <FormLabel>Role</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: Forward" {...field} />
+                            <Input placeholder="Ex: Head Coach" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -155,7 +155,7 @@ export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormP
                         <FormItem>
                           <FormLabel>Nationality *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: Argentina" {...field} />
+                            <Input placeholder="Ex: Spain" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -214,7 +214,7 @@ export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormP
                         <div className="space-y-0.5">
                           <FormLabel className="text-base">Enabled</FormLabel>
                           <div className="text-sm text-muted-foreground">
-                            Make this player visible and active
+                            Make this coach visible and active
                           </div>
                         </div>
                         <FormControl>
@@ -234,7 +234,7 @@ export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormP
             <TabsContent value="media">
               <Card>
                 <CardHeader>
-                  <CardTitle>Player Media</CardTitle>
+                  <CardTitle>Coach Media</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Primary Image */}
@@ -292,13 +292,13 @@ export function PlayerForm({ initialData, isEdit = false, onClose }: PlayerFormP
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/players"))}
+              onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/coaches"))}
               className="flex-1"
             >
               Cancel
             </Button>
             <Button type="submit" className="flex-1">
-              {isEdit ? "Update Player" : "Create Player"}
+              {isEdit ? "Update Coach" : "Create Coach"}
             </Button>
           </div>
         </form>
