@@ -296,7 +296,7 @@ export function UnifiedContentSelector({
           </p>
           <div className="flex flex-wrap gap-2">
             {selectedDetails.map(item => (
-              <Badge key={item.id} variant="secondary" className="flex items-center gap-1 pr-1">
+              <Badge key={item.id} variant="neutral" className="flex items-center gap-1 pr-1">
                 {item.thumbnail && (
                   <img 
                     src={item.thumbnail} 

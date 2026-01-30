@@ -467,7 +467,7 @@ export const mockLives: Live[] = [
     id: "live1",
     nome_evento: "Nova City Sparks vs Northbridge Thunder - Semifinal",
     descricao: "Jogo decisivo da semifinal do campeonato estadual",
-    imagem_capa: "/placeholder.svg",
+    imagem_capa: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardgame-lynxlakes.png",
     data_inicio: "2024-01-20T19:00:00",
     status: "scheduled"
   },
@@ -475,7 +475,7 @@ export const mockLives: Live[] = [
     id: "live2",
     nome_evento: "Coletiva de Imprensa: Apresentação do Novo Técnico",
     descricao: "Acompanhe ao vivo a apresentação oficial",
-    imagem_capa: "/placeholder.svg",
+    imagem_capa: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardgamewatchers-03.png",
     data_inicio: "2024-01-19T15:00:00",
     status: "scheduled"
   },
@@ -483,7 +483,7 @@ export const mockLives: Live[] = [
     id: "live3",
     nome_evento: "Brookdale Saints vs Red Valley Outlaws",
     descricao: "Confronto direto pela liderança da segunda divisão",
-    imagem_capa: "/placeholder.svg",
+    imagem_capa: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardgamewatchers-04.png",
     data_inicio: "2024-01-21T16:00:00",
     status: "scheduled"
   }

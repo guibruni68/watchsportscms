@@ -1,4 +1,4 @@
-import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, UserCircle, Trophy, Briefcase } from "lucide-react";
+import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, UserCircle, Trophy, Briefcase, MapPin } from "lucide-react";
 import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
@@ -29,9 +29,19 @@ const mainNavItems = [{
       icon: Briefcase
     },
     {
-      title: "Groups",
-      url: "/groups",
+      title: "Teams",
+      url: "/teams",
       icon: Users
+    },
+    {
+      title: "Competitions",
+      url: "/competitions",
+      icon: Trophy
+    },
+    {
+      title: "Stadiums",
+      url: "/stadiums",
+      icon: MapPin
     }
   ]
 }, {

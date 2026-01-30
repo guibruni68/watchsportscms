@@ -191,7 +191,7 @@ export function CarouselManualSelector({
               </p>
               <div className="flex flex-wrap gap-2">
                 {getSelectedContentDetails().map((content) => (
-                  <Badge key={content.id} variant="secondary" className="flex items-center gap-1">
+                  <Badge key={content.id} variant="neutral" className="flex items-center gap-1">
                     {content.title}
                     <X 
                       className="h-3 w-3 cursor-pointer" 
