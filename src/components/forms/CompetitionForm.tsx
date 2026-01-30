@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { format } from "date-fns"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -15,62 +15,59 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { GenreMultiSelect } from "@/components/ui/genre-multi-select"
-import { AgentMultiSelect } from "@/components/ui/agent-multi-select"
 import { FileUpload } from "@/components/ui/file-upload"
-import { mockGenres, mockPlayers, mockTeams } from "@/data/mockData"
-import { ArrowLeft, CalendarIcon, X } from "lucide-react"
+import { ArrowLeft, CalendarIcon, X, Save } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { Country } from 'country-state-city'
 
-const groupSchema = z.object({
+const competitionSchema = z.object({
   name: z.string().min(1, "Name is required"),
   acronym: z.string().min(1, "Acronym is required").max(10, "Acronym must be 10 characters or less"),
-  genre: z.enum(["league", "team"]),
-  genres: z.array(z.string()).optional(),
   description: z.string().min(1, "Description is required"),
+  type: z.enum(["league", "cup", "tournament"]),
   logoUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   cardImageUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   bannerImageUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   originDate: z.date().optional(),
+  country: z.string().optional(),
   enabled: z.boolean(),
-  agentesRelacionados: z.array(z.object({
+  teamsRelacionados: z.array(z.object({
     id: z.string(),
     name: z.string(),
-    type: z.enum(["agent", "group"]),
   })).optional(),
 })
 
-type GroupFormData = z.infer<typeof groupSchema>
+type CompetitionFormData = z.infer<typeof competitionSchema>
 
-interface GroupFormProps {
-  initialData?: Partial<GroupFormData>
+interface CompetitionFormProps {
+  initialData?: Partial<CompetitionFormData>
   isEdit?: boolean
   onClose?: () => void
 }
 
-export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormProps) {
+export function CompetitionForm({ initialData, isEdit = false, onClose }: CompetitionFormProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   const [showExitConfirmation, setShowExitConfirmation] = useState(false)
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
 
-  const form = useForm<GroupFormData>({
-    resolver: zodResolver(groupSchema),
+  const form = useForm<CompetitionFormData>({
+    resolver: zodResolver(competitionSchema),
     defaultValues: {
       name: initialData?.name || "",
       acronym: initialData?.acronym || "",
-      genre: initialData?.genre || "team",
-      genres: initialData?.genres || [],
       description: initialData?.description || "",
+      type: initialData?.type || "league",
       logoUrl: initialData?.logoUrl || "",
       cardImageUrl: initialData?.cardImageUrl || "",
       bannerImageUrl: initialData?.bannerImageUrl || "",
       originDate: initialData?.originDate,
+      country: initialData?.country || "",
       enabled: initialData?.enabled ?? true,
-      agentesRelacionados: initialData?.agentesRelacionados || [],
+      teamsRelacionados: initialData?.teamsRelacionados || [],
     },
   })
 
@@ -90,20 +87,23 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
     pendingNavigation?.()
   }
 
-  const onSubmit = (data: GroupFormData) => {
-    console.log("Saving group:", data)
-    
+  const onSubmit = (data: CompetitionFormData) => {
+    console.log("Saving competition:", data)
+
     toast({
-      title: isEdit ? "Group updated!" : "Group created!",
+      title: isEdit ? "Competition updated!" : "Competition created!",
       description: `${data.name} was ${isEdit ? "updated" : "created"} successfully.`,
     })
-    
+
     if (onClose) {
       onClose()
     } else {
-      navigate("/groups")
+      navigate("/competitions")
     }
   }
+
+  // Get countries
+  const countries = Country.getAllCountries()
 
   return (
     <div className="space-y-6">
@@ -111,11 +111,12 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/groups"))}
+          onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/competitions"))}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
+        <h1 className="text-2xl font-bold">{isEdit ? "Edit Competition" : "New Competition"}</h1>
       </div>
 
       <Form {...form}>
@@ -124,14 +125,13 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
             <TabsList className="mb-6">
               <TabsTrigger value="information">Information</TabsTrigger>
               <TabsTrigger value="media">Media</TabsTrigger>
-              <TabsTrigger value="agents">Agents</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
             <TabsContent value="information">
               <Card>
                 <CardHeader>
-                  <CardTitle>Group Information</CardTitle>
+                  <CardTitle>Competition Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -142,7 +142,7 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                         <FormItem>
                           <FormLabel>Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: FC Barcelona" {...field} />
+                            <Input placeholder="Ex: La Liga" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -156,7 +156,7 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                         <FormItem>
                           <FormLabel>Acronym *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: FCB" {...field} />
+                            <Input placeholder="Ex: LaLiga" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -164,50 +164,57 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="genre"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Type *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="league">League</SelectItem>
-                            <SelectItem value="team">Team</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="league">League</SelectItem>
+                              <SelectItem value="cup">Cup</SelectItem>
+                              <SelectItem value="tournament">Tournament</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="genres"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Categories</FormLabel>
-                        <FormControl>
-                          <GenreMultiSelect
-                            selectedGenres={field.value || []}
-                            onGenresChange={field.onChange}
-                            genreType="group"
-                            availableGenres={mockGenres}
-                            placeholder="Select or create categories..."
-                          />
-                        </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Add categories to classify this group (e.g., Professional League, Youth Team, etc.)
-                        </p>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Country/Region</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a country" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="max-h-[300px]">
+                              <SelectItem value="Europe">Europe (Continental)</SelectItem>
+                              <SelectItem value="World">World (International)</SelectItem>
+                              {countries.map((country) => (
+                                <SelectItem key={country.isoCode} value={country.name}>
+                                  {country.flag} {country.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -217,7 +224,7 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                         <FormLabel>Description *</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Enter a description for the group..."
+                            placeholder="Enter a description for the competition..."
                             className="min-h-[100px]"
                             {...field}
                           />
@@ -232,7 +239,7 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                     name="originDate"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Origin Date</FormLabel>
+                        <FormLabel>First Edition Date</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -278,7 +285,7 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                         <div className="space-y-0.5">
                           <FormLabel className="text-base">Enabled</FormLabel>
                           <div className="text-sm text-muted-foreground">
-                            Make this group visible and active
+                            Make this competition visible and active
                           </div>
                         </div>
                         <FormControl>
@@ -298,7 +305,7 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
             <TabsContent value="media">
               <Card>
                 <CardHeader>
-                  <CardTitle>Group Media</CardTitle>
+                  <CardTitle>Competition Media</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Logo */}
@@ -324,6 +331,9 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                             />
                           </div>
                         )}
+                        <p className="text-sm text-muted-foreground">
+                          Competition logo image (1:1 aspect ratio recommended)
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -377,39 +387,6 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
                 </CardContent>
               </Card>
             </TabsContent>
-
-            {/* Tab 3: Agents */}
-            <TabsContent value="agents">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Related Agents</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="agentesRelacionados"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Agents</FormLabel>
-                        <FormControl>
-                          <AgentMultiSelect
-                            value={field.value || []}
-                            onChange={field.onChange}
-                            players={mockPlayers}
-                            teams={mockTeams}
-                            placeholder="Search and select agents..."
-                          />
-                        </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Add agents (players, coaches, writers) that belong to this group
-                        </p>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
           </Tabs>
 
           {/* Form Actions */}
@@ -417,13 +394,14 @@ export function GroupForm({ initialData, isEdit = false, onClose }: GroupFormPro
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/groups"))}
+              onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/competitions"))}
               className="flex-1"
             >
               Cancel
             </Button>
             <Button type="submit" className="flex-1">
-              {isEdit ? "Update Group" : "Create Group"}
+              <Save className="h-4 w-4 mr-2" />
+              {isEdit ? "Save Changes" : "Create Competition"}
             </Button>
           </div>
         </form>

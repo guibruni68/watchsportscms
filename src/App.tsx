@@ -13,13 +13,16 @@ import LivesPage from "./pages/lives/LivesPage";
 import LiveDetailsPage from "./pages/lives/LiveDetailsPage";
 import EditLivePage from "./pages/lives/EditLivePage";
 import AgentsPage from "./pages/agents/AgentsPage";
-import GroupsPage from "./pages/groups/GroupsPage";
-import GroupDetailsPage from "./pages/groups/GroupDetailsPage";
+import TeamsPage from "./pages/teams/TeamsPage";
+import TeamDetailsPage from "./pages/teams/TeamDetailsPage";
+import CompetitionsPage from "./pages/competitions/CompetitionsPage";
+import CompetitionDetailsPage from "./pages/competitions/CompetitionDetailsPage";
 import AgentDetailsPage from "./pages/agents/AgentDetailsPage";
 import PlayersPage from "./pages/players/PlayersPage";
 import PlayerDetailsPage from "./pages/players/PlayerDetailsPage";
 import CoachesPage from "./pages/coaches/CoachesPage";
 import CoachDetailsPage from "./pages/coaches/CoachDetailsPage";
+import StadiumsPage from "./pages/stadiums/StadiumsPage";
 import ChampionshipDetailsPage from "./pages/championships/ChampionshipDetailsPage";
 import SchedulePage from "./pages/schedule/SchedulePage";
 import EventDetailPage from "./pages/schedule/EventDetailPage";
@@ -115,6 +118,11 @@ const App = () => (
                 <CoachDetailsPage />
               </ProtectedRoute>
             } />
+            <Route path="/stadiums" element={
+              <ProtectedRoute>
+                <StadiumsPage />
+              </ProtectedRoute>
+            } />
             <Route path="/agents" element={
               <ProtectedRoute>
                 <AgentsPage />
@@ -125,14 +133,24 @@ const App = () => (
                 <AgentDetailsPage />
               </ProtectedRoute>
             } />
-            <Route path="/groups" element={
+            <Route path="/teams" element={
               <ProtectedRoute>
-                <GroupsPage />
+                <TeamsPage />
               </ProtectedRoute>
             } />
-            <Route path="/groups/:id" element={
+            <Route path="/teams/:id" element={
               <ProtectedRoute>
-                <GroupDetailsPage />
+                <TeamDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/competitions" element={
+              <ProtectedRoute>
+                <CompetitionsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/competitions/:id" element={
+              <ProtectedRoute>
+                <CompetitionDetailsPage />
               </ProtectedRoute>
             } />
             <Route path="/championships/:id" element={

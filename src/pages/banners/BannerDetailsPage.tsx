@@ -110,7 +110,7 @@ export default function BannerDetailsPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
                       {banner.tag && (
-                        <Badge className="mb-2" variant="secondary">
+                        <Badge className="mb-2" variant="neutral">
                           {banner.tag}
                         </Badge>
                       )}
@@ -145,7 +145,7 @@ export default function BannerDetailsPage() {
                     <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
                     <div className="absolute top-1/2 -translate-y-1/2 left-0 p-6 text-white max-w-md">
                       {banner.tag && (
-                        <Badge className="mb-2" variant="secondary">
+                        <Badge className="mb-2" variant="neutral">
                           {banner.tag}
                         </Badge>
                       )}
@@ -201,7 +201,7 @@ export default function BannerDetailsPage() {
                     {banner.enabled ? "Enabled" : "Disabled"}
                   </Badge>
                   {banner.isPublished && (
-                    <Badge variant="secondary">Published</Badge>
+                    <Badge variant="neutral">Published</Badge>
                   )}
                   <Badge variant={statusVariant}>{status}</Badge>
                 </div>
@@ -211,7 +211,7 @@ export default function BannerDetailsPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Tag</label>
                   <div className="text-sm">
-                    <Badge variant="secondary">
+                    <Badge variant="neutral">
                       <TagIcon className="h-3 w-3 mr-1" />
                       {banner.tag}
                     </Badge>

@@ -36,7 +36,7 @@ const mockLives: Live[] = [
     genre: ["Championship", "Final"],
     available: false,
     viewers: 0,
-    thumbnail: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400"
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchThunders.png"
   },
   {
     id: "2",
@@ -46,7 +46,7 @@ const mockLives: Live[] = [
     genre: ["Press Conference", "Institutional"],
     available: true,
     viewers: 1247,
-    thumbnail: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=400"
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchersIron.png"
   },
   {
     id: "3",
@@ -56,7 +56,7 @@ const mockLives: Live[] = [
     genre: ["Training", "Practice"],
     available: false,
     viewers: 892,
-    thumbnail: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400"
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-thunderredrock.png"
   },
   {
     id: "4",
@@ -66,7 +66,7 @@ const mockLives: Live[] = [
     genre: ["Interview"],
     available: false,
     viewers: 567,
-    thumbnail: "https://images.unsplash.com/photo-1487466365202-1afdb86c764e?w=400"
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-RedrockPine.png"
   },
   {
     id: "5",
@@ -76,7 +76,7 @@ const mockLives: Live[] = [
     genre: ["Training", "Behind the Scenes"],
     available: false,
     viewers: 0,
-    thumbnail: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400"
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-NovaThunder.png"
   }
 ]
 

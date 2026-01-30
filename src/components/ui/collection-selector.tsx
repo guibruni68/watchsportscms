@@ -74,7 +74,7 @@ export function CollectionSelector({ value, onValueChange, placeholder = "Seleci
               <div className="flex items-center gap-2">
                 <Tag className="h-4 w-4" />
                 <span className="truncate">{selectedCollection.titulo}</span>
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="neutral" className="text-xs">
                   {tipoLabels[selectedCollection.tipo_catalogo as keyof typeof tipoLabels]}
                 </Badge>
               </div>
@@ -125,7 +125,7 @@ export function CollectionSelector({ value, onValueChange, placeholder = "Seleci
                     <div className="flex items-center gap-2 flex-1">
                       <Tag className="h-4 w-4" />
                       <span className="truncate">{collection.titulo}</span>
-                      <Badge variant="secondary" className="text-xs ml-auto">
+                      <Badge variant="neutral" className="text-xs ml-auto">
                         {tipoLabels[collection.tipo_catalogo as keyof typeof tipoLabels]}
                       </Badge>
                     </div>

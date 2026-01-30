@@ -243,7 +243,7 @@ export function CarouselContentSelector({
             {getSelectedContentDetails().map((content) => (
               <Badge
                 key={content.id}
-                variant="secondary"
+                variant="neutral"
                 className="flex items-center gap-2 pr-1 py-1"
               >
                 <span className="truncate max-w-32">{content.title}</span>
