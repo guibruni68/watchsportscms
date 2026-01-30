@@ -40,13 +40,22 @@ const mockAgent: Agent = {
   enabled: true
 }
 
-export default function AgentDetailsPage() {
+interface AgentDetailsPageProps {
+  agentType?: "player" | "coach"
+}
+
+export default function AgentDetailsPage({ agentType }: AgentDetailsPageProps) {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [agent] = useState<Agent>(mockAgent)
   const [showEditForm, setShowEditForm] = useState(false)
   const [activeTab, setActiveTab] = useState("overview")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+
+  // Determine page context based on agentType prop
+  const pageTitle = agentType === "player" ? "Player" : agentType === "coach" ? "Coach" : "Agent"
+  const pageTitlePlural = agentType === "player" ? "Players" : agentType === "coach" ? "Coaches" : "Agents"
+  const basePath = agentType === "player" ? "/players" : agentType === "coach" ? "/coaches" : "/agents"
 
   if (showEditForm) {
     return (
@@ -62,6 +71,7 @@ export default function AgentDetailsPage() {
           enabled: agent.enabled
         }}
         isEdit={true}
+        defaultLabel={agentType}
         onClose={() => setShowEditForm(false)}
       />
     )
@@ -74,11 +84,11 @@ export default function AgentDetailsPage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate("/agents")}
+          onClick={() => navigate(basePath)}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Agents
+          Back to {pageTitlePlural}
         </Button>
       </div>
 
@@ -114,9 +124,11 @@ export default function AgentDetailsPage() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-4xl font-bold">{agent.name}</h1>
-              <Badge variant="outline" className="text-base px-3 py-1 capitalize">
-                {agent.label}
-              </Badge>
+              {!agentType && (
+                <Badge variant="outline" className="text-base px-3 py-1 capitalize">
+                  {agent.label}
+                </Badge>
+              )}
               <Badge variant={agent.enabled ? "default" : "secondary"}>
                 {agent.enabled ? "Enabled" : "Disabled"}
               </Badge>
@@ -127,7 +139,7 @@ export default function AgentDetailsPage() {
         </div>
         <Button onClick={() => setShowEditForm(true)}>
           <Edit className="h-4 w-4 mr-2" />
-          Edit Agent
+          Edit {pageTitle}
         </Button>
       </div>
 
@@ -150,10 +162,12 @@ export default function AgentDetailsPage() {
                   <p className="text-sm font-medium text-muted-foreground">Name</p>
                   <p className="text-base">{agent.name}</p>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Label</p>
-                  <Badge variant="outline" className="capitalize">{agent.label}</Badge>
-                </div>
+                {!agentType && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Label</p>
+                    <Badge variant="outline" className="capitalize">{agent.label}</Badge>
+                  </div>
+                )}
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Nationality</p>
                   <p className="text-base">{agent.nationality}</p>

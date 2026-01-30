@@ -98,7 +98,7 @@ const App = () => (
             } />
             <Route path="/players/:id" element={
               <ProtectedRoute>
-                <AgentDetailsPage />
+                <AgentDetailsPage agentType="player" />
               </ProtectedRoute>
             } />
             <Route path="/coaches" element={
@@ -108,7 +108,7 @@ const App = () => (
             } />
             <Route path="/coaches/:id" element={
               <ProtectedRoute>
-                <AgentDetailsPage />
+                <AgentDetailsPage agentType="coach" />
               </ProtectedRoute>
             } />
             <Route path="/agents" element={
