@@ -17,11 +17,13 @@ import TeamsPage from "./pages/teams/TeamsPage";
 import TeamDetailsPage from "./pages/teams/TeamDetailsPage";
 import CompetitionsPage from "./pages/competitions/CompetitionsPage";
 import CompetitionDetailsPage from "./pages/competitions/CompetitionDetailsPage";
+import SeasonDetailsPage from "./pages/competitions/SeasonDetailsPage";
 import AgentDetailsPage from "./pages/agents/AgentDetailsPage";
 import PlayersPage from "./pages/players/PlayersPage";
 import PlayerDetailsPage from "./pages/players/PlayerDetailsPage";
 import CoachesPage from "./pages/coaches/CoachesPage";
 import CoachDetailsPage from "./pages/coaches/CoachDetailsPage";
+import RefereesPage from "./pages/referees/RefereesPage";
 import StadiumsPage from "./pages/stadiums/StadiumsPage";
 import ChampionshipDetailsPage from "./pages/championships/ChampionshipDetailsPage";
 import SchedulePage from "./pages/schedule/SchedulePage";
@@ -118,6 +120,11 @@ const App = () => (
                 <CoachDetailsPage />
               </ProtectedRoute>
             } />
+            <Route path="/referees" element={
+              <ProtectedRoute>
+                <RefereesPage />
+              </ProtectedRoute>
+            } />
             <Route path="/stadiums" element={
               <ProtectedRoute>
                 <StadiumsPage />
@@ -151,6 +158,11 @@ const App = () => (
             <Route path="/competitions/:id" element={
               <ProtectedRoute>
                 <CompetitionDetailsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/competitions/:competitionId/seasons/:seasonId" element={
+              <ProtectedRoute>
+                <SeasonDetailsPage />
               </ProtectedRoute>
             } />
             <Route path="/championships/:id" element={

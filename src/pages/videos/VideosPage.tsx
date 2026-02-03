@@ -29,95 +29,99 @@ interface Video {
 const mockVideos: Video[] = [
   {
     id: "1",
-    title: "Gols da vitória por 3x1 contra o Rival FC",
-    description: "Melhores momentos da partida válida pelo campeonato estadual",
+    title: "Buzzer Beater: Vitória épica no último segundo",
+    description: "Os melhores momentos da vitória dramática com cesta no estouro do cronômetro",
     genre: ["Goals and Highlights", "Best Moments"],
-    tags: ["gols", "vitória", "campeonato"],
+    tags: ["buzzer beater", "vitória", "playoffs"],
     publishDate: "2024-01-15T20:30:00",
     views: 15420,
     duration: "05:32",
     available: true,
-    thumbnail: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400"
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/04542e4202afd169555c7c2693804706a2fa64e5.png"
   },
   {
-    id: "2", 
-    title: "Entrevista com novo atacante contratado",
-    description: "Primeiro bate-papo com o jogador que chegou para reforçar o ataque",
+    id: "2",
+    title: "Triple-Double histórico do armador",
+    description: "Reveja a performance incrível com pontos, assistências e rebotes",
     genre: ["Interviews", "Backstage"],
-    tags: ["entrevista", "contratação", "atacante"],
+    tags: ["triple-double", "armador", "recorde"],
     publishDate: "2025-12-15T14:00:00",
     views: 8931,
     duration: "12:18",
     available: false,
-    thumbnail: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400"
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/1d986d6d01b285b9919ce7999ac9e722c4840aaf.png"
   },
   {
     id: "3",
-    title: "Bastidores do treino tático",
-    description: "Como o time se prepara taticamente para os próximos jogos",
+    title: "Treino intenso de arremessos de 3 pontos",
+    description: "Veja como os jogadores aprimoram a precisão nos arremessos de longa distância",
     genre: ["Behind the Scenes"],
-    tags: ["treino", "tática", "preparação"],
+    tags: ["treino", "arremesso", "3 pontos"],
     publishDate: "2024-01-10T16:45:00",
     views: 5672,
     duration: "08:15",
     available: false,
-    thumbnail: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400"
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/1d986d6d01b285b9919ce7999ac9e722c4840aaf.png"
   },
   {
     id: "4",
-    title: "Coletiva de imprensa pré-jogo",
-    description: "Técnico e capitão falam sobre a próxima partida",
+    title: "Enterradas espetaculares da temporada",
+    description: "As melhores dunks que eletrificaram a torcida nesta temporada",
     genre: ["Press Conference"],
-    tags: ["coletiva", "imprensa", "pré-jogo"],
+    tags: ["enterradas", "dunks", "highlights"],
     publishDate: "2024-01-08T11:00:00",
     views: 3245,
     duration: "15:42",
     available: true,
-    thumbnail: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=400"
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/27356cffab990f52a5f57edf87e0c6b97602eebc.png"
   },
   {
     id: "5",
-    title: "Análise tática da derrota",
-    description: "Entenda os pontos que precisam ser melhorados",
+    title: "Análise tática: Defesa zona 2-3",
+    description: "Entenda como a defesa em zona tem sido decisiva nos jogos",
     genre: ["Analysis"],
-    tags: ["análise", "tática", "derrota"],
+    tags: ["análise", "tática", "defesa"],
     publishDate: "2024-01-06T19:30:00",
     views: 12850,
     duration: "18:22",
-    available: true
+    available: true,
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/27356cffab990f52a5f57edf87e0c6b97602eebc.png"
   },
   {
     id: "6",
-    title: "Treino de finalizações",
-    description: "Atacantes trabalham a pontaria no CT",
+    title: "Tocos memoráveis: Os bloqueios da semana",
+    description: "As melhores defesas e bloqueios que salvaram o time",
     genre: ["Training"],
-    tags: ["treino", "finalizações", "atacantes"],
+    tags: ["tocos", "bloqueios", "defesa"],
     publishDate: "2024-01-05T09:15:00",
     views: 7423,
     duration: "06:45",
-    available: true
+    available: true,
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/34d1567ec77c0dfb903c34f17dc09bf06c7fdf4a.png"
   },
   {
     id: "7",
-    title: "Apresentação do novo uniforme",
-    description: "Conheça os detalhes da nova camisa para 2024",
+    title: "Alley-oop perfeito: Conexão entre armador e pivô",
+    description: "A jogada ensaiada que virou marca registrada do time",
     genre: ["Institutional"],
-    tags: ["uniforme", "camisa", "2024"],
+    tags: ["alley-oop", "jogada", "parceria"],
     publishDate: "2024-01-04T16:20:00",
     views: 21340,
     duration: "04:18",
-    available: true
+    available: true,
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/3b9955fd994fada0c92464563b2a10537e8ac849.png"
   },
   {
     id: "8",
-    title: "Gols mais bonitos da temporada",
-    description: "Relembre os melhores gols marcados pelo time",
+    title: "Crossover e dribles: A arte do ala-armador",
+    description: "Os movimentos mais impressionantes do nosso craque",
     genre: ["Goals and Highlights"],
-    tags: ["gols", "temporada", "melhores"],
+    tags: ["crossover", "dribles", "skills"],
     publishDate: "2024-01-03T20:00:00",
     views: 18765,
     duration: "09:33",
-    available: true
+    available: true,
+    thumbnail: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/509f32f74898993508d86eb0ef535dc2691ff80f.png"
   },
   {
     id: "9",
