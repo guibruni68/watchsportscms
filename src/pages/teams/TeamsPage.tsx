@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Users, Plus, Loader2 } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ListPagination } from "@/components/ui/list-controls"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
@@ -33,51 +32,179 @@ interface Team {
 const mockTeams: Team[] = [
   {
     id: "1",
-    name: "FC Barcelona",
-    acronym: "FCB",
-    description: "Professional football club based in Barcelona, Catalonia, Spain",
-    logoUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=100",
-    cardImageUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400",
-    bannerImageUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=1200",
-    originDate: "1899-11-29",
-    city: "Barcelona",
-    country: "Spain",
+    name: "Basement Basketball",
+    acronym: "BSM",
+    description: "Time de basquete profissional com tradição e história",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-basement.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-basement.png",
+    originDate: "2010-05-15",
+    city: "Curitiba",
+    country: "Brazil",
     stadiumId: "1",
-    stadiumName: "Camp Nou",
+    stadiumName: "Arena Basement",
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-15T00:00:00",
     enabled: true
   },
   {
     id: "2",
-    name: "Real Madrid CF",
-    acronym: "RMA",
-    description: "Spanish professional football club based in Madrid",
-    logoUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=100",
-    cardImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400",
-    originDate: "1902-03-06",
-    city: "Madrid",
-    country: "Spain",
+    name: "Big City Thunder",
+    acronym: "BCT",
+    description: "O trovão da grande cidade no basquete nacional",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-bigcitythunder.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-bigcitythunder.png",
+    originDate: "2012-03-20",
+    city: "São Paulo",
+    country: "Brazil",
     stadiumId: "2",
-    stadiumName: "Santiago Bernabéu",
+    stadiumName: "Thunder Arena",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-14T00:00:00",
+    enabled: true
+  },
+  {
+    id: "3",
+    name: "Iron Hill",
+    acronym: "IRH",
+    description: "Força e determinação do morro de ferro",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-ironhill.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-ironhill.png",
+    originDate: "2008-07-10",
+    city: "Belo Horizonte",
+    country: "Brazil",
+    stadiumId: "3",
+    stadiumName: "Iron Arena",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-13T00:00:00",
+    enabled: true
+  },
+  {
+    id: "4",
+    name: "Loriela",
+    acronym: "LOR",
+    description: "Elegância e técnica em cada jogada",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-loriela.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-loriela.png",
+    originDate: "2015-01-25",
+    city: "Rio de Janeiro",
+    country: "Brazil",
+    stadiumId: "4",
+    stadiumName: "Loriela Center",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-12T00:00:00",
+    enabled: true
+  },
+  {
+    id: "5",
+    name: "Luna Sparks",
+    acronym: "LSP",
+    description: "Brilhando como as estrelas da lua",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-lunasparks.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-lunasparks.png",
+    originDate: "2018-09-15",
+    city: "Florianópolis",
+    country: "Brazil",
+    stadiumId: "5",
+    stadiumName: "Sparks Arena",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-11T00:00:00",
+    enabled: true
+  },
+  {
+    id: "6",
+    name: "Northern",
+    acronym: "NTH",
+    description: "O poder do norte no basquete brasileiro",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-northern.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-northern.png",
+    originDate: "2005-11-30",
+    city: "Manaus",
+    country: "Brazil",
+    stadiumId: "6",
+    stadiumName: "Northern Dome",
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-10T00:00:00",
     enabled: true
   },
   {
-    id: "3",
-    name: "Manchester United",
-    acronym: "MUN",
-    description: "English professional football club based in Old Trafford",
-    logoUrl: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=100",
-    originDate: "1878-01-01",
-    city: "Manchester",
-    country: "United Kingdom",
-    stadiumId: "3",
-    stadiumName: "Old Trafford",
+    id: "7",
+    name: "Nova City",
+    acronym: "NVC",
+    description: "A nova geração do basquete urbano",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-novacity.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-novacity.png",
+    originDate: "2020-02-14",
+    city: "Brasília",
+    country: "Brazil",
+    stadiumId: "7",
+    stadiumName: "Nova Arena",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-09T00:00:00",
+    enabled: true
+  },
+  {
+    id: "8",
+    name: "Outlaws",
+    acronym: "OUT",
+    description: "Jogando fora das regras, dentro das quadras",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-outlaws.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-outlaws.png",
+    originDate: "2016-06-01",
+    city: "Porto Alegre",
+    country: "Brazil",
+    stadiumId: "8",
+    stadiumName: "Outlaws Den",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-08T00:00:00",
+    enabled: false
+  },
+  {
+    id: "9",
+    name: "Pinevale",
+    acronym: "PNV",
+    description: "Do vale dos pinheiros para as quadras",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-pinevale.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-pinevale.png",
+    originDate: "2011-04-22",
+    city: "Curitiba",
+    country: "Brazil",
+    stadiumId: "9",
+    stadiumName: "Pinevale Court",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-07T00:00:00",
+    enabled: true
+  },
+  {
+    id: "10",
+    name: "Queens",
+    acronym: "QNS",
+    description: "Rainhas da quadra, dominando o jogo",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-queens.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-queens.png",
+    originDate: "2019-08-08",
+    city: "Salvador",
+    country: "Brazil",
+    stadiumId: "10",
+    stadiumName: "Queens Palace",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-06T00:00:00",
+    enabled: true
+  },
+  {
+    id: "11",
+    name: "Red Rock",
+    acronym: "RRK",
+    description: "Sólidos como a rocha vermelha",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-redrock.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-redrock.png",
+    originDate: "2007-12-05",
+    city: "Recife",
+    country: "Brazil",
+    stadiumId: "11",
+    stadiumName: "Red Rock Arena",
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-05T00:00:00",
-    enabled: false
+    enabled: true
   },
 ]
 
@@ -247,7 +374,6 @@ export default function TeamsPage() {
                 <TableHead>Logo</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Acronym</TableHead>
-                <TableHead>Stadium</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -256,16 +382,17 @@ export default function TeamsPage() {
               {filteredTeams.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((team) => (
                 <TableRow key={team.id}>
                   <TableCell>
-                    {team.logoUrl ? (
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={team.logoUrl} alt={team.name} />
-                        <AvatarFallback>{team.acronym}</AvatarFallback>
-                      </Avatar>
-                    ) : (
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback><Users className="h-5 w-5" /></AvatarFallback>
-                      </Avatar>
-                    )}
+                    <div className="w-14 h-14 rounded-md overflow-hidden bg-muted flex items-center justify-center">
+                      {team.logoUrl ? (
+                        <img
+                          src={team.logoUrl}
+                          alt={team.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Users className="h-6 w-6 text-muted-foreground" />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Link to={`/teams/${team.id}`} className="font-medium hover:underline">
@@ -274,9 +401,6 @@ export default function TeamsPage() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline">{team.acronym}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {team.stadiumName || "-"}
                   </TableCell>
                   <TableCell>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">

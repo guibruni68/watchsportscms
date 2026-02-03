@@ -1,18 +1,23 @@
 import { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ArrowLeft, Edit, Calendar, Users, User, X, Search, MapPin } from "lucide-react"
+import { ArrowLeft, User, X, Search, MapPin, Calendar, Building2, Briefcase, Trophy } from "lucide-react"
 import { TeamForm } from "@/components/forms/TeamForm"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
+import { cn } from "@/lib/utils"
+
+const teamTypeLabels: Record<string, string> = {
+  futebol: "Futebol",
+  futsal: "Futsal",
+  futebol_feminino: "Futebol Feminino",
+}
 
 interface Team {
   id: string
@@ -27,9 +32,13 @@ interface Team {
   country?: string
   stadiumId?: string
   stadiumName?: string
+  presidentName?: string
+  teamType?: string
   createdAt: string
   updatedAt: string
   enabled: boolean
+  skills?: string[]
+  jobFunction?: string
 }
 
 interface Agent {
@@ -46,57 +55,80 @@ interface Agent {
   enabled: boolean
 }
 
-const mockTeam: Team = {
-  id: "1",
-  name: "FC Barcelona",
-  acronym: "FCB",
-  description: "Professional football club based in Barcelona, Catalonia, Spain. Founded in 1899 by a group of Swiss, Catalan, German, and English footballers led by Joan Gamper, the club has become a symbol of Catalan culture and Catalanism.",
-  logoUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=100",
-  cardImageUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400",
-  bannerImageUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=1200",
-  originDate: "1899-11-29",
-  city: "Barcelona",
-  country: "Spain",
-  stadiumId: "1",
-  stadiumName: "Camp Nou",
-  createdAt: "2024-01-01T00:00:00",
-  updatedAt: "2024-01-15T00:00:00",
-  enabled: true
+// Mock data using real team from TeamsPage
+const mockTeams: Record<string, Team> = {
+  "1": {
+    id: "1",
+    name: "Basement Basketball",
+    acronym: "BSM",
+    description: "Time de basquete profissional com tradição e história. Uma equipe que representa a força e determinação dos jogadores que começaram nas quadras de bairro e chegaram ao profissionalismo através de muito trabalho e dedicação.",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-basement.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-basement.png",
+    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-basement.png",
+    originDate: "2010-05-15",
+    city: "Curitiba",
+    country: "Brazil",
+    stadiumId: "1",
+    stadiumName: "Arena Basement",
+    presidentName: "João da Silva",
+    teamType: "futebol",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-15T00:00:00",
+    enabled: true,
+    skills: ["Basketball", "Professional", "Training", "Youth Development", "Community"],
+    jobFunction: "Sports"
+  },
+  "2": {
+    id: "2",
+    name: "Big City Thunder",
+    acronym: "BCT",
+    description: "O trovão da grande cidade no basquete nacional. Time conhecido por sua velocidade de jogo e jogadas explosivas que eletriziam a torcida a cada partida.",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-bigcitythunder.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-bigcitythunder.png",
+    originDate: "2012-03-20",
+    city: "São Paulo",
+    country: "Brazil",
+    stadiumId: "2",
+    stadiumName: "Thunder Arena",
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-14T00:00:00",
+    enabled: true,
+    skills: ["Basketball", "Athletics", "Speed", "Entertainment"],
+    jobFunction: "Sports"
+  }
 }
 
 const mockAgents: Agent[] = [
   {
     id: "1",
-    name: "Lionel Messi",
+    name: "Carlos Silva",
     label: "player",
-    genre: "Forward",
-    nationality: "Argentina",
-    originDate: "1987-06-24",
+    genre: "Point Guard",
+    nationality: "Brazil",
+    originDate: "1995-06-24",
     imagePrimaryUrl: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100",
-    imageSecondaryUrl: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=1200",
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-15T00:00:00",
     enabled: true
   },
   {
     id: "2",
-    name: "Gerard Piqué",
+    name: "João Santos",
     label: "player",
-    genre: "Defender",
-    nationality: "Spain",
-    originDate: "1987-02-02",
+    genre: "Shooting Guard",
+    nationality: "Brazil",
+    originDate: "1998-02-02",
     imagePrimaryUrl: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100",
-    imageSecondaryUrl: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=1200",
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-10T00:00:00",
     enabled: true
   },
   {
     id: "3",
-    name: "Pep Guardiola",
+    name: "Roberto Oliveira",
     label: "coach",
     genre: "Head Coach",
-    nationality: "Spain",
+    nationality: "Brazil",
     originDate: "1971-01-18",
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-10T00:00:00",
@@ -107,11 +139,11 @@ const mockAgents: Agent[] = [
 const mockAvailableAgents: Agent[] = [
   {
     id: "4",
-    name: "Cristiano Ronaldo",
+    name: "Pedro Costa",
     label: "player",
-    genre: "Forward",
-    nationality: "Portugal",
-    originDate: "1985-02-05",
+    genre: "Center",
+    nationality: "Brazil",
+    originDate: "1997-02-05",
     imagePrimaryUrl: "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=100",
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-01T00:00:00",
@@ -119,37 +151,27 @@ const mockAvailableAgents: Agent[] = [
   },
   {
     id: "5",
-    name: "Neymar Jr",
+    name: "Lucas Ferreira",
     label: "player",
-    genre: "Forward",
+    genre: "Small Forward",
     nationality: "Brazil",
-    originDate: "1992-02-05",
+    originDate: "1999-02-05",
     imagePrimaryUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100",
-    createdAt: "2024-01-01T00:00:00",
-    updatedAt: "2024-01-01T00:00:00",
-    enabled: true
-  },
-  {
-    id: "6",
-    name: "Carlo Ancelotti",
-    label: "coach",
-    genre: "Head Coach",
-    nationality: "Italy",
-    originDate: "1959-06-10",
-    imagePrimaryUrl: "https://images.unsplash.com/photo-1566753323558-f4e0952af115?w=100",
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-01T00:00:00",
     enabled: true
   }
 ]
 
+type TabType = "overview" | "members" | "media"
+
 export default function TeamDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [team] = useState<Team>(mockTeam)
+  const [team] = useState<Team>(mockTeams[id || "1"] || mockTeams["1"])
   const [agents] = useState<Agent[]>(mockAgents)
   const [showEditForm, setShowEditForm] = useState(false)
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab] = useState<TabType>("overview")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
 
   // Add Agent Dialog state
@@ -193,6 +215,8 @@ export default function TeamDetailsPage() {
           city: team.city,
           country: team.country,
           stadiumId: team.stadiumId,
+          presidentName: team.presidentName,
+          teamType: team.teamType,
           enabled: team.enabled
         }}
         isEdit={true}
@@ -201,260 +225,346 @@ export default function TeamDetailsPage() {
     )
   }
 
+  const tabs: { id: TabType; label: string; count?: number }[] = [
+    { id: "overview", label: "Overview" },
+    { id: "members", label: "Members", count: agents.length },
+    { id: "media", label: "Media" }
+  ]
+
+  // Format date as DD/MM/YYYY
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  }
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate("/teams")}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Teams
-        </Button>
-      </div>
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/teams")}
+        className="text-muted-foreground hover:text-foreground gap-2 px-0"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Teams
+      </Button>
 
-      {/* Banner */}
-      {team.bannerImageUrl && (
-        <div className="relative h-64 w-full rounded-lg overflow-hidden">
-          <img
-            src={team.bannerImageUrl}
-            alt={team.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-        </div>
-      )}
+      {/* Header Card */}
+      <Card className="border-[#1f1f1f] bg-[#171717] rounded-xl overflow-hidden">
+        {/* Top banner bar - 128px height per Figma */}
+        <div className="h-32 bg-gradient-to-r from-[#262626] to-[#171717]" />
 
-      {/* Team Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-start gap-6">
-          {team.logoUrl ? (
-            <Avatar className="h-24 w-24 border-4 border-background">
-              <AvatarImage src={team.logoUrl} alt={team.name} />
-              <AvatarFallback className="text-2xl">{team.acronym}</AvatarFallback>
-            </Avatar>
-          ) : (
-            <Avatar className="h-24 w-24 border-4 border-background">
-              <AvatarFallback className="text-2xl"><Users className="h-12 w-12" /></AvatarFallback>
-            </Avatar>
-          )}
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl font-bold">{team.name}</h1>
-              <Badge variant="outline" className="text-base px-3 py-1">
-                {team.acronym}
-              </Badge>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
-                {team.enabled ? "Enabled" : "Disabled"}
-              </span>
-            </div>
-            <p className="text-muted-foreground mb-4 max-w-2xl">{team.description}</p>
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              {team.city && team.country && (
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>{team.city}, {team.country}</span>
-                </div>
-              )}
-              {team.originDate && (
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>Founded: {new Date(team.originDate).toLocaleDateString()}</span>
-                </div>
-              )}
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span>{agents.length} Members</span>
+        {/* Header Content */}
+        <div className="px-7 pb-7 -mt-14">
+          <div className="flex items-start justify-between">
+            {/* Left Section: Logo + Info */}
+            <div className="flex flex-col">
+              {/* Team Logo - circular like in teams table */}
+              <div className="w-[116px] h-[116px] rounded-full bg-white overflow-hidden flex items-center justify-center shadow-lg mb-4">
+                {team.logoUrl ? (
+                  <img
+                    src={team.logoUrl}
+                    alt={team.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-2xl font-bold text-gray-400">{team.acronym}</span>
+                )}
               </div>
+
+              {/* Team Info */}
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
+                  {team.name}
+                </h1>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                  {team.enabled ? "Enabled" : "Disabled"}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                {team.acronym}
+              </p>
             </div>
+
+            {/* Edit Button */}
+            <Button
+              onClick={() => setShowEditForm(true)}
+              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-[10px] px-6 h-10 mt-16"
+            >
+              Edit
+            </Button>
           </div>
         </div>
-        <Button onClick={() => setShowEditForm(true)}>
-          <Edit className="h-4 w-4 mr-2" />
-          Edit Team
-        </Button>
+      </Card>
+
+      {/* Tabs - outside the card */}
+      <div className="border-b border-[#1f1f1f]">
+        <div className="flex gap-0">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                activeTab === tab.id
+                  ? "text-white"
+                  : "text-muted-foreground hover:text-white/80"
+              )}
+            >
+              {tab.label}
+              {tab.count !== undefined && ` (${tab.count})`}
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="pb-4">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="members">Members ({agents.length})</TabsTrigger>
-          </TabsList>
-        </div>
+      {/* Tab Content */}
+      {activeTab === "overview" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="px-12 pt-12 pb-16">
+            <div className="flex justify-between gap-[140px]">
+              {/* Left Column - Description & Details */}
+              <div className="flex-1 space-y-4">
+                {/* Description */}
+                <div className="space-y-0">
+                  <p className="text-sm text-[#999999] leading-5">Description</p>
+                  <p className="text-base text-white leading-6 max-w-[603px]">
+                    {team.description}
+                  </p>
+                </div>
 
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Team Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Full Name</p>
-                  <p className="text-base">{team.name}</p>
+                {/* Full Name */}
+                <div className="space-y-0 pt-4">
+                  <p className="text-sm text-[#999999] leading-5">Full Name</p>
+                  <p className="text-base text-white leading-6">{team.name}</p>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Acronym</p>
-                  <p className="text-base">{team.acronym}</p>
+
+                {/* Acronym */}
+                <div className="space-y-0">
+                  <p className="text-sm text-[#999999] leading-5">Acronym</p>
+                  <p className="text-base text-white leading-6">{team.acronym}</p>
                 </div>
-                {team.city && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">City</p>
-                    <p className="text-base">{team.city}</p>
+
+                {/* President */}
+                {team.presidentName && (
+                  <div className="space-y-0">
+                    <p className="text-sm text-[#999999] leading-5">President</p>
+                    <p className="text-base text-white leading-6">{team.presidentName}</p>
                   </div>
                 )}
-                {team.country && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Country</p>
-                    <p className="text-base">{team.country}</p>
+
+                {/* Team Type */}
+                {team.teamType && (
+                  <div className="space-y-0">
+                    <p className="text-sm text-[#999999] leading-5">Type</p>
+                    <p className="text-base text-white leading-6">{teamTypeLabels[team.teamType] || team.teamType}</p>
                   </div>
                 )}
-                {team.stadiumName && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Stadium</p>
-                    <p className="text-base">{team.stadiumName}</p>
+              </div>
+
+              {/* Right Column - Info Cards */}
+              <div className="w-[189px] space-y-6">
+                {/* Location */}
+                {team.city && team.country && (
+                  <div className="flex items-center gap-[13px]">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
+                      <MapPin className="h-[18px] w-[18px] text-white/50" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <p className="text-sm text-white leading-[14px]">{team.city}</p>
+                      <p className="text-xs text-white/50 leading-[18px]">{team.country}</p>
+                    </div>
                   </div>
                 )}
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Description</p>
-                  <p className="text-base">{team.description}</p>
-                </div>
+
+                {/* Founded */}
                 {team.originDate && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Foundation Date</p>
-                    <p className="text-base">{new Date(team.originDate).toLocaleDateString()}</p>
+                  <div className="flex items-center gap-[10px]">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
+                      <Calendar className="h-[18px] w-[18px] text-white/50" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-white leading-[14px]">Founded</p>
+                      <p className="text-xs text-white/50 leading-[18px]">{formatDate(team.originDate)}</p>
+                    </div>
                   </div>
                 )}
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Status</p>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border mt-1">
-                    {team.enabled ? "Enabled" : "Disabled"}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Media Assets</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {team.logoUrl && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-2">Logo</p>
+                {/* Stadium */}
+                {team.stadiumName && (
+                  <div className="flex items-center gap-[10px]">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
+                      <Building2 className="h-[18px] w-[18px] text-white/50" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-white leading-[14px]">Stadium</p>
+                      <p className="text-xs text-white/50 leading-[18px]">{team.stadiumName}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* President */}
+                {team.presidentName && (
+                  <div className="flex items-center gap-[10px]">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
+                      <User className="h-[18px] w-[18px] text-white/50" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-white leading-[14px]">President</p>
+                      <p className="text-xs text-white/50 leading-[18px]">{team.presidentName}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Team Type */}
+                {team.teamType && (
+                  <div className="flex items-center gap-[10px]">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
+                      <Trophy className="h-[18px] w-[18px] text-white/50" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-white leading-[14px]">Type</p>
+                      <p className="text-xs text-white/50 leading-[18px]">{teamTypeLabels[team.teamType] || team.teamType}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {activeTab === "members" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <div className="p-6 flex items-center justify-between border-b border-[#1f1f1f]">
+            <h3 className="text-lg font-semibold text-white">Team Members</h3>
+            <Button
+              size="sm"
+              onClick={() => setShowAddAgentDialog(true)}
+              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg"
+            >
+              <User className="h-4 w-4 mr-2" />
+              Add Member
+            </Button>
+          </div>
+          <div className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-[#1f1f1f] hover:bg-transparent">
+                  <TableHead className="text-muted-foreground">Photo</TableHead>
+                  <TableHead className="text-muted-foreground">Name</TableHead>
+                  <TableHead className="text-muted-foreground">Role</TableHead>
+                  <TableHead className="text-muted-foreground">Nationality</TableHead>
+                  <TableHead className="text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-right text-muted-foreground">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {agents.map((agent) => (
+                  <TableRow key={agent.id} className="border-[#1f1f1f]">
+                    <TableCell>
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={agent.imagePrimaryUrl} alt={agent.name} />
+                        <AvatarFallback className="bg-[#1f1f1f] text-white">
+                          {agent.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TableCell>
+                    <TableCell className="font-medium text-white">{agent.name}</TableCell>
+                    <TableCell>
+                      <span className="text-sm text-muted-foreground capitalize">{agent.label}</span>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{agent.nationality}</TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                        {agent.enabled ? "Enabled" : "Disabled"}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <ActionDropdown
+                        onView={() => navigate(`/agents/${agent.id}`)}
+                        onEdit={() => {}}
+                        onDelete={() => {}}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </Card>
+      )}
+
+      {activeTab === "media" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Media Assets</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Logo */}
+              {team.logoUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Logo</p>
+                  <div
+                    className="aspect-square rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center p-6"
+                    onClick={() => setLightboxImage(team.logoUrl!)}
+                  >
                     <img
                       src={team.logoUrl}
                       alt="Logo"
-                      className="h-32 w-32 object-contain border rounded cursor-pointer hover:opacity-75 transition-opacity"
-                      onClick={() => setLightboxImage(team.logoUrl!)}
+                      className="max-w-full max-h-full object-contain"
                     />
                   </div>
-                )}
-                {team.cardImageUrl && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-2">Card Image</p>
+                </div>
+              )}
+
+              {/* Card Image */}
+              {team.cardImageUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Card Image</p>
+                  <div
+                    className="aspect-square rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setLightboxImage(team.cardImageUrl!)}
+                  >
                     <img
                       src={team.cardImageUrl}
                       alt="Card"
-                      className="h-48 w-auto object-contain border rounded cursor-pointer hover:opacity-75 transition-opacity"
-                      onClick={() => setLightboxImage(team.cardImageUrl!)}
+                      className="w-full h-full object-cover"
                     />
                   </div>
-                )}
-                {team.bannerImageUrl && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-2">Banner Image</p>
+                </div>
+              )}
+
+              {/* Banner Image */}
+              {team.bannerImageUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Banner Image</p>
+                  <div
+                    className="aspect-square rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setLightboxImage(team.bannerImageUrl!)}
+                  >
                     <img
                       src={team.bannerImageUrl}
                       alt="Banner"
-                      className="h-32 w-full object-cover border rounded cursor-pointer hover:opacity-75 transition-opacity"
-                      onClick={() => setLightboxImage(team.bannerImageUrl!)}
+                      className="w-full h-full object-cover"
                     />
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="members" className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Team Members</CardTitle>
-              <Button size="sm" onClick={() => setShowAddAgentDialog(true)}>
-                <User className="h-4 w-4 mr-2" />
-                Add Member
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Photo</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Nationality</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {agents.map((agent) => (
-                    <TableRow key={agent.id}>
-                      <TableCell>
-                        {agent.imagePrimaryUrl ? (
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={agent.imagePrimaryUrl} alt={agent.name} />
-                            <AvatarFallback>
-                              {agent.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                        ) : (
-                          <Avatar className="h-10 w-10">
-                            <AvatarFallback>
-                              {agent.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                        )}
-                      </TableCell>
-                      <TableCell className="font-medium">{agent.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="capitalize">{agent.label}</Badge>
-                      </TableCell>
-                      <TableCell>{agent.nationality}</TableCell>
-                      <TableCell>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
-                          {agent.enabled ? "Enabled" : "Disabled"}
-                        </span>
-                      </TableCell>
-                      <TableCell>{new Date(agent.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-right">
-                        <ActionDropdown
-                          onView={() => navigate(`/agents/${agent.id}`)}
-                          onEdit={() => {}}
-                          onDelete={() => {}}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Add Agent Dialog */}
       <Dialog open={showAddAgentDialog} onOpenChange={setShowAddAgentDialog}>
-        <DialogContent className="max-w-2xl max-h-[80vh]">
+        <DialogContent className="max-w-2xl max-h-[80vh] bg-[#0d0d0d] border-[#1f1f1f]">
           <DialogHeader>
-            <DialogTitle>Add Members to Team</DialogTitle>
+            <DialogTitle className="text-white">Add Members to Team</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -464,7 +574,7 @@ export default function TeamDetailsPage() {
                 placeholder="Search by name or position..."
                 value={agentSearchTerm}
                 onChange={(e) => setAgentSearchTerm(e.target.value)}
-                className="pl-9"
+                className="pl-9 bg-[#090909] border-[#1f1f1f]"
               />
             </div>
 
@@ -478,29 +588,21 @@ export default function TeamDetailsPage() {
                   filteredAvailableAgents.map((agent) => (
                     <div
                       key={agent.id}
-                      className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent cursor-pointer"
+                      className="flex items-center space-x-3 p-3 rounded-lg border border-[#1f1f1f] hover:bg-[#1f1f1f]/50 cursor-pointer"
                       onClick={() => toggleAgentSelection(agent.id)}
                     >
                       <Checkbox
                         checked={selectedAgentIds.includes(agent.id)}
                         onCheckedChange={() => toggleAgentSelection(agent.id)}
                       />
-                      {agent.imagePrimaryUrl ? (
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={agent.imagePrimaryUrl} alt={agent.name} />
-                          <AvatarFallback>
-                            {agent.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                      ) : (
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback>
-                            {agent.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={agent.imagePrimaryUrl} alt={agent.name} />
+                        <AvatarFallback className="bg-[#1f1f1f]">
+                          {agent.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
                       <div className="flex-1">
-                        <p className="font-medium">{agent.name}</p>
+                        <p className="font-medium text-white">{agent.name}</p>
                         <p className="text-sm text-muted-foreground capitalize">{agent.label} • {agent.nationality}</p>
                       </div>
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
@@ -514,16 +616,21 @@ export default function TeamDetailsPage() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setShowAddAgentDialog(false)
-              setSelectedAgentIds([])
-              setAgentSearchTerm("")
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowAddAgentDialog(false)
+                setSelectedAgentIds([])
+                setAgentSearchTerm("")
+              }}
+              className="border-[#1f1f1f]"
+            >
               Cancel
             </Button>
             <Button
               onClick={handleAddAgents}
               disabled={selectedAgentIds.length === 0}
+              className="bg-[#153A8A] hover:bg-[#1a4aa8]"
             >
               Add {selectedAgentIds.length > 0 && `(${selectedAgentIds.length})`} Member{selectedAgentIds.length !== 1 ? 's' : ''}
             </Button>
@@ -533,7 +640,7 @@ export default function TeamDetailsPage() {
 
       {/* Image Lightbox */}
       <Dialog open={!!lightboxImage} onOpenChange={() => setLightboxImage(null)}>
-        <DialogContent className="max-w-4xl p-0 bg-black/95">
+        <DialogContent className="max-w-4xl p-0 bg-black/95 border-0">
           <div className="relative">
             <Button
               variant="ghost"

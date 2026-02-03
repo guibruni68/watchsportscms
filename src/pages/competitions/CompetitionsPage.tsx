@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Trophy, Plus, Loader2 } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ListPagination } from "@/components/ui/list-controls"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
@@ -32,58 +31,75 @@ interface Competition {
 const mockCompetitions: Competition[] = [
   {
     id: "1",
-    name: "La Liga",
-    acronym: "LaLiga",
-    description: "The top professional football division of the Spanish football league system",
+    name: "A League Basketball",
+    acronym: "ALB",
+    description: "Principal liga de basquete profissional da região sul do Brasil",
     type: "league",
-    logoUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=100",
-    cardImageUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400",
-    bannerImageUrl: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=1200",
-    originDate: "1929-02-10",
-    country: "Spain",
-    teamsCount: 20,
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20A%20League.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20A%20League.png",
+    originDate: "2015-03-15",
+    country: "Brazil",
+    teamsCount: 12,
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-15T00:00:00",
     enabled: true
   },
   {
     id: "2",
-    name: "UEFA Champions League",
-    acronym: "UCL",
-    description: "Annual club football competition organised by UEFA and contested by top European clubs",
-    type: "cup",
-    logoUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=100",
-    cardImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400",
-    originDate: "1955-09-04",
-    country: "Europe",
-    teamsCount: 32,
+    name: "B League Basketball",
+    acronym: "BLB",
+    description: "Segunda divisão do campeonato de basquete com times em desenvolvimento",
+    type: "league",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20B%20League.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20B%20League.png",
+    originDate: "2018-06-20",
+    country: "Brazil",
+    teamsCount: 16,
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-10T00:00:00",
     enabled: true
   },
   {
     id: "3",
-    name: "Copa del Rey",
-    acronym: "CDR",
-    description: "Annual knockout football cup competition in Spanish football",
+    name: "International Basketball League",
+    acronym: "IBL",
+    description: "Competição internacional com os melhores times da América do Sul",
     type: "cup",
-    logoUrl: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=100",
-    originDate: "1903-01-01",
-    country: "Spain",
-    teamsCount: 83,
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20Internation%20League.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20Internation%20League.png",
+    originDate: "2010-09-01",
+    country: "South America",
+    teamsCount: 24,
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-05T00:00:00",
     enabled: true
   },
   {
     id: "4",
-    name: "Premier League",
-    acronym: "EPL",
-    description: "The top level of the English football league system",
-    type: "league",
-    originDate: "1992-02-20",
-    country: "United Kingdom",
-    teamsCount: 20,
+    name: "Super League Basketball",
+    acronym: "SLB",
+    description: "Torneio eliminatório com os campeões de cada estado",
+    type: "tournament",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20Super%20League.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20Super%20League.png",
+    originDate: "2020-01-10",
+    country: "Brazil",
+    teamsCount: 32,
+    createdAt: "2024-01-01T00:00:00",
+    updatedAt: "2024-01-01T00:00:00",
+    enabled: true
+  },
+  {
+    id: "5",
+    name: "World Basketball League",
+    acronym: "WBL",
+    description: "Liga mundial com times de elite de todos os continentes",
+    type: "cup",
+    logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20WBL.png",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card%20-%20WBL.png",
+    originDate: "2005-08-12",
+    country: "World",
+    teamsCount: 48,
     createdAt: "2024-01-01T00:00:00",
     updatedAt: "2024-01-01T00:00:00",
     enabled: false
@@ -262,10 +278,7 @@ export default function CompetitionsPage() {
               <TableRow>
                 <TableHead>Logo</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Acronym</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>Country</TableHead>
-                <TableHead>Teams</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -274,16 +287,17 @@ export default function CompetitionsPage() {
               {filteredCompetitions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((competition) => (
                 <TableRow key={competition.id}>
                   <TableCell>
-                    {competition.logoUrl ? (
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={competition.logoUrl} alt={competition.name} />
-                        <AvatarFallback>{competition.acronym}</AvatarFallback>
-                      </Avatar>
-                    ) : (
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback><Trophy className="h-5 w-5" /></AvatarFallback>
-                      </Avatar>
-                    )}
+                    <div className="w-14 h-14 rounded-md overflow-hidden bg-muted flex items-center justify-center">
+                      {competition.logoUrl ? (
+                        <img
+                          src={competition.logoUrl}
+                          alt={competition.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Trophy className="h-6 w-6 text-muted-foreground" />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Link to={`/competitions/${competition.id}`} className="font-medium hover:underline">
@@ -291,18 +305,9 @@ export default function CompetitionsPage() {
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{competition.acronym}</Badge>
-                  </TableCell>
-                  <TableCell>
                     <span className="text-sm text-muted-foreground">
                       {getTypeLabel(competition.type)}
                     </span>
-                  </TableCell>
-                  <TableCell>
-                    {competition.country || "-"}
-                  </TableCell>
-                  <TableCell>
-                    {competition.teamsCount || "-"}
                   </TableCell>
                   <TableCell>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">

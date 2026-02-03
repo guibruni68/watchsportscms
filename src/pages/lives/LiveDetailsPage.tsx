@@ -1,37 +1,34 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, Play, Calendar, Users, X, Tag } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils";
+import { useState, useEffect } from "react"
+import { useParams, useNavigate, useSearchParams } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3 } from "lucide-react"
+import { toast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 
 interface Live {
-  id: string;
-  title: string;
-  description: string;
-  label: "VOD" | "LIVE";
-  releaseYear?: number;
-  scheduleDate: string;
-  isPublished: boolean;
-  badge?: "NEW" | "NEW EPISODES" | "SOON";
-  cardImageUrl?: string;
-  bannerImageUrl?: string;
-  streamUrl?: string;
-  ageRating?: string;
-  createdAt: string;
-  updatedAt: string;
-  enabled: boolean;
-  
-  // Legacy fields for backward compatibility with list pages
-  eventName?: string;
-  dateTime?: string;
-  genre?: string[];
-  available?: boolean;
-  viewers?: number;
-  playerEmbed?: string;
-  coverImage?: string;
+  id: string
+  title: string
+  description: string
+  label: "VOD" | "LIVE"
+  releaseYear?: number
+  scheduleDate: string
+  isPublished: boolean
+  badge?: "NEW" | "NEW EPISODES" | "SOON"
+  cardImageUrl?: string
+  bannerImageUrl?: string
+  streamUrl?: string
+  ageRating?: string
+  createdAt: string
+  updatedAt: string
+  enabled: boolean
+  eventName?: string
+  dateTime?: string
+  genre?: string[]
+  available?: boolean
+  viewers?: number
+  playerEmbed?: string
 }
 
 // Mock data
@@ -39,20 +36,19 @@ const mockLives: Live[] = [
   {
     id: "1",
     title: "State Championship Final",
-    description: "Live broadcast of the grand final against traditional rival",
+    description: "Live broadcast of the grand final against traditional rival. A decisive match for the state title with both teams at their best.",
     label: "LIVE",
     releaseYear: 2025,
     scheduleDate: "2025-12-20T16:00:00",
     isPublished: true,
     badge: "SOON",
     cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchThunders.png",
-    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardgamewatchers-01.png",
+    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchThunders.png",
     streamUrl: "https://example.com/stream/championship-final",
-    ageRating: "PG",
+    ageRating: "L",
     createdAt: "2025-11-15T10:00:00",
     updatedAt: "2025-11-20T14:30:00",
     enabled: true,
-    // Legacy fields
     eventName: "State Championship Final",
     dateTime: "2025-12-20T16:00:00",
     genre: ["Championship", "Final"],
@@ -62,20 +58,19 @@ const mockLives: Live[] = [
   {
     id: "2",
     title: "2024 Squad Presentation",
-    description: "Press conference with presentation of new players",
+    description: "Press conference with presentation of new players. Meet the new reinforcements for the upcoming season.",
     label: "LIVE",
     releaseYear: 2024,
     scheduleDate: "2024-01-18T10:00:00",
     isPublished: true,
     badge: "NEW",
     cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchersIron.png",
-    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardgamewatchers-02.png",
+    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchersIron.png",
     streamUrl: "https://example.com/stream/squad-presentation",
-    ageRating: "G",
+    ageRating: "L",
     createdAt: "2024-01-10T09:00:00",
     updatedAt: "2024-01-17T16:45:00",
     enabled: true,
-    // Legacy fields
     eventName: "2024 Squad Presentation",
     dateTime: "2024-01-18T10:00:00",
     genre: ["Press Conference", "Institutional"],
@@ -84,340 +79,456 @@ const mockLives: Live[] = [
   },
   {
     id: "3",
-    title: "Preparatory Practice Match",
-    description: "Last test before championship debut",
-    label: "LIVE",
-    releaseYear: 2024,
-    scheduleDate: "2024-01-15T15:00:00",
-    isPublished: true,
-    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-thunderredrock.png",
-    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardgamewatchers-03.png",
-    streamUrl: "https://example.com/stream/practice-match",
-    ageRating: "PG",
-    createdAt: "2024-01-08T11:00:00",
-    updatedAt: "2024-01-14T13:20:00",
-    enabled: false,
-    // Legacy fields
-    eventName: "Preparatory Practice Match",
-    dateTime: "2024-01-15T15:00:00",
-    genre: ["Training", "Practice"],
-    available: false,
-    viewers: 892
-  },
-  {
-    id: "4",
-    title: "Coach Interview",
-    description: "Exclusive conversation about the 2024 season",
-    label: "LIVE",
-    releaseYear: 2024,
-    scheduleDate: "2024-01-14T14:00:00",
-    isPublished: true,
-    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-RedrockPine.png",
-    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardgamewatchers-04.png",
-    streamUrl: "https://example.com/stream/coach-interview",
-    ageRating: "G",
-    createdAt: "2024-01-07T09:00:00",
-    updatedAt: "2024-01-13T11:00:00",
-    enabled: true,
-    // Legacy fields
-    eventName: "Coach Interview",
-    dateTime: "2024-01-14T14:00:00",
-    genre: ["Interview"],
-    available: false,
-    viewers: 567
-  },
-  {
-    id: "5",
     title: "Open Training for Fans",
-    description: "Follow the team's training before the decisive game",
+    description: "Follow the team's training before the decisive game. An exclusive opportunity to see the players preparing.",
     label: "LIVE",
     releaseYear: 2026,
     scheduleDate: "2026-01-22T09:00:00",
     isPublished: false,
     badge: "SOON",
     cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-NovaThunder.png",
-    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-BasementPine.png",
+    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-NovaThunder.png",
     streamUrl: "https://example.com/stream/open-training",
-    ageRating: "G",
+    ageRating: "L",
     createdAt: "2026-01-10T08:00:00",
     updatedAt: "2026-01-20T10:00:00",
     enabled: true,
-    // Legacy fields
     eventName: "Open Training for Fans",
     dateTime: "2026-01-22T09:00:00",
     genre: ["Training", "Behind the Scenes"],
     available: false,
     viewers: 0
   },
-];
+]
+
+type TabType = "overview" | "details" | "stats" | "media"
 
 export default function LiveDetailsPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [live, setLive] = useState<Live | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const [live, setLive] = useState<Live | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<TabType>("overview")
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+
+  // Check for tab param on mount
+  useEffect(() => {
+    const tabParam = searchParams.get('tab')
+    if (tabParam === 'stats') {
+      setActiveTab('stats')
+    }
+  }, [searchParams])
+
+  // Format datetime
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!id) return;
+      if (!id) return
 
       try {
-        // Mock API call - replace with actual API
-        const liveData = mockLives.find(l => l.id === id);
-        
+        const liveData = mockLives.find(l => l.id === id)
+
         if (!liveData) {
-          throw new Error("Live stream not found");
+          throw new Error("Live stream not found")
         }
-        
-        setLive(liveData);
+
+        setLive(liveData)
       } catch (error) {
         toast({
           title: "Error",
           description: "Error loading live stream data.",
           variant: "destructive",
-        });
-        navigate('/lives');
+        })
+        navigate('/lives')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchData();
-  }, [id, navigate]);
+    fetchData()
+  }, [id, navigate])
 
   const handleEdit = () => {
-    navigate(`/lives/edit/${id}`);
-  };
+    navigate(`/lives/edit/${id}`)
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-muted-foreground">Loading...</div>
       </div>
-    );
+    )
   }
 
   if (!live) {
-    return null;
+    return null
+  }
+
+  const tabs: { id: TabType; label: string }[] = [
+    { id: "overview", label: "Overview" },
+    { id: "details", label: "Details" },
+    { id: "stats", label: "Stats" },
+    { id: "media", label: "Media" }
+  ]
+
+  const getStatusLabel = () => {
+    if (!live.enabled) return "Disabled"
+    if (!live.isPublished) return "Draft"
+    const now = new Date()
+    const scheduleDate = new Date(live.scheduleDate)
+    if (live.available) return "Live Now"
+    if (scheduleDate > now) return "Scheduled"
+    return "Ended"
+  }
+
+  const getStatusStyle = () => {
+    const status = getStatusLabel()
+    if (status === "Live Now") return "bg-red-500/20 text-red-500 border-red-500/30"
+    if (status === "Scheduled") return "bg-blue-500/20 text-blue-500 border-blue-500/30"
+    return "bg-muted text-muted-foreground border-border"
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/lives')}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Live Streams
-          </Button>
-        </div>
-        <Button onClick={handleEdit} className="gap-2">
-          <Edit className="h-4 w-4" />
-          Edit Live Stream
-        </Button>
-      </div>
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/lives")}
+        className="text-muted-foreground hover:text-foreground gap-2 px-0"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Live Streams
+      </Button>
 
-      {/* Live Stream Details Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl flex items-center gap-2">
-            <Play className="h-6 w-6" />
-            {live.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Live Stream Cover */}
-            <div className="flex-shrink-0 space-y-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-2">Card Image</label>
-                <div 
-                  className="relative w-full md:w-64 aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
-                  onClick={() => live.cardImageUrl && setLightboxImage(live.cardImageUrl)}
-                >
-                  {live.cardImageUrl ? (
-                    <img 
-                      src={live.cardImageUrl} 
+      {/* Header Card */}
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
+        {/* Top banner bar */}
+        <div className="h-28 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d]" />
+
+        {/* Header Content */}
+        <div className="px-7 pb-7 -mt-14">
+          <div className="flex items-start justify-between">
+            {/* Left Section: Thumbnail + Info */}
+            <div className="flex flex-col">
+              {/* Live Thumbnail */}
+              <div className="w-[200px] h-[120px] rounded-2xl bg-[#1a1a1a] overflow-hidden flex items-center justify-center shadow-lg mb-4 relative">
+                {live.cardImageUrl ? (
+                  <>
+                    <img
+                      src={live.cardImageUrl}
                       alt={live.title}
                       className="w-full h-full object-cover"
                     />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Play className="h-12 w-12 text-muted-foreground" />
+                    {/* Radio icon overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                        <Radio className="h-5 w-5 text-white" />
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-              
-              {live.bannerImageUrl && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground block mb-2">Banner Image</label>
-                  <div 
-                    className="relative w-full md:w-64 aspect-[21/9] rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setLightboxImage(live.bannerImageUrl!)}
-                  >
-                    <img 
-                      src={live.bannerImageUrl} 
-                      alt={`${live.title} banner`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Live Stream Info */}
-            <div className="flex-1 space-y-5">
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
-                <p className="text-sm">{live.label}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Schedule Date</p>
-                  <div className="text-sm flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    <div>
-                      <p>{new Date(live.scheduleDate).toLocaleDateString("en-US")}</p>
-                      <p className="text-muted-foreground">
-                        {new Date(live.scheduleDate).toLocaleTimeString("en-US", { 
-                          hour: "2-digit", 
-                          minute: "2-digit" 
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Status</p>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
-                      {live.enabled ? "Enabled" : "Disabled"}
-                    </span>
-                    {live.isPublished && (
-                      <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
-                        Published
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {live.releaseYear && (
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Release Year</p>
-                    <p className="text-sm">{live.releaseYear}</p>
-                  </div>
+                  </>
+                ) : (
+                  <Radio className="h-8 w-8 text-muted-foreground/50" />
                 )}
-                {live.ageRating && (
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Age Rating</p>
-                    <p className="text-sm">{live.ageRating}</p>
+                {/* Live indicator */}
+                {live.available && (
+                  <div className="absolute top-2 left-2 flex items-center gap-1 bg-red-600 text-white text-xs px-2 py-1 rounded-full">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                    LIVE
                   </div>
                 )}
               </div>
 
-              {live.badge && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Badge</p>
-                  <p className="text-sm">{live.badge}</p>
-                </div>
-              )}
-
-              {live.genre && live.genre.length > 0 && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Genres</p>
-                  <p className="text-sm">
-                    {live.genre.join(", ")}
-                  </p>
-                </div>
-              )}
-
-              {live.streamUrl && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Stream URL</p>
-                  <p className="text-sm text-muted-foreground font-mono text-xs break-all bg-muted/50 p-2 rounded">
-                    {live.streamUrl}
-                  </p>
-                </div>
-              )}
-
-              {live.description && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Description</p>
-                  <p className="text-sm bg-muted/50 p-3 rounded-md">{live.description}</p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Created At</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(live.createdAt).toLocaleString("en-US")}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Updated At</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(live.updatedAt).toLocaleString("en-US")}
-                  </p>
-                </div>
+              {/* Live Info */}
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl font-bold text-white">
+                  {live.title}
+                </h1>
+                <span className={cn(
+                  "inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium border",
+                  getStatusStyle()
+                )}>
+                  {getStatusLabel()}
+                </span>
+                {live.badge && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-[#153A8A]/20 text-[#4a90d9] border border-[#153A8A]/30">
+                    {live.badge}
+                  </span>
+                )}
               </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                {live.releaseYear || "Live Stream"}
+              </p>
             </div>
+
+            {/* Edit Button */}
+            <Button
+              onClick={handleEdit}
+              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg px-6 h-10 mt-20"
+            >
+              Edit
+            </Button>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
-      {/* Live Stream Player Card (if embed exists) */}
-      {live.playerEmbed && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Play className="h-5 w-5" />
-              Live Stream
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative w-full aspect-video bg-muted rounded-lg overflow-hidden">
-              <div 
-                className="w-full h-full"
-                dangerouslySetInnerHTML={{ __html: live.playerEmbed }}
-              />
+      {/* Tabs - outside the card */}
+      <div className="border-b border-[#1f1f1f]">
+        <div className="flex gap-0">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                activeTab === tab.id
+                  ? "text-white"
+                  : "text-muted-foreground hover:text-white/80"
+              )}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === "overview" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              {/* Left Column - Description & Genres */}
+              <div className="flex-1 space-y-8">
+                {/* Description */}
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
+                    {live.description || "No description available."}
+                  </p>
+                </div>
+
+                {/* Genres */}
+                {live.genre && live.genre.length > 0 && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {live.genre.map((genre, index) => (
+                        <div
+                          key={index}
+                          className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]"
+                        >
+                          <span className="text-xs font-medium text-white/50">{genre}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column - Info Cards */}
+              <div className="w-64 space-y-6">
+                {/* Age Rating */}
+                {live.ageRating && (
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-bold text-muted-foreground">{live.ageRating}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">Age Rating</p>
+                      <p className="text-xs text-muted-foreground">{live.ageRating}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Lightbox Modal */}
-      {lightboxImage && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setLightboxImage(null)}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 right-4 text-white hover:bg-white/20"
-            onClick={() => setLightboxImage(null)}
-          >
-            <X className="h-6 w-6" />
-          </Button>
-          <img 
-            src={lightboxImage} 
-            alt="Enlarged view"
-            className="max-w-full max-h-full object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
+      {activeTab === "details" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Technical Details</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Stream URL */}
+              {live.streamUrl && (
+                <div className="col-span-2">
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Stream URL</p>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
+                    <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <code className="text-xs text-white/60 break-all">{live.streamUrl}</code>
+                  </div>
+                </div>
+              )}
+
+              {/* Release Year */}
+              {live.releaseYear && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Release Year</p>
+                  <p className="text-sm text-white">{live.releaseYear}</p>
+                </div>
+              )}
+
+              {/* Label */}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Label</p>
+                <p className="text-sm text-white">{live.label}</p>
+              </div>
+
+              {/* Created At */}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Created At</p>
+                <p className="text-sm text-white">{formatDateTime(live.createdAt)}</p>
+              </div>
+
+              {/* Updated At */}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Updated At</p>
+                <p className="text-sm text-white">{formatDateTime(live.updatedAt)}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
+
+      {activeTab === "stats" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Statistics</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Peak Viewers */}
+              <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                    <Users className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm font-medium text-muted-foreground">Peak Viewers</p>
+                </div>
+                <p className="text-3xl font-bold text-white">{(live.viewers || 0).toLocaleString()}</p>
+              </div>
+
+              {/* Total Views */}
+              <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                    <BarChart3 className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm font-medium text-muted-foreground">Total Views</p>
+                </div>
+                <p className="text-3xl font-bold text-white">{((live.viewers || 0) * 2.5).toLocaleString()}</p>
+              </div>
+
+              {/* Watch Time */}
+              <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm font-medium text-muted-foreground">Avg Watch Time</p>
+                </div>
+                <p className="text-3xl font-bold text-white">24:35</p>
+              </div>
+            </div>
+
+            {!live.viewers && (
+              <div className="text-center py-8">
+                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">Statistics will be available after the stream starts.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {activeTab === "media" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Media Assets</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Card Image */}
+              {live.cardImageUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Card Image</p>
+                  <div
+                    className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setLightboxImage(live.cardImageUrl!)}
+                  >
+                    <img
+                      src={live.cardImageUrl}
+                      alt="Card"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Banner Image */}
+              {live.bannerImageUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Banner Image</p>
+                  <div
+                    className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setLightboxImage(live.bannerImageUrl!)}
+                  >
+                    <img
+                      src={live.bannerImageUrl}
+                      alt="Banner"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {!live.cardImageUrl && !live.bannerImageUrl && (
+              <div className="text-center py-12">
+                <Radio className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No media assets uploaded yet.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Image Lightbox */}
+      <Dialog open={!!lightboxImage} onOpenChange={() => setLightboxImage(null)}>
+        <DialogContent className="max-w-4xl p-0 bg-black/95 border-0">
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 z-10 text-white hover:bg-white/20"
+              onClick={() => setLightboxImage(null)}
+            >
+              <X className="h-6 w-6" />
+            </Button>
+            {lightboxImage && (
+              <img
+                src={lightboxImage}
+                alt="Full size preview"
+                className="w-full h-auto max-h-[90vh] object-contain"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
-  );
+  )
 }

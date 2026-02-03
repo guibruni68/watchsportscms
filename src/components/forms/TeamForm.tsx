@@ -35,6 +35,8 @@ const teamSchema = z.object({
   country: z.string().optional(),
   city: z.string().optional(),
   stadiumId: z.string().optional(),
+  presidentName: z.string().optional(),
+  teamType: z.string().optional(),
   enabled: z.boolean(),
   agentesRelacionados: z.array(z.object({
     id: z.string(),
@@ -58,6 +60,13 @@ const mockStadiums = [
   { id: "3", name: "Old Trafford", city: "Manchester", country: "United Kingdom" },
 ]
 
+// Team types
+const teamTypes = [
+  { value: "futebol", label: "Futebol" },
+  { value: "futsal", label: "Futsal" },
+  { value: "futebol_feminino", label: "Futebol Feminino" },
+]
+
 export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -79,6 +88,8 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
       country: initialData?.country || "",
       city: initialData?.city || "",
       stadiumId: initialData?.stadiumId || "",
+      presidentName: initialData?.presidentName || "",
+      teamType: initialData?.teamType || "",
       enabled: initialData?.enabled ?? true,
       agentesRelacionados: initialData?.agentesRelacionados || [],
     },
@@ -264,30 +275,73 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="stadiumId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Stadium</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="stadiumId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Stadium</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a stadium" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {mockStadiums.map((stadium) => (
+                                <SelectItem key={stadium.id} value={stadium.id}>
+                                  {stadium.name} - {stadium.city}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="presidentName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>President Name</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a stadium" />
-                            </SelectTrigger>
+                            <Input placeholder="Ex: John Smith" {...field} />
                           </FormControl>
-                          <SelectContent>
-                            {mockStadiums.map((stadium) => (
-                              <SelectItem key={stadium.id} value={stadium.id}>
-                                {stadium.name} - {stadium.city}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="teamType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Team Type</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select team type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {teamTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value}>
+                                  {type.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}

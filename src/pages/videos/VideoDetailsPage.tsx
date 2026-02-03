@@ -1,391 +1,465 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, Tag, Calendar, Play, X } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils";
+import { useState, useEffect } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { ArrowLeft, Clock, Play, Tag, X, Link2 } from "lucide-react"
+import { toast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 
 interface Video {
-  id: string;
-  title: string;
-  description: string;
-  label: "VOD" | "LIVE";
-  releaseYear?: number;
-  scheduleDate: string;
-  isPublished: boolean;
-  badge?: "NEW" | "NEW EPISODES" | "SOON";
-  cardImageUrl?: string;
-  bannerImageUrl?: string;
-  streamUrl?: string;
-  ageRating?: string;
-  createdAt: string;
-  updatedAt: string;
-  enabled: boolean;
-  // Legacy fields for list page compatibility
-  genre?: string[];
-  tags?: string[];
-  views?: number;
-  duration?: string;
-  available?: boolean;
-  publishDate?: string;
-  coverImage?: string;
-  videoUrl?: string;
+  id: string
+  title: string
+  description: string
+  label: "VOD" | "LIVE"
+  releaseYear?: number
+  scheduleDate: string
+  isPublished: boolean
+  badge?: "NEW" | "NEW EPISODES" | "SOON"
+  cardImageUrl?: string
+  bannerImageUrl?: string
+  streamUrl?: string
+  ageRating?: string
+  createdAt: string
+  updatedAt: string
+  enabled: boolean
+  genre?: string[]
+  tags?: string[]
+  views?: number
+  duration?: string
+  available?: boolean
+  publishDate?: string
 }
 
-// Mock data - updated with new structure
+// Mock data
 const mockVideos: Video[] = [
   {
     id: "1",
-    title: "Gols da vitória por 3x1 contra o Rival FC",
-    description: "Melhores momentos da partida válida pelo campeonato estadual",
+    title: "Buzzer Beater: Vitória épica no último segundo",
+    description: "Os melhores momentos da vitória dramática com cesta no estouro do cronômetro. Uma partida emocionante que ficará marcada na história do time.",
     label: "VOD",
     releaseYear: 2024,
     scheduleDate: "2024-01-15T20:30:00",
     isPublished: true,
     badge: "NEW",
-    cardImageUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400",
-    bannerImageUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1200",
-    streamUrl: "https://example.com/stream1",
-    ageRating: "12+",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/04542e4202afd169555c7c2693804706a2fa64e5.png",
+    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/04542e4202afd169555c7c2693804706a2fa64e5.png",
+    streamUrl: "https://example.com/stream/buzzer-beater",
+    ageRating: "L",
     createdAt: "2024-01-10T10:00:00",
     updatedAt: "2024-01-15T20:30:00",
     enabled: true,
-    // Legacy fields for list compatibility
     genre: ["Goals and Highlights", "Best Moments"],
-    tags: ["gols", "vitória", "campeonato"],
-    publishDate: "2024-01-15T20:30:00",
+    tags: ["buzzer beater", "vitória", "playoffs"],
     views: 15420,
     duration: "05:32",
     available: true
   },
   {
     id: "2",
-    title: "Entrevista com novo atacante contratado",
-    description: "Primeiro bate-papo com o jogador que chegou para reforçar o ataque",
+    title: "Triple-Double histórico do armador",
+    description: "Reveja a performance incrível com pontos, assistências e rebotes. O armador entregou uma atuação memorável.",
     label: "VOD",
     releaseYear: 2024,
     scheduleDate: "2025-12-15T14:00:00",
     isPublished: false,
     badge: "SOON",
-    cardImageUrl: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400",
-    bannerImageUrl: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200",
-    streamUrl: "https://example.com/stream2",
+    cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/1d986d6d01b285b9919ce7999ac9e722c4840aaf.png",
+    bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/curitibawatchersCards/1d986d6d01b285b9919ce7999ac9e722c4840aaf.png",
+    streamUrl: "https://example.com/stream/triple-double",
     ageRating: "L",
     createdAt: "2024-01-05T09:00:00",
     updatedAt: "2024-01-12T10:00:00",
     enabled: false,
-    // Legacy fields for list compatibility
     genre: ["Interviews", "Backstage"],
-    tags: ["entrevista", "contratação", "atacante"],
-    publishDate: "2025-12-15T14:00:00",
+    tags: ["triple-double", "armador", "recorde"],
     views: 8931,
     duration: "12:18",
     available: false
   },
-  {
-    id: "3",
-    title: "Bastidores do treino tático",
-    description: "Como o time se prepara taticamente para os próximos jogos",
-    label: "VOD",
-    releaseYear: 2024,
-    scheduleDate: "2024-01-10T16:45:00",
-    isPublished: true,
-    cardImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400",
-    bannerImageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200",
-    streamUrl: "https://example.com/stream3",
-    ageRating: "L",
-    createdAt: "2024-01-08T08:00:00",
-    updatedAt: "2024-01-10T16:45:00",
-    enabled: false,
-    // Legacy fields for list compatibility
-    genre: ["Behind the Scenes"],
-    tags: ["treino", "tática", "preparação"],
-    publishDate: "2024-01-10T16:45:00",
-    views: 5672,
-    duration: "08:15",
-    available: false
-  },
-];
+]
+
+type TabType = "overview" | "details" | "media"
 
 export default function VideoDetailsPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [video, setVideo] = useState<Video | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const [video, setVideo] = useState<Video | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<TabType>("overview")
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+
+  // Format datetime
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!id) return;
+      if (!id) return
 
       try {
-        // Mock API call - replace with actual API
-        const videoData = mockVideos.find(v => v.id === id);
-        
+        const videoData = mockVideos.find(v => v.id === id)
+
         if (!videoData) {
-          throw new Error("Video not found");
+          throw new Error("Video not found")
         }
-        
-        setVideo(videoData);
+
+        setVideo(videoData)
       } catch (error) {
         toast({
           title: "Error",
           description: "Error loading video data.",
           variant: "destructive",
-        });
-        navigate('/videos');
+        })
+        navigate('/videos')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchData();
-  }, [id, navigate]);
+    fetchData()
+  }, [id, navigate])
 
   const handleEdit = () => {
-    navigate(`/videos/edit/${id}`);
-  };
+    navigate(`/videos/edit/${id}`)
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-muted-foreground">Loading...</div>
       </div>
-    );
+    )
   }
 
   if (!video) {
-    return null;
+    return null
+  }
+
+  const tabs: { id: TabType; label: string }[] = [
+    { id: "overview", label: "Overview" },
+    { id: "details", label: "Details" },
+    { id: "media", label: "Media" }
+  ]
+
+  const getStatusLabel = () => {
+    if (!video.enabled) return "Disabled"
+    if (!video.isPublished) return "Draft"
+    const now = new Date()
+    const scheduleDate = new Date(video.scheduleDate)
+    if (scheduleDate > now) return "Scheduled"
+    return "Published"
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/videos')}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Videos
-          </Button>
-        </div>
-        <Button onClick={handleEdit} className="gap-2">
-          <Edit className="h-4 w-4" />
-          Edit Video
-        </Button>
-      </div>
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/videos")}
+        className="text-muted-foreground hover:text-foreground gap-2 px-0"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Videos
+      </Button>
 
-      {/* Video Details Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl flex items-center gap-2">
-            <Play className="h-6 w-6" />
-            {video.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Video Cover */}
-            <div className="flex-shrink-0 space-y-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-2">Card Image</label>
-                <div 
-                  className="relative w-full md:w-64 aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
-                  onClick={() => video.cardImageUrl && setLightboxImage(video.cardImageUrl)}
-                >
-                  {video.cardImageUrl ? (
-                    <img 
-                      src={video.cardImageUrl} 
+      {/* Header Card */}
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
+        {/* Top banner bar */}
+        <div className="h-28 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d]" />
+
+        {/* Header Content */}
+        <div className="px-7 pb-7 -mt-14">
+          <div className="flex items-start justify-between">
+            {/* Left Section: Thumbnail + Info */}
+            <div className="flex flex-col">
+              {/* Video Thumbnail */}
+              <div className="w-[200px] h-[120px] rounded-2xl bg-[#1a1a1a] overflow-hidden flex items-center justify-center shadow-lg mb-4 relative">
+                {video.cardImageUrl ? (
+                  <>
+                    <img
+                      src={video.cardImageUrl}
                       alt={video.title}
                       className="w-full h-full object-cover"
                     />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Play className="h-12 w-12 text-muted-foreground" />
+                    {/* Play button overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                        <Play className="h-5 w-5 text-white fill-white" />
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-              
-              {video.bannerImageUrl && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground block mb-2">Banner Image</label>
-                  <div 
-                    className="relative w-full md:w-64 aspect-[21/9] rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setLightboxImage(video.bannerImageUrl!)}
-                  >
-                    <img 
-                      src={video.bannerImageUrl} 
-                      alt={`${video.title} banner`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Video Info */}
-            <div className="flex-1 space-y-5">
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
-                <p className="text-sm">{video.label}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Schedule Date</p>
-                  <p className="text-sm">
-                    {new Date(video.scheduleDate).toLocaleDateString("en-US")}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Status</p>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
-                      {video.enabled ? "Enabled" : "Disabled"}
-                    </span>
-                    {video.isPublished && (
-                      <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
-                        Published
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {video.releaseYear && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Release Year</label>
-                    <div className="text-sm">{video.releaseYear}</div>
-                  </div>
-                )}
-                {video.ageRating && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Age Rating</label>
-                    <p className="text-sm">{video.ageRating}</p>
-                  </div>
+                  </>
+                ) : (
+                  <Play className="h-8 w-8 text-muted-foreground/50" />
                 )}
               </div>
 
-              {video.badge && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Badge</label>
-                  <p className="text-sm">{video.badge}</p>
-                </div>
-              )}
-
-            {video.scheduleDate && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Schedule Date</p>
-                    <div className="text-sm flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(video.scheduleDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric"
-                      })}
-                    </div>
-                  </div>
-                </div>
-            )}
-
-              {video.genre && video.genre.length > 0 && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Genres</p>
-                  <p className="text-sm">
-                    {video.genre.join(", ")}
-                  </p>
-                </div>
-              )}
-
-              {video.streamUrl && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Stream URL</p>
-                  <p className="text-sm text-muted-foreground font-mono text-xs break-all bg-muted/50 p-2 rounded">
-                    {video.streamUrl}
-                  </p>
-                </div>
-              )}
-
-              {video.description && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Description</p>
-                  <p className="text-sm bg-muted/50 p-3 rounded-md">{video.description}</p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Created At</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(video.createdAt).toLocaleString("en-US")}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Updated At</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(video.updatedAt).toLocaleString("en-US")}
-                  </p>
-                </div>
+              {/* Video Info */}
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl font-bold text-white">
+                  {video.title}
+                </h1>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                  {getStatusLabel()}
+                </span>
+                {video.badge && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-[#153A8A]/20 text-[#4a90d9] border border-[#153A8A]/30">
+                    {video.badge}
+                  </span>
+                )}
               </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                {video.releaseYear || "Video"}
+              </p>
             </div>
+
+            {/* Edit Button */}
+            <Button
+              onClick={handleEdit}
+              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg px-6 h-10 mt-20"
+            >
+              Edit
+            </Button>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
-      {/* Video Player Card (Optional - if video URL exists) */}
-      {video.videoUrl && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Play className="h-5 w-5" />
-              Video Preview
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative w-full aspect-video bg-muted rounded-lg overflow-hidden">
-              <video 
-                src={video.videoUrl} 
-                controls 
-                className="w-full h-full"
-              >
-                Your browser does not support the video tag.
-              </video>
+      {/* Tabs - outside the card */}
+      <div className="border-b border-[#1f1f1f]">
+        <div className="flex gap-0">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                activeTab === tab.id
+                  ? "text-white"
+                  : "text-muted-foreground hover:text-white/80"
+              )}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === "overview" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              {/* Left Column - Description & Tags */}
+              <div className="flex-1 space-y-8">
+                {/* Description */}
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
+                    {video.description || "No description available."}
+                  </p>
+                </div>
+
+                {/* Genres */}
+                {video.genre && video.genre.length > 0 && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {video.genre.map((genre, index) => (
+                        <div
+                          key={index}
+                          className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]"
+                        >
+                          <span className="text-xs font-medium text-white/50">{genre}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tags */}
+                {video.tags && video.tags.length > 0 && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {video.tags.map((tag, index) => (
+                        <div
+                          key={index}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#1a1a1a] border border-[#262626]"
+                        >
+                          <Tag className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs text-white/60">{tag}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column - Info Cards */}
+              <div className="w-64 space-y-6">
+                {/* Duration */}
+                {video.duration && (
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
+                      <Clock className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">Duration</p>
+                      <p className="text-xs text-muted-foreground">{video.duration}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Age Rating */}
+                {video.ageRating && (
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-bold text-muted-foreground">{video.ageRating}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">Age Rating</p>
+                      <p className="text-xs text-muted-foreground">{video.ageRating}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Lightbox Modal */}
-      {lightboxImage && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setLightboxImage(null)}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 right-4 text-white hover:bg-white/20"
-            onClick={() => setLightboxImage(null)}
-          >
-            <X className="h-6 w-6" />
-          </Button>
-          <img 
-            src={lightboxImage} 
-            alt="Enlarged view"
-            className="max-w-full max-h-full object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
+      {activeTab === "details" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Technical Details</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Stream URL */}
+              {video.streamUrl && (
+                <div className="col-span-2">
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Stream URL</p>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
+                    <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <code className="text-xs text-white/60 break-all">{video.streamUrl}</code>
+                  </div>
+                </div>
+              )}
+
+              {/* Release Year */}
+              {video.releaseYear && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Release Year</p>
+                  <p className="text-sm text-white">{video.releaseYear}</p>
+                </div>
+              )}
+
+              {/* Label */}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Label</p>
+                <p className="text-sm text-white">{video.label}</p>
+              </div>
+
+              {/* Created At */}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Created At</p>
+                <p className="text-sm text-white">{formatDateTime(video.createdAt)}</p>
+              </div>
+
+              {/* Updated At */}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Updated At</p>
+                <p className="text-sm text-white">{formatDateTime(video.updatedAt)}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
+
+      {activeTab === "media" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Media Assets</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Card Image */}
+              {video.cardImageUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Card Image</p>
+                  <div
+                    className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setLightboxImage(video.cardImageUrl!)}
+                  >
+                    <img
+                      src={video.cardImageUrl}
+                      alt="Card"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Banner Image */}
+              {video.bannerImageUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Banner Image</p>
+                  <div
+                    className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setLightboxImage(video.bannerImageUrl!)}
+                  >
+                    <img
+                      src={video.bannerImageUrl}
+                      alt="Banner"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {!video.cardImageUrl && !video.bannerImageUrl && (
+              <div className="text-center py-12">
+                <Play className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No media assets uploaded yet.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Image Lightbox */}
+      <Dialog open={!!lightboxImage} onOpenChange={() => setLightboxImage(null)}>
+        <DialogContent className="max-w-4xl p-0 bg-black/95 border-0">
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 z-10 text-white hover:bg-white/20"
+              onClick={() => setLightboxImage(null)}
+            >
+              <X className="h-6 w-6" />
+            </Button>
+            {lightboxImage && (
+              <img
+                src={lightboxImage}
+                alt="Full size preview"
+                className="w-full h-auto max-h-[90vh] object-contain"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
-  );
+  )
 }

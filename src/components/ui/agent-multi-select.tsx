@@ -292,41 +292,41 @@ export function AgentMultiSelect({
               Clear all
             </Button>
           </div>
-          <div className="space-y-2">
-            {value.map((agent, index) => (
-              <div
-                key={`${agent.id}-${index}`}
-                className="flex items-center justify-between p-3 bg-background border rounded-md hover:border-primary/50 transition-colors"
-              >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {agent.type === "agent" ? (
-                    <User className="h-4 w-4 text-muted-foreground shrink-0" />
-                  ) : (
-                    <Users className="h-4 w-4 text-muted-foreground shrink-0" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {agent.name}
-                      {agent.number && (
-                        <span className="text-muted-foreground ml-1">
-                          #{agent.number}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemove(agent.id)}
-                  className="h-8 w-8 p-0 text-destructive hover:text-destructive shrink-0"
+          <div className="max-h-[280px] overflow-y-auto space-y-2">
+              {value.map((agent, index) => (
+                <div
+                  key={`${agent.id}-${index}`}
+                  className="flex items-center justify-between p-3 bg-background border rounded-md hover:border-primary/50 transition-colors"
                 >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {agent.type === "agent" ? (
+                      <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                    ) : (
+                      <Users className="h-4 w-4 text-muted-foreground shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {agent.name}
+                        {agent.number && (
+                          <span className="text-muted-foreground ml-1">
+                            #{agent.number}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemove(agent.id)}
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive shrink-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
         </div>
       )}
     </div>

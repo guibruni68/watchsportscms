@@ -1,27 +1,31 @@
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Eye, Edit, Trash2, BarChart3 } from "lucide-react"
+import { MoreHorizontal, Eye, Edit, Trash2, BarChart3, Users } from "lucide-react"
 
 interface ActionDropdownProps {
   onView?: () => void
   onEdit?: () => void
   onDelete?: () => void
   onStats?: () => void
+  onManageSquad?: () => void
   showView?: boolean
   showEdit?: boolean
   showDelete?: boolean
   showStats?: boolean
+  showManageSquad?: boolean
 }
 
-export function ActionDropdown({ 
-  onView, 
-  onEdit, 
+export function ActionDropdown({
+  onView,
+  onEdit,
   onDelete,
   onStats,
-  showView = true, 
-  showEdit = true, 
+  onManageSquad,
+  showView = true,
+  showEdit = true,
   showDelete = true,
-  showStats = false
+  showStats = false,
+  showManageSquad = false
 }: ActionDropdownProps) {
   return (
     <DropdownMenu>
@@ -48,6 +52,12 @@ export function ActionDropdown({
           <DropdownMenuItem onClick={onStats} className="py-2 px-3 cursor-pointer">
             <BarChart3 className="mr-3 h-4 w-4" />
             Stats
+          </DropdownMenuItem>
+        )}
+        {showManageSquad && onManageSquad && (
+          <DropdownMenuItem onClick={onManageSquad} className="py-2 px-3 cursor-pointer">
+            <Users className="mr-3 h-4 w-4" />
+            Manage Squad
           </DropdownMenuItem>
         )}
         {showDelete && onDelete && (
