@@ -18,6 +18,7 @@ import TeamDetailsPage from "./pages/teams/TeamDetailsPage";
 import CompetitionsPage from "./pages/competitions/CompetitionsPage";
 import CompetitionDetailsPage from "./pages/competitions/CompetitionDetailsPage";
 import SeasonDetailsPage from "./pages/competitions/SeasonDetailsPage";
+import SeasonsPage from "./pages/seasons/SeasonsPage";
 import AgentDetailsPage from "./pages/agents/AgentDetailsPage";
 import PlayersPage from "./pages/players/PlayersPage";
 import PlayerDetailsPage from "./pages/players/PlayerDetailsPage";
@@ -39,7 +40,6 @@ import BannersPage from "./pages/banners/BannersPage";
 import BannerDetailsPage from "./pages/banners/BannerDetailsPage";
 import NewBannerPage from "./pages/banners/NewBannerPage";
 import EditBannerPage from "./pages/banners/EditBannerPage";
-import CustomizationPage from "./pages/customization/CustomizationPage";
 import AdsPage from "./pages/ads/AdsPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
 import CollectionsPage from "./pages/collections/CollectionsPage";
@@ -49,6 +49,7 @@ import CollectionDetailsPage from "./pages/collections/CollectionDetailsPage";
 import AuthPage from "./pages/AuthPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import NotFound from "./pages/NotFound";
+import HelpPage from "./pages/help/HelpPage";
 
 const queryClient = new QueryClient();
 
@@ -165,6 +166,16 @@ const App = () => (
                 <SeasonDetailsPage />
               </ProtectedRoute>
             } />
+            <Route path="/seasons" element={
+              <ProtectedRoute>
+                <SeasonsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/seasons/:id" element={
+              <ProtectedRoute>
+                <SeasonDetailsPage />
+              </ProtectedRoute>
+            } />
             <Route path="/championships/:id" element={
               <ProtectedRoute>
                 <ChampionshipDetailsPage />
@@ -235,11 +246,6 @@ const App = () => (
                 <EditBannerPage />
               </ProtectedRoute>
             } />
-            <Route path="/customization" element={
-              <ProtectedRoute>
-                <CustomizationPage />
-              </ProtectedRoute>
-            } />
             <Route path="/ads" element={
               <ProtectedRoute>
                 <AdsPage />
@@ -271,6 +277,12 @@ const App = () => (
               </ProtectedRoute>
             } />
             
+            <Route path="/help" element={
+              <ProtectedRoute>
+                <HelpPage />
+              </ProtectedRoute>
+            } />
+
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
