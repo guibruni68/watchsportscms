@@ -18,7 +18,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select"
 import { FileUpload } from "@/components/ui/file-upload"
 import { mockPlayers, mockTeams } from "@/data/mockData"
-import { ArrowLeft, CalendarIcon, X, Save } from "lucide-react"
+import { ArrowLeft, CalendarIcon, X, Save, Info, ImageIcon, Users } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -161,9 +161,9 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
-              <TabsTrigger value="members">Members</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
+              <TabsTrigger value="members" className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />Members</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}

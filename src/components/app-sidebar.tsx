@@ -1,4 +1,4 @@
-import { Home, Video, Radio, Users, Calendar, Newspaper, BarChart3, Layout, Megaphone, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, UserCircle, Trophy, Briefcase, MapPin, Scale, LifeBuoy } from "lucide-react";
+import { Home, Video, Radio, Users, Calendar, Newspaper, BarChart3, Layout, Megaphone, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, UserCircle, Trophy, Briefcase, MapPin, Scale, HelpCircle } from "lucide-react";
 import teamLogo from "/assets/mosca.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
@@ -224,23 +224,21 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Help & Support Button */}
-        <div className="px-3 pb-3">
-          <div className="border-t border-border/50 pt-3">
-            <SidebarMenuButton
-              asChild
-              className={`h-12 px-4 w-full ${getNavClassName("/help")}`}
-            >
-              <NavLink to="/help">
-                <LifeBuoy className="h-4 w-4 text-muted-foreground mr-3" />
-                <span>Ajuda & Suporte</span>
-              </NavLink>
-            </SidebarMenuButton>
-          </div>
-        </div>
-
         {/* User Profile Footer */}
         <SidebarFooter className="mt-auto border-t border-border/50">
+          {/* Help & Support Micro Banner */}
+          <div className="px-3 pt-4 pb-1">
+            <NavLink to="/help" className="block">
+              <div className={`rounded-xl border p-4 transition-colors cursor-pointer ${isActive("/help") ? "border-border bg-muted/40" : "border-border/50 bg-card hover:bg-muted/30"}`}>
+                <HelpCircle className="h-5 w-5 text-muted-foreground mb-3" />
+                <p className="text-sm font-medium text-foreground mb-1">Need Help?</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Browse guides and answers to your questions.
+                </p>
+              </div>
+            </NavLink>
+          </div>
+          <div className="border-t border-border/50 mx-4" />
           <div className="p-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

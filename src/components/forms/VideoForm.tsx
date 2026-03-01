@@ -18,7 +18,7 @@ import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres, mockPlayers, mockTeams } from "@/data/mockData";
-import { ArrowLeft, CalendarIcon } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Info, ImageIcon, Globe, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -128,10 +128,10 @@ export function VideoForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="content" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="content">Information</TabsTrigger>
-              <TabsTrigger value="images">Media</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
-              <TabsTrigger value="agents">Agents</TabsTrigger>
+              <TabsTrigger value="content" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="images" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
+              <TabsTrigger value="agents" className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />Agents</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}

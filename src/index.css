@@ -18,11 +18,11 @@
     --popover: 0 0% 5%;
     --popover-foreground: 0 0% 98%;
 
-    /* Primary brand colors - Custom blue */
-    --primary: 221 74% 31%;
+    /* Primary brand colors - Watch.LIVE */
+    --primary: 338 100% 34%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 221 74% 25%;
-    --primary-glow: 221 74% 60%;
+    --primary-hover: 338 100% 24%;
+    --primary-glow: 325 84% 33%;
 
     /* Secondary colors - Custom green */
     --secondary: 149 75% 22%;
@@ -46,22 +46,22 @@
     /* Border and input */
     --border: 0 0% 12%;
     --input: 0 0% 12%;
-    --ring: 221 74% 31%;
+    --ring: 338 100% 34%;
 
     /* Component variables */
     --radius: 0.75rem;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(221 74% 31%), hsl(221 74% 45%));
+    --gradient-primary: linear-gradient(135deg, hsl(338 100% 34%), hsl(325 84% 33%));
     --gradient-secondary: linear-gradient(135deg, hsl(149 75% 22%), hsl(149 75% 35%));
-    --gradient-hero: linear-gradient(135deg, hsl(221 74% 31%) 0%, hsl(221 74% 45%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(338 100% 34%) 0%, hsl(325 84% 33%) 100%);
     --gradient-card: linear-gradient(135deg, hsl(0 0% 5%) 0%, hsl(0 0% 8%) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(221 74% 31% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(221 74% 31% / 0.4), 0 2px 4px -1px hsl(221 74% 31% / 0.2);
-    --shadow-lg: 0 10px 15px -3px hsl(221 74% 31% / 0.4), 0 4px 6px -2px hsl(221 74% 31% / 0.2);
-    --shadow-glow: 0 0 20px hsl(221 74% 60% / 0.6);
+    --shadow-sm: 0 1px 2px 0 hsl(338 100% 34% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(338 100% 34% / 0.4), 0 2px 4px -1px hsl(338 100% 34% / 0.2);
+    --shadow-lg: 0 10px 15px -3px hsl(338 100% 34% / 0.4), 0 4px 6px -2px hsl(338 100% 34% / 0.2);
+    --shadow-glow: 0 0 20px hsl(338 100% 34% / 0.6);
 
     /* Animation variables */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -69,12 +69,12 @@
 
     --sidebar-background: 0 0% 3%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 221 74% 31%;
+    --sidebar-primary: 338 100% 34%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 8%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 0 0% 12%;
-    --sidebar-ring: 221 74% 31%;
+    --sidebar-ring: 338 100% 34%;
   }
 
 }

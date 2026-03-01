@@ -115,11 +115,11 @@ export default function AdsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-secondary text-secondary-foreground">Ativo</Badge>
+        return <Badge variant="success">Ativo</Badge>
       case "paused":
-        return <Badge className="bg-warning text-warning-foreground">Pausado</Badge>
+        return <Badge variant="warning">Pausado</Badge>
       case "scheduled":
-        return <Badge className="bg-primary text-primary-foreground">Agendado</Badge>
+        return <Badge variant="info">Agendado</Badge>
       case "ended":
         return <Badge variant="outline">Finalizado</Badge>
       default:
@@ -379,15 +379,14 @@ export default function AdsPage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-sm text-foreground">{position.name}</h4>
-                      <Badge 
-                        variant={position.availability === "Disponível" ? "default" : "outline"}
-                        className={`text-xs ${
-                          position.availability === "Disponível" 
-                            ? "bg-secondary text-secondary-foreground" 
-                            : position.availability === "Ocupado" 
-                              ? "bg-warning text-warning-foreground"
-                              : ""
-                        }`}
+                      <Badge
+                        variant={
+                          position.availability === "Disponível"
+                            ? "success"
+                            : position.availability === "Ocupado"
+                              ? "warning"
+                              : "outline"
+                        }
                       >
                         {position.availability}
                       </Badge>

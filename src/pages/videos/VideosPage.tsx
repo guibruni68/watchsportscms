@@ -419,9 +419,9 @@ export default function VideosPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                  <Badge variant="neutral">
                     {getContentStatus(video.available, video.publishDate)}
-                  </span>
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   <ActionDropdown

@@ -320,9 +320,9 @@ export default function AgentsPage({ agentType }: AgentsPageProps) {
                     <span className="capitalize">{agent.label}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {agent.enabled ? "Enabled" : "Disabled"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

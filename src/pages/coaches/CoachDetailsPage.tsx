@@ -1,10 +1,11 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Calendar, Globe, Briefcase, X } from "lucide-react"
+import { ArrowLeft, Calendar, Globe, Briefcase, X, Info, ImageIcon } from "lucide-react"
 import { CoachForm } from "@/components/forms/CoachForm"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 interface Coach {
@@ -72,9 +73,9 @@ export default function CoachDetailsPage() {
     )
   }
 
-  const tabs: { id: TabType; label: string }[] = [
-    { id: "overview", label: "Overview" },
-    { id: "media", label: "Media" }
+  const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
+    { id: "overview", label: "Overview", icon: Info },
+    { id: "media", label: "Media", icon: ImageIcon }
   ]
 
   return (
@@ -120,9 +121,9 @@ export default function CoachDetailsPage() {
                 <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
                   {coach.name}
                 </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                <Badge variant="neutral">
                   {coach.enabled ? "Enabled" : "Disabled"}
-                </span>
+                </Badge>
               </div>
               <p className="text-sm text-muted-foreground mt-1">
                 {coach.role || "Coach"}
@@ -132,7 +133,7 @@ export default function CoachDetailsPage() {
             {/* Edit Button */}
             <Button
               onClick={() => setShowEditForm(true)}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-[10px] px-6 h-10 mt-16"
+              className="bg-primary hover:bg-primary/80 text-white rounded-[10px] px-6 h-10 mt-16"
             >
               Edit
             </Button>
@@ -148,15 +149,16 @@ export default function CoachDetailsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
                 activeTab === tab.id
                   ? "text-white"
                   : "text-muted-foreground hover:text-white/80"
               )}
             >
+              <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
               )}
             </button>
           ))}

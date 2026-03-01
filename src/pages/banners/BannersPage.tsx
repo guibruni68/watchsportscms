@@ -145,9 +145,9 @@ export default function BannersPage() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                      <Badge variant="neutral">
                         {status}
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <ActionDropdown

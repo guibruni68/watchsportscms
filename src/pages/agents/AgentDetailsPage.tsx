@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Edit, Calendar, Globe } from "lucide-react"
+import { ArrowLeft, Edit, Calendar, Globe, Info } from "lucide-react"
 import { AgentForm } from "@/components/forms/AgentForm"
 import { mockGenres } from "@/data/mockData"
 import { X } from "lucide-react"
@@ -147,7 +147,7 @@ export default function AgentDetailsPage({ agentType }: AgentDetailsPageProps) {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="pb-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="overview" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Overview</TabsTrigger>
           </TabsList>
         </div>
 

@@ -215,9 +215,9 @@ export default function ShelvesPage() {
                     <span className="text-sm">{getDomainLabel(shelf.domain)}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {shelf.enabled ? "Active" : "Inactive"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

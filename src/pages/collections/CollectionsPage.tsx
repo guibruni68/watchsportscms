@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Play } from "lucide-react";
 import { ActionDropdown } from "@/components/ui/action-dropdown";
 import { SearchFilters } from "@/components/ui/search-filters";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { mockCatalogues } from "@/data/mockCatalogues";
 import { getContentStatus } from "@/lib/utils";
@@ -216,9 +217,9 @@ export default function CollectionsPage() {
                     <div className="text-sm">{new Date(collection.published_at).toLocaleDateString("en-US")}</div>
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {getContentStatus(collection.status, collection.published_at)}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <ActionDropdown

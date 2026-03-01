@@ -79,7 +79,7 @@ export function ManageSquadDialog({
           </Button>
           <Button
             onClick={handleSave}
-            className="bg-[#153A8A] hover:bg-[#1a4aa8]"
+            className="bg-primary hover:bg-primary/80"
           >
             Save Squad
           </Button>

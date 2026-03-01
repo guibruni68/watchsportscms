@@ -4,6 +4,14 @@ import {
   Upload, Eye, CalendarDays, Globe, Users, ShieldCheck
 } from "lucide-react"
 
+export interface HelpStep {
+  step: number
+  title: string
+  description: string
+  imageUrl?: string
+  tip?: string
+}
+
 export interface HelpFaq {
   question: string
   answer: string
@@ -16,6 +24,7 @@ export interface HelpTopic {
   icon: LucideIcon
   faqs: HelpFaq[]
   featured?: boolean
+  steps?: HelpStep[]
 }
 
 export interface HelpCategory {
@@ -28,13 +37,13 @@ export interface HelpCategory {
 export const helpCategories: HelpCategory[] = [
   {
     id: "getting-started",
-    label: "Primeiros Passos",
+    label: "Getting Started",
     icon: BookOpen,
     topics: [
       {
         id: "gs-overview",
-        title: "Visão geral do CMS",
-        description: "Entenda o que é possível fazer nesta plataforma.",
+        title: "CMS Overview",
+        description: "Understand what you can do on this platform.",
         icon: Eye,
         featured: true,
         faqs: [
@@ -54,8 +63,8 @@ export const helpCategories: HelpCategory[] = [
       },
       {
         id: "gs-navigation",
-        title: "Navegando pelo sistema",
-        description: "Como usar o menu lateral e encontrar o que precisa.",
+        title: "Navigating the system",
+        description: "How to use the sidebar and find what you need.",
         icon: Settings,
         faqs: [
           {
@@ -70,8 +79,8 @@ export const helpCategories: HelpCategory[] = [
       },
       {
         id: "gs-account",
-        title: "Conta e perfil",
-        description: "Configurações da sua conta de acesso.",
+        title: "Account & Profile",
+        description: "Your account settings and profile.",
         icon: KeyRound,
         faqs: [
           {
@@ -88,13 +97,13 @@ export const helpCategories: HelpCategory[] = [
   },
   {
     id: "videos",
-    label: "Vídeos (VOD)",
+    label: "Videos (VOD)",
     icon: PlayCircle,
     topics: [
       {
         id: "vod-upload",
-        title: "Publicando um vídeo",
-        description: "Passo a passo para criar e publicar um VOD.",
+        title: "Publishing a video",
+        description: "Step-by-step guide to create and publish a VOD.",
         icon: Upload,
         featured: true,
         faqs: [
@@ -110,12 +119,74 @@ export const helpCategories: HelpCategory[] = [
             question: "Posso agendar a publicação de um vídeo?",
             answer: "Sim. Defina a 'Schedule Date' para uma data futura e ative a opção 'Published'. O vídeo será exibido automaticamente a partir dessa data."
           }
+        ],
+        steps: [
+          {
+            step: 1,
+            title: "Acesse a seção de Vídeos",
+            description: "No menu lateral esquerdo, localize e clique em \"Content\" para expandir o grupo. Em seguida, clique em \"Videos (VOD)\". Você verá a listagem de todos os vídeos cadastrados na plataforma.",
+            imageUrl: "/tutorial-placeholder.png",
+            tip: "Se o grupo Content não estiver visível, role o menu para baixo. Todos os grupos são colapsáveis — clique no nome do grupo para expandir."
+          },
+          {
+            step: 2,
+            title: "Clique em \"Novo Vídeo\"",
+            description: "No canto superior direito da página de vídeos, clique no botão \"Novo Vídeo\" (ou \"+ New Video\"). Isso abrirá o formulário de criação dividido em abas.",
+            imageUrl: "/tutorial-placeholder.png"
+          },
+          {
+            step: 3,
+            title: "Preencha as informações básicas — aba Information",
+            description: "Na aba \"Information\" (ativa por padrão), preencha os campos obrigatórios: Título (o nome que aparecerá no app), Descrição (um resumo do conteúdo do vídeo), Ano de lançamento e Classificação etária. Esses campos são exibidos diretamente para o usuário final.",
+            imageUrl: "/tutorial-placeholder.png",
+            tip: "Escreva o título de forma clara e direta. Evite usar maiúsculas em excesso ou caracteres especiais que possam causar problemas de exibição."
+          },
+          {
+            step: 4,
+            title: "Configure o stream — aba Details",
+            description: "Clique na aba \"Details\". No campo \"Stream URL\", cole a URL completa do arquivo de vídeo (formato HLS .m3u8 ou link direto de CDN). Sem este campo preenchido, o vídeo não poderá ser reproduzido pelos usuários. Você também pode definir um badge (ex: NEW, SOON) nesta aba.",
+            imageUrl: "/tutorial-placeholder.png",
+            tip: "Certifique-se de que a URL do stream seja acessível publicamente ou esteja na CDN configurada pela equipe técnica. URLs inválidas não causam erro ao salvar, mas o vídeo não reproduzirá no app."
+          },
+          {
+            step: 5,
+            title: "Faça upload das imagens — aba Media",
+            description: "Clique na aba \"Media\". Você verá dois slots de imagem: Card Image (imagem exibida nas prateleiras e listagens, proporção 2:3) e Banner Image (imagem de destaque na página do vídeo, proporção 16:9). Clique em cada slot e selecione o arquivo de imagem do seu computador.",
+            imageUrl: "/tutorial-placeholder.png",
+            tip: "Use imagens de alta resolução: mínimo 600×900px para o Card e 1920×1080px para o Banner. Formatos aceitos: JPG e PNG."
+          },
+          {
+            step: 6,
+            title: "Associe gêneros e agentes",
+            description: "Na aba \"Genres\", selecione um ou mais gêneros que categorizam o conteúdo (ex: Melhores Momentos, Entrevistas, Jogos Completos). Na aba \"Agents\", você pode associar os distribuidores ou parceiros responsáveis por este vídeo. Ambas as abas são opcionais, mas ajudam na organização e busca.",
+            imageUrl: "/tutorial-placeholder.png"
+          },
+          {
+            step: 7,
+            title: "Defina o status de publicação",
+            description: "Localize o toggle \"Published\" e o campo \"Schedule Date\". Para disponibilizar o vídeo imediatamente, ative o toggle Published e deixe a Schedule Date em branco. Para agendar, defina a Schedule Date com uma data futura e ative o Published — o vídeo entrará automaticamente no ar na data e hora definidas.",
+            imageUrl: "/tutorial-placeholder.png",
+            tip: "Um vídeo com Published ativado e Schedule Date no futuro ficará no estado \"Scheduled\" — visível na listagem do CMS, mas ainda não exibido para os usuários finais."
+          },
+          {
+            step: 8,
+            title: "Verifique se o vídeo está habilitado",
+            description: "Certifique-se de que o toggle \"Enabled\" está ativo. Um vídeo desabilitado não aparece para os usuários independentemente do status de publicação. Use este campo para pausar temporariamente um vídeo sem precisar despublicá-lo.",
+            imageUrl: "/tutorial-placeholder.png"
+          },
+          {
+            step: 9,
+            title: "Salve o vídeo",
+            description: "Clique no botão \"Salvar\" no rodapé do formulário. Uma notificação de confirmação aparecerá indicando que o vídeo foi salvo com sucesso. Você será redirecionado para a listagem de vídeos, onde o novo vídeo aparecerá com seu status atualizado.",
+            imageUrl: "/tutorial-placeholder.png",
+            tip: "Após salvar, clique no vídeo na listagem para abrir sua página de detalhes e verificar todas as informações, editar ou acompanhar visualizações."
+          }
         ]
       },
       {
         id: "vod-genres",
-        title: "Gêneros e tags",
-        description: "Como categorizar seu conteúdo de vídeo.",
+        title: "Genres and tags",
+        description: "How to categorize your video content.",
         icon: Eye,
         faqs: [
           {
@@ -130,8 +201,8 @@ export const helpCategories: HelpCategory[] = [
       },
       {
         id: "vod-status",
-        title: "Status e visibilidade",
-        description: "Entenda os diferentes estados de um vídeo.",
+        title: "Status and visibility",
+        description: "Understand the different states of a video.",
         icon: Settings,
         faqs: [
           {
@@ -153,8 +224,8 @@ export const helpCategories: HelpCategory[] = [
     topics: [
       {
         id: "lives-create",
-        title: "Criando uma live",
-        description: "Configure e publique transmissões ao vivo.",
+        title: "Creating a live stream",
+        description: "Set up and publish live streams.",
         icon: Radio,
         featured: true,
         faqs: [
@@ -170,8 +241,8 @@ export const helpCategories: HelpCategory[] = [
       },
       {
         id: "lives-stream",
-        title: "Configurando o stream",
-        description: "URLs, agentes e configurações técnicas.",
+        title: "Stream configuration",
+        description: "Stream URLs, agents and technical settings.",
         icon: Settings,
         faqs: [
           {
@@ -188,13 +259,13 @@ export const helpCategories: HelpCategory[] = [
   },
   {
     id: "content",
-    label: "Conteúdo & Publicação",
+    label: "Content & Publishing",
     icon: Globe,
     topics: [
       {
         id: "content-shelves",
-        title: "Prateleiras e Pages",
-        description: "Organize como o conteúdo aparece no app.",
+        title: "Shelves and Pages",
+        description: "Organize how content appears in the app.",
         icon: Globe,
         featured: true,
         faqs: [
@@ -211,7 +282,7 @@ export const helpCategories: HelpCategory[] = [
       {
         id: "content-banners",
         title: "Banners",
-        description: "Gerencie banners promocionais e destaques.",
+        description: "Manage promotional banners and highlights.",
         icon: Eye,
         faqs: [
           {
@@ -228,13 +299,13 @@ export const helpCategories: HelpCategory[] = [
   },
   {
     id: "sports",
-    label: "Competições & Times",
+    label: "Competitions & Teams",
     icon: Trophy,
     topics: [
       {
         id: "sports-competition",
-        title: "Criando uma competição",
-        description: "Configure campeonatos e torneios.",
+        title: "Creating a competition",
+        description: "Set up championships and tournaments.",
         icon: Trophy,
         featured: true,
         faqs: [
@@ -250,8 +321,8 @@ export const helpCategories: HelpCategory[] = [
       },
       {
         id: "sports-teams",
-        title: "Times e jogadores",
-        description: "Gerencie elencos e informações dos times.",
+        title: "Teams and players",
+        description: "Manage rosters and team information.",
         icon: Users,
         faqs: [
           {
@@ -268,13 +339,13 @@ export const helpCategories: HelpCategory[] = [
   },
   {
     id: "account",
-    label: "Conta & Acesso",
+    label: "Account & Access",
     icon: ShieldCheck,
     topics: [
       {
         id: "account-access",
-        title: "Permissões e acesso",
-        description: "Entenda níveis de acesso e segurança.",
+        title: "Permissions and access",
+        description: "Understand access levels and security.",
         icon: ShieldCheck,
         featured: true,
         faqs: [
@@ -290,8 +361,8 @@ export const helpCategories: HelpCategory[] = [
       },
       {
         id: "account-security",
-        title: "Segurança da conta",
-        description: "Boas práticas para proteger seu acesso.",
+        title: "Account security",
+        description: "Best practices to protect your account.",
         icon: KeyRound,
         faqs: [
           {

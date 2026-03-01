@@ -1,4 +1,4 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -8,9 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ArrowLeft, User, X, Search, MapPin, Calendar, Building2, Briefcase, Trophy } from "lucide-react"
+import { ArrowLeft, User, X, Search, MapPin, Calendar, Building2, Briefcase, Trophy, Info, Users, ImageIcon } from "lucide-react"
 import { TeamForm } from "@/components/forms/TeamForm"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 const teamTypeLabels: Record<string, string> = {
@@ -225,10 +226,10 @@ export default function TeamDetailsPage() {
     )
   }
 
-  const tabs: { id: TabType; label: string; count?: number }[] = [
-    { id: "overview", label: "Overview" },
-    { id: "members", label: "Members", count: agents.length },
-    { id: "media", label: "Media" }
+  const tabs: { id: TabType; label: string; icon: React.ElementType; count?: number }[] = [
+    { id: "overview", label: "Overview", icon: Info },
+    { id: "members", label: "Members", icon: Users, count: agents.length },
+    { id: "media", label: "Media", icon: ImageIcon }
   ]
 
   // Format date as DD/MM/YYYY
@@ -278,9 +279,9 @@ export default function TeamDetailsPage() {
                 <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
                   {team.name}
                 </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                <Badge variant="neutral">
                   {team.enabled ? "Enabled" : "Disabled"}
-                </span>
+                </Badge>
               </div>
               <p className="text-sm text-muted-foreground mt-1">
                 {team.acronym}
@@ -290,7 +291,7 @@ export default function TeamDetailsPage() {
             {/* Edit Button */}
             <Button
               onClick={() => setShowEditForm(true)}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-[10px] px-6 h-10 mt-16"
+              className="bg-primary hover:bg-primary/80 text-white rounded-[10px] px-6 h-10 mt-16"
             >
               Edit
             </Button>
@@ -306,16 +307,17 @@ export default function TeamDetailsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
                 activeTab === tab.id
                   ? "text-white"
                   : "text-muted-foreground hover:text-white/80"
               )}
             >
+              <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
               {tab.count !== undefined && ` (${tab.count})`}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
               )}
             </button>
           ))}
@@ -445,7 +447,7 @@ export default function TeamDetailsPage() {
             <Button
               size="sm"
               onClick={() => setShowAddAgentDialog(true)}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg"
+              className="bg-primary hover:bg-primary/80 text-white rounded-lg"
             >
               <User className="h-4 w-4 mr-2" />
               Add Member
@@ -480,9 +482,9 @@ export default function TeamDetailsPage() {
                     </TableCell>
                     <TableCell className="text-muted-foreground">{agent.nationality}</TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                      <Badge variant="neutral">
                         {agent.enabled ? "Enabled" : "Disabled"}
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <ActionDropdown
@@ -605,9 +607,9 @@ export default function TeamDetailsPage() {
                         <p className="font-medium text-white">{agent.name}</p>
                         <p className="text-sm text-muted-foreground capitalize">{agent.label} • {agent.nationality}</p>
                       </div>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                      <Badge variant="neutral">
                         {agent.enabled ? "Enabled" : "Disabled"}
-                      </span>
+                      </Badge>
                     </div>
                   ))
                 )}
@@ -630,7 +632,7 @@ export default function TeamDetailsPage() {
             <Button
               onClick={handleAddAgents}
               disabled={selectedAgentIds.length === 0}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8]"
+              className="bg-primary hover:bg-primary/80"
             >
               Add {selectedAgentIds.length > 0 && `(${selectedAgentIds.length})`} Member{selectedAgentIds.length !== 1 ? 's' : ''}
             </Button>

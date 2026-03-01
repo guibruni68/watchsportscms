@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, CalendarIcon, GripVertical, X } from "lucide-react";
+import { ArrowLeft, CalendarIcon, GripVertical, X, Info, Settings2, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -262,9 +262,9 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="configuration">Configuration</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="configuration" className="flex items-center gap-1.5"><Settings2 className="h-3.5 w-3.5" />Configuration</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}

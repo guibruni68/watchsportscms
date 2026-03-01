@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { 
+import {
   ArrowLeft,
   Trophy,
   Calendar,
@@ -17,7 +17,12 @@ import {
   Target,
   TrendingUp,
   Activity,
-  Star
+  Star,
+  Info,
+  ListOrdered,
+  CalendarDays,
+  BarChart3,
+  Radio
 } from "lucide-react"
 
 export default function ChampionshipDetailsPage() {
@@ -139,8 +144,8 @@ export default function ChampionshipDetailsPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="outline">{championship.type}</Badge>
-                  <Badge className="bg-secondary text-secondary-foreground">{championship.phase}</Badge>
-                  <Badge className="bg-primary text-primary-foreground">Nossa posição: {championship.ourPosition}º</Badge>
+                  <Badge variant="warning">{championship.phase}</Badge>
+                  <Badge variant="info">Nossa posição: {championship.ourPosition}º</Badge>
                 </div>
               </div>
             </div>
@@ -180,11 +185,11 @@ export default function ChampionshipDetailsPage() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="pb-4">
           <TabsList>
-            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-            <TabsTrigger value="classification">Classificação</TabsTrigger>
-            <TabsTrigger value="matches">Partidas</TabsTrigger>
-            <TabsTrigger value="statistics">Estatísticas</TabsTrigger>
-            <TabsTrigger value="live">Transmissões</TabsTrigger>
+            <TabsTrigger value="overview" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Visão Geral</TabsTrigger>
+            <TabsTrigger value="classification" className="flex items-center gap-1.5"><ListOrdered className="h-3.5 w-3.5" />Classificação</TabsTrigger>
+            <TabsTrigger value="matches" className="flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" />Partidas</TabsTrigger>
+            <TabsTrigger value="statistics" className="flex items-center gap-1.5"><BarChart3 className="h-3.5 w-3.5" />Estatísticas</TabsTrigger>
+            <TabsTrigger value="live" className="flex items-center gap-1.5"><Radio className="h-3.5 w-3.5" />Transmissões</TabsTrigger>
           </TabsList>
         </div>
 
@@ -219,7 +224,7 @@ export default function ChampionshipDetailsPage() {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Status</p>
-                    <Badge className="bg-primary text-primary-foreground">Em andamento</Badge>
+                    <Badge variant="success">Em andamento</Badge>
                   </div>
                 </div>
               </CardContent>

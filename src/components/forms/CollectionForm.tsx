@@ -18,7 +18,7 @@ import { toast } from "@/hooks/use-toast";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres } from "@/data/mockData";
-import { ArrowLeft, Plus, X, Upload, CalendarIcon, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, X, Upload, CalendarIcon, Trash2, Info, Globe, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ContentMultiSelect, ContentItem } from "@/components/ui/content-multi-select";
 import { cn } from "@/lib/utils";
@@ -252,9 +252,9 @@ export default function CollectionForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
-              <TabsTrigger value="seasons">Seasons</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
+              <TabsTrigger value="seasons" className="flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" />Seasons</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}

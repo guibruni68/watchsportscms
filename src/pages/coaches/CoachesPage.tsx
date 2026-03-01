@@ -9,6 +9,8 @@ import { ListPagination } from "@/components/ui/list-controls"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { CoachForm } from "@/components/forms/CoachForm"
+import { Badge } from "@/components/ui/badge"
+import { getEnabledBadgeVariant, getEnabledLabel } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 interface Coach {
@@ -147,6 +149,7 @@ export default function CoachesPage() {
     })
   }
 
+
   if (showForm) {
     return (
       <CoachForm
@@ -251,9 +254,9 @@ export default function CoachesPage() {
                   <TableCell>{coach.role || "-"}</TableCell>
                   <TableCell>{coach.nationality}</TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {coach.enabled ? "Enabled" : "Disabled"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

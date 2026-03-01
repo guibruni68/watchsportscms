@@ -59,11 +59,11 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left Side - Welcome Section */}
-      <div className="hidden lg:flex relative bg-cover bg-center bg-no-repeat flex-col justify-between p-12 text-white" style={{ backgroundImage: "url('/lovable-uploads/Backgroundfnb.png')" }}>
+      <div className="hidden lg:flex relative bg-cover bg-center bg-no-repeat flex-col justify-between p-12 text-white" style={{ backgroundImage: "url('/assets/Backgroundfnb.png')" }}>
         <div className="absolute inset-0 bg-black/30 -z-10" />
         <div className="flex items-center gap-3">
           <img 
-            src="/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png" 
+            src="/assets/178882be-43bc-492f-ab1c-036716604bc1.png" 
             alt="Logo" 
             className="h-12"
           />

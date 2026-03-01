@@ -219,9 +219,9 @@ export default function CollectionDetailsPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">Status</label>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {getContentStatus(collection.enabled ?? collection.available, collection.scheduleDate || collection.published_at)}
-                    </span>
+                    </Badge>
                   </div>
                 </div>
                 {collection.badge && (
@@ -360,9 +360,9 @@ export default function CollectionDetailsPage() {
                                 </div>
                               </TableCell>
                               <TableCell>
-                                <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
+                                <Badge variant="neutral">
                                   {getContentStatus(content.available, content.published_at)}
-                                </span>
+                                </Badge>
                               </TableCell>
                             </TableRow>
                           ))}

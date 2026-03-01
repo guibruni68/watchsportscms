@@ -16,7 +16,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select"
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select"
 import { FileUpload } from "@/components/ui/file-upload"
-import { ArrowLeft, CalendarIcon, X } from "lucide-react"
+import { ArrowLeft, CalendarIcon, X, Info, ImageIcon, Tag, Globe } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -127,10 +127,10 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
-              <TabsTrigger value="classification">Classification</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
+              <TabsTrigger value="classification" className="flex items-center gap-1.5"><Tag className="h-3.5 w-3.5" />Classification</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}

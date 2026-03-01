@@ -92,27 +92,27 @@ export default function NewsDetailPage() {
       {/* Status Badges */}
       <div className="flex flex-wrap gap-2 items-center">
         {newsItem.highlighted && (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+          <Badge variant="neutral">
             Highlighted
-          </span>
+          </Badge>
         )}
         {newsItem.published ? (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+          <Badge variant="neutral">
             Published
-          </span>
+          </Badge>
         ) : (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+          <Badge variant="neutral">
             Draft
-          </span>
+          </Badge>
         )}
         {newsItem.enabled ? (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+          <Badge variant="neutral">
             Enabled
-          </span>
+          </Badge>
         ) : (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+          <Badge variant="neutral">
             Disabled
-          </span>
+          </Badge>
         )}
         {newsGenres.length > 0 && (
           <span className="text-sm text-muted-foreground">

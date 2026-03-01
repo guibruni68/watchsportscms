@@ -1,11 +1,18 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3 } from "lucide-react"
+import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3, Info, Settings2, ImageIcon } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+
+interface Agent {
+  id: string
+  name: string
+  type: "agent" | "group"
+}
 
 interface Live {
   id: string
@@ -29,6 +36,7 @@ interface Live {
   available?: boolean
   viewers?: number
   playerEmbed?: string
+  agentesRelacionados?: Agent[]
 }
 
 // Mock data
@@ -53,7 +61,12 @@ const mockLives: Live[] = [
     dateTime: "2025-12-20T16:00:00",
     genre: ["Championship", "Final"],
     available: false,
-    viewers: 0
+    viewers: 0,
+    agentesRelacionados: [
+      { id: "player1", name: "Carlos Eduardo", type: "agent" },
+      { id: "player2", name: "André Silva", type: "agent" },
+      { id: "team1", name: "Watch Thunders", type: "group" }
+    ]
   },
   {
     id: "2",
@@ -175,11 +188,11 @@ export default function LiveDetailsPage() {
     return null
   }
 
-  const tabs: { id: TabType; label: string }[] = [
-    { id: "overview", label: "Overview" },
-    { id: "details", label: "Details" },
-    { id: "stats", label: "Stats" },
-    { id: "media", label: "Media" }
+  const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
+    { id: "overview", label: "Overview", icon: Info },
+    { id: "details", label: "Details", icon: Settings2 },
+    { id: "stats", label: "Stats", icon: BarChart3 },
+    { id: "media", label: "Media", icon: ImageIcon }
   ]
 
   const getStatusLabel = () => {
@@ -192,11 +205,11 @@ export default function LiveDetailsPage() {
     return "Ended"
   }
 
-  const getStatusStyle = () => {
+  const getStatusVariant = (): "destructive" | "info" | "outline" => {
     const status = getStatusLabel()
-    if (status === "Live Now") return "bg-red-500/20 text-red-500 border-red-500/30"
-    if (status === "Scheduled") return "bg-blue-500/20 text-blue-500 border-blue-500/30"
-    return "bg-muted text-muted-foreground border-border"
+    if (status === "Live Now") return "destructive"
+    if (status === "Scheduled") return "info"
+    return "outline"
   }
 
   return (
@@ -255,16 +268,13 @@ export default function LiveDetailsPage() {
                 <h1 className="text-xl font-bold text-white">
                   {live.title}
                 </h1>
-                <span className={cn(
-                  "inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium border",
-                  getStatusStyle()
-                )}>
+                <Badge variant={getStatusVariant()}>
                   {getStatusLabel()}
-                </span>
+                </Badge>
                 {live.badge && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-[#153A8A]/20 text-[#4a90d9] border border-[#153A8A]/30">
+                  <Badge variant="info">
                     {live.badge}
-                  </span>
+                  </Badge>
                 )}
               </div>
               <p className="text-sm text-muted-foreground mt-1">
@@ -275,7 +285,7 @@ export default function LiveDetailsPage() {
             {/* Edit Button */}
             <Button
               onClick={handleEdit}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg px-6 h-10 mt-20"
+              className="bg-primary hover:bg-primary/80 text-white rounded-lg px-6 h-10 mt-20"
             >
               Edit
             </Button>
@@ -291,15 +301,16 @@ export default function LiveDetailsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
                 activeTab === tab.id
                   ? "text-white"
                   : "text-muted-foreground hover:text-white/80"
               )}
             >
+              <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
               )}
             </button>
           ))}
@@ -332,6 +343,28 @@ export default function LiveDetailsPage() {
                           className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]"
                         >
                           <span className="text-xs font-medium text-white/50">{genre}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Agents */}
+                {live.agentesRelacionados && live.agentesRelacionados.length > 0 && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Related Agents</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {live.agentesRelacionados.map((agent) => (
+                        <div
+                          key={agent.id}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]"
+                        >
+                          <span className={cn(
+                            "w-2 h-2 rounded-full",
+                            agent.type === "agent" ? "bg-blue-500" : "bg-green-500"
+                          )} />
+                          <span className="text-xs font-medium text-white/50">{agent.name}</span>
+                          <span className="text-[10px] text-white/30 uppercase">{agent.type === "agent" ? "Player" : "Team"}</span>
                         </div>
                       ))}
                     </div>

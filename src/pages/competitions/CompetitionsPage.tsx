@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate, Link } from "react-router-dom"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { getEnabledBadgeVariant, getEnabledLabel } from "@/lib/utils"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Trophy, Plus, Loader2 } from "lucide-react"
 import { ListPagination } from "@/components/ui/list-controls"
@@ -201,6 +202,7 @@ export default function CompetitionsPage() {
     }
   }
 
+
   if (showForm) {
     return (
       <CompetitionForm
@@ -310,9 +312,9 @@ export default function CompetitionsPage() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {competition.enabled ? "Enabled" : "Disabled"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

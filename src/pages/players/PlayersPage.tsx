@@ -9,6 +9,8 @@ import { ListPagination } from "@/components/ui/list-controls"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { PlayerForm } from "@/components/forms/PlayerForm"
+import { Badge } from "@/components/ui/badge"
+import { getEnabledBadgeVariant, getEnabledLabel } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 interface Player {
@@ -159,6 +161,7 @@ export default function PlayersPage() {
     })
   }
 
+
   if (showForm) {
     return (
       <PlayerForm
@@ -263,9 +266,9 @@ export default function PlayersPage() {
                   <TableCell>{player.position || "-"}</TableCell>
                   <TableCell>{player.nationality}</TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {player.enabled ? "Enabled" : "Disabled"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

@@ -9,6 +9,8 @@ import { ListPagination } from "@/components/ui/list-controls"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { RefereeForm } from "@/components/forms/RefereeForm"
+import { Badge } from "@/components/ui/badge"
+import { getEnabledBadgeVariant, getEnabledLabel } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 interface Referee {
@@ -147,6 +149,7 @@ export default function RefereesPage() {
     })
   }
 
+
   if (showForm) {
     return (
       <RefereeForm
@@ -254,9 +257,9 @@ export default function RefereesPage() {
                   <TableCell>{referee.fullName}</TableCell>
                   <TableCell>{sportTypeLabels[referee.sportType] || referee.sportType}</TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {referee.enabled ? "Enabled" : "Disabled"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown

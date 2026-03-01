@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, GripVertical, X, Search } from "lucide-react";
+import { ArrowLeft, GripVertical, X, Search, Info, Layout } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -339,8 +339,8 @@ export function PageForm({ initialData, isEdit = false, onClose }: PageFormProps
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="shelves">Shelves</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="shelves" className="flex items-center gap-1.5"><Layout className="h-3.5 w-3.5" />Shelves</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}

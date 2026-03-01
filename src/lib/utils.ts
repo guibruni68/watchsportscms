@@ -36,15 +36,29 @@ export function getContentStatus(available: boolean, publishDate?: string | Date
  * @param status - The content status
  * @returns The appropriate badge variant
  */
-export function getStatusBadgeVariant(status: "Active" | "Inactive" | "Publishing"): "default" | "outline" | "secondary" {
+export function getStatusBadgeVariant(status: "Active" | "Inactive" | "Publishing"): "success" | "outline" | "warning" {
   switch (status) {
     case "Active":
-      return "default";
+      return "success";
     case "Publishing":
-      return "secondary";
+      return "warning";
     case "Inactive":
       return "outline";
     default:
       return "outline";
   }
+}
+
+/**
+ * Gets the badge variant for an enabled/disabled status
+ */
+export function getEnabledBadgeVariant(enabled: boolean): "success" | "outline" {
+  return enabled ? "success" : "outline";
+}
+
+/**
+ * Gets the label for an enabled/disabled status
+ */
+export function getEnabledLabel(enabled: boolean): string {
+  return enabled ? "Enabled" : "Disabled";
 }

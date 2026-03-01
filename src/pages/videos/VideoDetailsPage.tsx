@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Clock, Play, Tag, X, Link2 } from "lucide-react"
+import { ArrowLeft, Play, Tag, X, Link2, Info, Settings2, ImageIcon } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 interface Video {
@@ -144,10 +145,10 @@ export default function VideoDetailsPage() {
     return null
   }
 
-  const tabs: { id: TabType; label: string }[] = [
-    { id: "overview", label: "Overview" },
-    { id: "details", label: "Details" },
-    { id: "media", label: "Media" }
+  const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
+    { id: "overview", label: "Overview", icon: Info },
+    { id: "details", label: "Details", icon: Settings2 },
+    { id: "media", label: "Media", icon: ImageIcon }
   ]
 
   const getStatusLabel = () => {
@@ -208,13 +209,13 @@ export default function VideoDetailsPage() {
                 <h1 className="text-xl font-bold text-white">
                   {video.title}
                 </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                <Badge variant="neutral">
                   {getStatusLabel()}
-                </span>
+                </Badge>
                 {video.badge && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-[#153A8A]/20 text-[#4a90d9] border border-[#153A8A]/30">
+                  <Badge variant="info">
                     {video.badge}
-                  </span>
+                  </Badge>
                 )}
               </div>
               <p className="text-sm text-muted-foreground mt-1">
@@ -225,7 +226,7 @@ export default function VideoDetailsPage() {
             {/* Edit Button */}
             <Button
               onClick={handleEdit}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg px-6 h-10 mt-20"
+              className="bg-primary hover:bg-primary/80 text-white rounded-lg px-6 h-10 mt-20"
             >
               Edit
             </Button>
@@ -241,15 +242,16 @@ export default function VideoDetailsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
                 activeTab === tab.id
                   ? "text-white"
                   : "text-muted-foreground hover:text-white/80"
               )}
             >
+              <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
               )}
             </button>
           ))}
@@ -260,9 +262,7 @@ export default function VideoDetailsPage() {
       {activeTab === "overview" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
           <CardContent className="p-7">
-            <div className="flex gap-12">
-              {/* Left Column - Description & Tags */}
-              <div className="flex-1 space-y-8">
+            <div className="space-y-8">
                 {/* Description */}
                 <div>
                   <h3 className="text-base font-semibold text-white mb-4">Description</h3>
@@ -305,36 +305,22 @@ export default function VideoDetailsPage() {
                     </div>
                   </div>
                 )}
-              </div>
 
-              {/* Right Column - Info Cards */}
-              <div className="w-64 space-y-6">
                 {/* Duration */}
                 {video.duration && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
-                      <Clock className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Duration</p>
-                      <p className="text-xs text-muted-foreground">{video.duration}</p>
-                    </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Duration</p>
+                    <p className="text-base text-white">{video.duration}</p>
                   </div>
                 )}
 
                 {/* Age Rating */}
                 {video.ageRating && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-bold text-muted-foreground">{video.ageRating}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Age Rating</p>
-                      <p className="text-xs text-muted-foreground">{video.ageRating}</p>
-                    </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Age Rating</p>
+                    <p className="text-base text-white">{video.ageRating}</p>
                   </div>
                 )}
-              </div>
             </div>
           </CardContent>
         </Card>

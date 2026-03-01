@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Video, Radio, Newspaper, Search, Plus, X, CheckCircle2 } from "lucide-react";
+import { Video, Radio, Newspaper, Search, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -248,16 +248,12 @@ export function ContentMultiSelect({
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <div
                                   className={cn(
-                                    "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                    "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
                                     isSelected
                                       ? "border-primary bg-primary"
                                       : "border-muted-foreground/50"
                                   )}
-                                >
-                                  {isSelected && (
-                                    <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
-                                  )}
-                                </div>
+                                />
                                 {getTypeIcon("video")}
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium truncate">
@@ -291,16 +287,12 @@ export function ContentMultiSelect({
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <div
                                   className={cn(
-                                    "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                    "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
                                     isSelected
                                       ? "border-primary bg-primary"
                                       : "border-muted-foreground/50"
                                   )}
-                                >
-                                  {isSelected && (
-                                    <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
-                                  )}
-                                </div>
+                                />
                                 {getTypeIcon("live")}
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium truncate">
@@ -334,16 +326,12 @@ export function ContentMultiSelect({
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <div
                                   className={cn(
-                                    "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                    "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
                                     isSelected
                                       ? "border-primary bg-primary"
                                       : "border-muted-foreground/50"
                                   )}
-                                >
-                                  {isSelected && (
-                                    <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
-                                  )}
-                                </div>
+                                />
                                 {getTypeIcon("news")}
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium truncate">

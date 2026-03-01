@@ -135,7 +135,7 @@ export default function AnalyticsPage() {
     return <Play className="h-4 w-4 text-primary" />;
   };
   const getContentTypeBadge = (type: string) => {
-    return type === "live" ? <Badge className="bg-warning text-warning-foreground text-xs">AO VIVO</Badge> : <Badge variant="outline" className="text-xs">VOD</Badge>;
+    return type === "live" ? <Badge variant="destructive">AO VIVO</Badge> : <Badge variant="outline">VOD</Badge>;
   };
   return <div className="space-y-6 animate-fade-in">
       {/* Header */}
