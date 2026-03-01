@@ -1,5 +1,5 @@
-import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, UserCircle, Trophy, Briefcase, MapPin, Scale } from "lucide-react";
-import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
+import { Home, Video, Radio, Users, Calendar, Newspaper, BarChart3, Layout, Megaphone, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, UserCircle, Trophy, Briefcase, MapPin, Scale, LifeBuoy } from "lucide-react";
+import teamLogo from "/assets/mosca.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
 import { useGuestMode } from "@/hooks/useGuestMode";
@@ -44,6 +44,11 @@ const mainNavItems = [{
       icon: Trophy
     },
     {
+      title: "Seasons",
+      url: "/seasons",
+      icon: Calendar
+    },
+    {
       title: "Stadiums",
       url: "/stadiums",
       icon: MapPin
@@ -79,7 +84,7 @@ const mainNavItems = [{
       icon: Calendar
     }
   ]
-}, 
+},
 {
   title: "Pages & Shelves",
   icon: LayoutPanelTop,
@@ -87,7 +92,7 @@ const mainNavItems = [{
     {
       title: "Banners",
       url: "/banners",
-      icon: MonitorSpeaker
+      icon: Megaphone
     },
     {
       title: "Shelves",
@@ -97,37 +102,14 @@ const mainNavItems = [{
     {
       title: "Pages",
       url: "/pages",
-      icon: MonitorSpeaker
+      icon: LayoutPanelTop
     }
   ]
-}, 
+},
 {
   title: "Analytics",
   url: "/analytics",
   icon: BarChart3
-},
-{
-  title: "Ads Management",
-  url: "/advertising",
-  icon: Megaphone
-},
-{
-  title: "Subscriptions & Billing",
-  url: "/billing",
-  icon: DollarSign
-}, {
-  title: "Users Management",
-  url: "/users-management",
-  icon: UserCheck
-}];
-const settingsNavItems = [{
-  title: "Personalização",
-  url: "/customization",
-  icon: Palette
-}, {
-  title: "Configurações",
-  url: "/settings",
-  icon: Settings
 }];
 export function AppSidebar() {
   const location = useLocation();
@@ -189,9 +171,9 @@ export function AppSidebar() {
   return <Sidebar className="w-64">
       <SidebarContent className="bg-gradient-to-b from-card to-muted/20">
         {/* Logo Section */}
-        <div className="px-6 pt-6 pb-3 border-b border-border/50 flex justify-center">
-          <div className="flex items-center justify-center overflow-hidden">
-            <img src={teamLogo} alt="Logo do Clube" className="w-40 h-40 object-scale-down" />
+        <div className="px-4 pt-16 pb-[72px] border-b border-border/50 flex justify-center">
+          <div className="flex items-center justify-center overflow-hidden w-full">
+            <img src={teamLogo} alt="Logo do Clube" className="w-48 h-14 object-scale-down" />
           </div>
         </div>
 
@@ -241,6 +223,21 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Help & Support Button */}
+        <div className="px-3 pb-3">
+          <div className="border-t border-border/50 pt-3">
+            <SidebarMenuButton
+              asChild
+              className={`h-12 px-4 w-full ${getNavClassName("/help")}`}
+            >
+              <NavLink to="/help">
+                <LifeBuoy className="h-4 w-4 text-muted-foreground mr-3" />
+                <span>Ajuda & Suporte</span>
+              </NavLink>
+            </SidebarMenuButton>
+          </div>
+        </div>
 
         {/* User Profile Footer */}
         <SidebarFooter className="mt-auto border-t border-border/50">
