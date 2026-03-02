@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { Country } from 'country-state-city'
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const competitionSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -449,6 +450,7 @@ export function CompetitionForm({ initialData, isEdit = false, onClose }: Compet
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>
   )
 }

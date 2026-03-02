@@ -36,6 +36,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { TutorialButton } from "@/components/ui/tutorial-button";
 
 const shelfSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -516,9 +517,7 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
                                 )}
                               </div>
                             </FormControl>
-                            <FormDescription>
-                              Manually select items from the {watchDomain.toLowerCase()} domain and drag to reorder
-                            </FormDescription>
+
                             <FormMessage />
                           </FormItem>
                         );
@@ -811,6 +810,7 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
           </div>
         </form>
       </Form>
+      <TutorialButton />
     </div>
   );
 }

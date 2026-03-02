@@ -31,6 +31,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { PageShelf } from "@/types/page";
 import { Shelf } from "@/types/shelf";
+import { TutorialButton } from "@/components/ui/tutorial-button";
 
 const pageFormSchema = z.object({
   name: z.string().min(1, "Page name is required"),
@@ -427,6 +428,7 @@ export function PageForm({ initialData, isEdit = false, onClose }: PageFormProps
           </div>
         </form>
       </Form>
+      <TutorialButton />
     </div>
   );
 }

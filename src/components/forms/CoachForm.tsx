@@ -18,6 +18,7 @@ import { ArrowLeft, CalendarIcon, X, Info, ImageIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const coachSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -346,6 +347,7 @@ export function CoachForm({ initialData, isEdit = false, onClose }: CoachFormPro
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>
   )
 }

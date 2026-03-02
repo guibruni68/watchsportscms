@@ -19,6 +19,7 @@ import { GenreMultiSelect } from "@/components/ui/genre-multi-select"
 import { FileUpload } from "@/components/ui/file-upload"
 import { mockGenres } from "@/data/mockData"
 import { cn } from "@/lib/utils"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const agentSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -308,6 +309,7 @@ export function AgentForm({ initialData, isEdit = false, defaultLabel, onClose }
           </div>
         </DialogContent>
       </Dialog>
+      <TutorialButton />
     </div>
   )
 }

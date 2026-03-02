@@ -17,11 +17,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
-import { mockGenres, mockPlayers, mockTeams } from "@/data/mockData";
+import { mockGenres, getAgentOptions } from "@/data/mockData";
 import { ArrowLeft, CalendarIcon, Info, ImageIcon, Globe, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { TutorialButton } from "@/components/ui/tutorial-button";
 const videoSchema = z.object({
   titulo: z.string().min(1, "Title is required"),
   descricao: z.string().min(1, "Description is required"),
@@ -126,16 +127,16 @@ export function VideoForm({
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <Tabs defaultValue="content" className="w-full">
+          <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="content" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
-              <TabsTrigger value="images" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
-              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
               <TabsTrigger value="agents" className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />Agents</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
-            <TabsContent value="content">
+            <TabsContent value="information">
               <Card>
                 <CardHeader>
                   <CardTitle>Video Information</CardTitle>
@@ -229,7 +230,7 @@ export function VideoForm({
             </TabsContent>
 
             {/* Tab 2: Media */}
-            <TabsContent value="images">
+            <TabsContent value="media">
               <Card>
                 <CardHeader>
                   <CardTitle>Video Media</CardTitle>
@@ -274,7 +275,39 @@ export function VideoForm({
               </Card>
             </TabsContent>
 
-            {/* Tab 3: Publishing */}
+            {/* Tab 3: Agents */}
+            <TabsContent value="agents">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Related Agents</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="agentesRelacionados"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Agents</FormLabel>
+                        <FormControl>
+                          <AgentMultiSelect
+                            agents={getAgentOptions()}
+                            value={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Search and select agents..."
+                          />
+                        </FormControl>
+                        <p className="text-sm text-muted-foreground">
+                          Add agents (players, coaches, writers) related to this video content
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Tab 4: Publishing */}
             <TabsContent value="publishing">
               <Card>
                 <CardHeader>
@@ -343,39 +376,6 @@ export function VideoForm({
                 </CardContent>
               </Card>
             </TabsContent>
-
-            {/* Tab 4: Agents */}
-            <TabsContent value="agents">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Related Agents</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="agentesRelacionados"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Agents</FormLabel>
-                        <FormControl>
-                          <AgentMultiSelect
-                            value={field.value || []}
-                            onChange={field.onChange}
-                            players={mockPlayers}
-                            teams={mockTeams}
-                            placeholder="Search and select agents..."
-                          />
-                        </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Add agents (players, coaches, writers) related to this video content
-                        </p>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
           </Tabs>
 
           <div className="flex gap-4">
@@ -408,5 +408,6 @@ export function VideoForm({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>;
 }

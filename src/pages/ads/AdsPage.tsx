@@ -197,7 +197,7 @@ export default function AdsPage() {
                   {totalImpressions.toLocaleString()}
                 </p>
               </div>
-              <Eye className="h-6 w-6 text-primary" />
+              <Eye className="h-6 w-6 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
@@ -417,9 +417,9 @@ export default function AdsPage() {
                     {adCampaigns.filter(c => c.status === 'active').length}
                   </p>
                 </div>
-                <div className="p-3 rounded-lg bg-primary/10">
+                <div className="p-3 rounded-lg bg-muted/50">
                   <p className="text-muted-foreground mb-1">Meta do Mês</p>
-                  <p className="text-xl font-bold text-primary">R$ 5.000</p>
+                  <p className="text-xl font-bold text-foreground">R$ 5.000</p>
                 </div>
               </div>
               

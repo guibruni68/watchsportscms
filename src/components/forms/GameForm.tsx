@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { CalendarIcon, Clock, Save } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const gameSchema = z.object({
   homeTeamId: z.string().min(1, "Home team is required"),
@@ -381,6 +382,7 @@ export function GameForm({
           </form>
         </Form>
       </DialogContent>
+      <TutorialButton />
     </Dialog>
   )
 }

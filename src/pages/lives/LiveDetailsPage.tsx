@@ -3,10 +3,10 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3, Info, Settings2, ImageIcon } from "lucide-react"
+import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3, Info, Settings2, ImageIcon, AlertTriangle } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+import { ReportIssueDialog } from "@/components/dialogs/ReportIssueDialog"
 
 interface Agent {
   id: string
@@ -124,6 +124,7 @@ export default function LiveDetailsPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabType>("overview")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+  const [reportOpen, setReportOpen] = useState(false)
 
   // Check for tab param on mount
   useEffect(() => {
@@ -195,23 +196,6 @@ export default function LiveDetailsPage() {
     { id: "media", label: "Media", icon: ImageIcon }
   ]
 
-  const getStatusLabel = () => {
-    if (!live.enabled) return "Disabled"
-    if (!live.isPublished) return "Draft"
-    const now = new Date()
-    const scheduleDate = new Date(live.scheduleDate)
-    if (live.available) return "Live Now"
-    if (scheduleDate > now) return "Scheduled"
-    return "Ended"
-  }
-
-  const getStatusVariant = (): "destructive" | "info" | "outline" => {
-    const status = getStatusLabel()
-    if (status === "Live Now") return "destructive"
-    if (status === "Scheduled") return "info"
-    return "outline"
-  }
-
   return (
     <div className="space-y-6">
       {/* Back Button */}
@@ -268,27 +252,26 @@ export default function LiveDetailsPage() {
                 <h1 className="text-xl font-bold text-white">
                   {live.title}
                 </h1>
-                <Badge variant={getStatusVariant()}>
-                  {getStatusLabel()}
-                </Badge>
-                {live.badge && (
-                  <Badge variant="info">
-                    {live.badge}
-                  </Badge>
-                )}
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                {live.releaseYear || "Live Stream"}
-              </p>
             </div>
 
-            {/* Edit Button */}
-            <Button
-              onClick={handleEdit}
-              className="bg-primary hover:bg-primary/80 text-white rounded-lg px-6 h-10 mt-20"
-            >
-              Edit
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 mt-20">
+              <Button
+                variant="outline"
+                onClick={() => setReportOpen(true)}
+                className="gap-2"
+              >
+                <AlertTriangle className="h-4 w-4" />
+                Reportar Problema
+              </Button>
+              <Button
+                onClick={handleEdit}
+                className="bg-primary hover:bg-primary/80 text-white rounded-lg px-6 h-10"
+              >
+                Edit
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
@@ -372,18 +355,21 @@ export default function LiveDetailsPage() {
                 )}
               </div>
 
-              {/* Right Column - Info Cards */}
-              <div className="w-64 space-y-6">
+              {/* Right Column - Info */}
+              <div className="w-64 space-y-8">
+                {/* Release Year */}
+                {live.releaseYear && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Year</h3>
+                    <p className="text-sm text-white/80">{live.releaseYear}</p>
+                  </div>
+                )}
+
                 {/* Age Rating */}
                 {live.ageRating && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-bold text-muted-foreground">{live.ageRating}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Age Rating</p>
-                      <p className="text-xs text-muted-foreground">{live.ageRating}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Age Rating</h3>
+                    <p className="text-sm text-white/80">{live.ageRating}</p>
                   </div>
                 )}
               </div>
@@ -562,6 +548,14 @@ export default function LiveDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Report Issue Dialog */}
+      <ReportIssueDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        liveTitle={live.title}
+        liveId={live.id}
+      />
     </div>
   )
 }

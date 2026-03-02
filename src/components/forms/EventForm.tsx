@@ -16,6 +16,7 @@ import { ArrowLeft, CalendarIcon, X, Info, ImageIcon, Globe } from "lucide-react
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const eventSchema = z.object({
   title: z.string().min(1, "Event title is required"),
@@ -281,6 +282,7 @@ export function EventForm({ initialData, isEdit = false, onClose }: EventFormPro
           </div>
         </form>
       </Form>
+      <TutorialButton />
     </div>
   )
 }

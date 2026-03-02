@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Eye, Edit, Trash2, BarChart3, Users } from "lucide-react"
+import { MoreHorizontal, Eye, Edit, Trash2, BarChart3, Users, AlertTriangle } from "lucide-react"
 
 interface ActionDropdownProps {
   onView?: () => void
@@ -8,11 +8,13 @@ interface ActionDropdownProps {
   onDelete?: () => void
   onStats?: () => void
   onManageSquad?: () => void
+  onReport?: () => void
   showView?: boolean
   showEdit?: boolean
   showDelete?: boolean
   showStats?: boolean
   showManageSquad?: boolean
+  showReport?: boolean
 }
 
 export function ActionDropdown({
@@ -21,11 +23,13 @@ export function ActionDropdown({
   onDelete,
   onStats,
   onManageSquad,
+  onReport,
   showView = true,
   showEdit = true,
   showDelete = true,
   showStats = false,
-  showManageSquad = false
+  showManageSquad = false,
+  showReport = false
 }: ActionDropdownProps) {
   return (
     <DropdownMenu>
@@ -58,6 +62,12 @@ export function ActionDropdown({
           <DropdownMenuItem onClick={onManageSquad} className="py-2 px-3 cursor-pointer">
             <Users className="mr-3 h-4 w-4" />
             Manage Squad
+          </DropdownMenuItem>
+        )}
+        {showReport && onReport && (
+          <DropdownMenuItem onClick={onReport} className="py-2 px-3 cursor-pointer">
+            <AlertTriangle className="mr-3 h-4 w-4" />
+            Reportar Problema
           </DropdownMenuItem>
         )}
         {showDelete && onDelete && (

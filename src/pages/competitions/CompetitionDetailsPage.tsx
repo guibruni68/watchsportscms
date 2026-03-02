@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ArrowLeft, Calendar, Trophy, Users, X, Search, MapPin, Plus, Globe, ChevronRight, Info, ImageIcon } from "lucide-react"
+import { ArrowLeft, Calendar, Trophy, Users, X, Search, MapPin, Plus, ChevronRight, Info, ImageIcon } from "lucide-react"
 import { CompetitionForm } from "@/components/forms/CompetitionForm"
 import { SeasonForm } from "@/components/forms/SeasonForm"
 import { ManageSquadDialog } from "@/components/dialogs/ManageSquadDialog"
@@ -454,79 +454,47 @@ export default function CompetitionDetailsPage() {
       {/* Tab Content */}
       {activeTab === "overview" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="px-12 pt-12 pb-16">
-            <div className="flex justify-between gap-[140px]">
-              {/* Left Column - Description & Details */}
-              <div className="flex-1 space-y-4">
-                {/* Description */}
-                <div className="space-y-0">
-                  <p className="text-sm text-[#999999] leading-5">Description</p>
-                  <p className="text-base text-white leading-6 max-w-[603px]">
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              {/* Left Column */}
+              <div className="flex-1 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
                     {competition.description || "No description available."}
                   </p>
                 </div>
 
-                {/* Full Name */}
-                <div className="space-y-0 pt-4">
-                  <p className="text-sm text-[#999999] leading-5">Full Name</p>
-                  <p className="text-base text-white leading-6">{competition.name}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Full Name</h3>
+                  <p className="text-sm text-white/80">{competition.name}</p>
                 </div>
 
-                {/* Acronym */}
-                <div className="space-y-0">
-                  <p className="text-sm text-[#999999] leading-5">Acronym</p>
-                  <p className="text-base text-white leading-6">{competition.acronym}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Acronym</h3>
+                  <p className="text-sm text-white/80">{competition.acronym}</p>
                 </div>
               </div>
 
-              {/* Right Column - Info Cards */}
-              <div className="w-[189px] space-y-6">
-                {/* Country */}
+              {/* Right Column */}
+              <div className="w-64 space-y-8">
                 {competition.country && (
-                  <div className="flex items-center gap-[13px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Globe className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <p className="text-sm text-white leading-[14px]">{competition.country}</p>
-                      <p className="text-xs text-white/50 leading-[18px]">Country</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Country</h3>
+                    <p className="text-sm text-white/80">{competition.country}</p>
                   </div>
                 )}
 
-                {/* Founded */}
                 {competition.originDate && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Calendar className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">Founded</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{formatDate(competition.originDate)}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Founded</h3>
+                    <p className="text-sm text-white/80">{formatDate(competition.originDate)}</p>
                   </div>
                 )}
 
-                {/* Type */}
-                <div className="flex items-center gap-[10px]">
-                  <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                    <Trophy className="h-[18px] w-[18px] text-white/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-white leading-[14px]">Type</p>
-                    <p className="text-xs text-white/50 leading-[18px]">{getTypeLabel(competition.type)}</p>
-                  </div>
-                </div>
-
-                {/* Teams Count */}
-                <div className="flex items-center gap-[10px]">
-                  <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                    <Users className="h-[18px] w-[18px] text-white/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-white leading-[14px]">Teams</p>
-                    <p className="text-xs text-white/50 leading-[18px]">{teams.length} participating</p>
-                  </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Type</h3>
+                  <p className="text-sm text-white/80">{getTypeLabel(competition.type)}</p>
                 </div>
               </div>
             </div>

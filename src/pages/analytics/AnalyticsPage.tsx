@@ -132,7 +132,7 @@ export default function AnalyticsPage() {
     return change >= 0 ? "text-secondary" : "text-destructive";
   };
   const getContentTypeIcon = (type: string) => {
-    return <Play className="h-4 w-4 text-primary" />;
+    return <Play className="h-4 w-4 text-muted-foreground" />;
   };
   const getContentTypeBadge = (type: string) => {
     return type === "live" ? <Badge variant="destructive">AO VIVO</Badge> : <Badge variant="outline">VOD</Badge>;
@@ -190,7 +190,7 @@ export default function AnalyticsPage() {
                   </span>
                 </div>
               </div>
-              <Eye className="h-6 w-6 text-primary" />
+              <Eye className="h-6 w-6 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
@@ -210,7 +210,7 @@ export default function AnalyticsPage() {
                   </span>
                 </div>
               </div>
-              <BarChart3 className="h-6 w-6 text-primary" />
+              <BarChart3 className="h-6 w-6 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
                   </span>
                 </div>
               </div>
-              <Clock className="h-6 w-6 text-primary" />
+              <Clock className="h-6 w-6 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
@@ -251,7 +251,7 @@ export default function AnalyticsPage() {
                   </span>
                 </div>
               </div>
-              <Users className="h-6 w-6 text-primary" />
+              <Users className="h-6 w-6 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
@@ -301,20 +301,20 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-3 rounded-lg bg-primary/10">
-                <p className="text-2xl font-bold text-primary">
+              <div className="text-center p-3 rounded-lg bg-muted/50">
+                <p className="text-2xl font-bold text-foreground">
                   {analyticsData.engagement.totalLikes.toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">Curtidas</p>
               </div>
-              <div className="text-center p-3 rounded-lg bg-primary/10">
-                <p className="text-2xl font-bold text-primary">
+              <div className="text-center p-3 rounded-lg bg-muted/50">
+                <p className="text-2xl font-bold text-foreground">
                   {analyticsData.engagement.totalComments.toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">Comentários</p>
               </div>
-              <div className="text-center p-3 rounded-lg bg-primary/10">
-                <p className="text-2xl font-bold text-primary">
+              <div className="text-center p-3 rounded-lg bg-muted/50">
+                <p className="text-2xl font-bold text-foreground">
                   {analyticsData.engagement.totalShares.toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">Compartilhamentos</p>
@@ -324,7 +324,7 @@ export default function AnalyticsPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Taxa de Engajamento</span>
-                <span className="text-lg font-bold text-primary">
+                <span className="text-lg font-bold text-foreground">
                   {analyticsData.engagement.avgEngagement}%
                 </span>
               </div>

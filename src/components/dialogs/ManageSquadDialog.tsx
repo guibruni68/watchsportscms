@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { AgentMultiSelect, Agent } from "@/components/ui/agent-multi-select"
-import { mockPlayers } from "@/data/mockData"
+import { getAgentOptions } from "@/data/mockData"
 
 interface Team {
   id: string
@@ -58,10 +58,9 @@ export function ManageSquadDialog({
 
         <div className="space-y-4">
           <AgentMultiSelect
+            agents={getAgentOptions()}
             value={squadMembers}
             onChange={setSquadMembers}
-            players={mockPlayers.map(p => ({ id: p.id, name: p.name, number: p.number }))}
-            teams={[]}
             placeholder="Search and select members..."
           />
           <p className="text-sm text-muted-foreground">

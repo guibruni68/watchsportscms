@@ -16,11 +16,12 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select"
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select"
 import { FileUpload } from "@/components/ui/file-upload"
-import { ArrowLeft, CalendarIcon, X, Info, ImageIcon, Tag, Globe } from "lucide-react"
+import { ArrowLeft, CalendarIcon, X, Info, ImageIcon, Users, Globe } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import { mockGenres, mockPlayers, mockTeams } from "@/data/mockData"
+import { mockGenres, getAgentOptions } from "@/data/mockData"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const newsSchema = z.object({
   title: z.string().min(1, "Internal title is required"),
@@ -129,7 +130,7 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
             <TabsList className="mb-6">
               <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
               <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
-              <TabsTrigger value="classification" className="flex items-center gap-1.5"><Tag className="h-3.5 w-3.5" />Classification</TabsTrigger>
+              <TabsTrigger value="agents" className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />Agents</TabsTrigger>
               <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
             </TabsList>
 
@@ -201,12 +202,35 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
                       <FormItem>
                         <FormLabel>Last Content Block *</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Closing paragraph of the news article..." 
+                          <Textarea
+                            placeholder="Closing paragraph of the news article..."
                             className="min-h-32"
-                            {...field} 
+                            {...field}
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="genres"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>News Types</FormLabel>
+                        <FormControl>
+                          <GenreMultiSelect
+                            selectedGenres={field.value || []}
+                            onGenresChange={field.onChange}
+                            genreType="news"
+                            availableGenres={newsGenres}
+                            placeholder="Select news types..."
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Categorize the type of news (Breaking News, Transfers, etc.)
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -269,49 +293,25 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
               </Card>
             </TabsContent>
 
-            {/* Tab 3: Classification */}
-            <TabsContent value="classification">
+            {/* Tab 3: Agents */}
+            <TabsContent value="agents">
               <Card>
                 <CardHeader>
-                  <CardTitle>Classification</CardTitle>
+                  <CardTitle>Related Agents</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="genres"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>News Types</FormLabel>
-                        <FormControl>
-                          <GenreMultiSelect
-                            selectedGenres={field.value || []}
-                            onGenresChange={field.onChange}
-                            genreType="news"
-                            availableGenres={newsGenres}
-                            placeholder="Select news types..."
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Categorize the type of news (Breaking News, Transfers, etc.)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <FormField
                     control={form.control}
                     name="agentesRelacionados"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Related Agents/Groups</FormLabel>
+                        <FormLabel>Agents</FormLabel>
                         <FormControl>
                           <AgentMultiSelect
-                            players={mockPlayers}
-                            teams={mockTeams}
+                            agents={getAgentOptions()}
                             value={field.value || []}
                             onChange={field.onChange}
-                            placeholder="Link agents or groups..."
+                            placeholder="Search and select agents..."
                           />
                         </FormControl>
                         <FormDescription>
@@ -512,6 +512,7 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>
   )
 }

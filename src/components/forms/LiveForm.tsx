@@ -17,14 +17,14 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres } from "@/data/mockData";
-import { ArrowLeft, CalendarIcon, Upload, X, Info, ImageIcon, Radio, Users, Globe, BarChart3, PlayCircle } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ArrowLeft, CalendarIcon, Upload, X, Info, ImageIcon, Radio, Users, Globe, BarChart3 } from "lucide-react";
+import { TutorialButton } from "@/components/ui/tutorial-button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { mockPlayers, mockTeams } from "@/data/mockData";
+import { getAgentOptions } from "@/data/mockData";
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
 
 
@@ -94,7 +94,6 @@ export function LiveForm({
   const [imageUploadMode, setImageUploadMode] = useState<"file" | "url">("file");
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
 
   // Parse initial datetime if provided
@@ -475,10 +474,9 @@ export function LiveForm({
                         <FormLabel>Agents</FormLabel>
                         <FormControl>
                           <AgentMultiSelect
+                            agents={getAgentOptions()}
                             value={field.value || []}
                             onChange={field.onChange}
-                            players={mockPlayers.map(p => ({ id: p.id, name: p.name, number: p.number }))}
-                            teams={mockTeams.map(t => ({ id: t.id, name: t.name }))}
                             placeholder="Search and select agents..."
                           />
                         </FormControl>
@@ -616,30 +614,6 @@ export function LiveForm({
         </form>
       </Form>
 
-      {/* Tutorial Floating Button */}
-      <button
-        onClick={() => setShowTutorial(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-white shadow-lg hover:bg-primary/80 transition-colors text-sm font-medium"
-      >
-        <PlayCircle className="h-4 w-4" />
-        Tutorial
-      </button>
-
-      {/* Tutorial Video Dialog */}
-      <Dialog open={showTutorial} onOpenChange={setShowTutorial}>
-        <DialogContent className="max-w-3xl p-0 bg-[#0d0d0d] border-[#1f1f1f] overflow-hidden">
-          <div className="aspect-video w-full">
-            <iframe
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-              title="Tutorial"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Unsaved Changes Confirmation Dialog */}
       <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
         <AlertDialogContent>
@@ -659,5 +633,6 @@ export function LiveForm({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>;
 }

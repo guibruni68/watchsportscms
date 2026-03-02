@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { User, Users, Search, Plus, X } from "lucide-react";
+import { User, Users, Search, Plus, X, Mic, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -20,28 +20,40 @@ export interface Agent {
   id: string;
   name: string;
   type: "agent" | "group";
+  role?: "player" | "coach" | "writer";
+  number?: number;
+}
+
+interface AgentOption {
+  id: string;
+  name: string;
+  type: "agent" | "group";
+  role?: "player" | "coach" | "writer";
   number?: number;
 }
 
 interface AgentMultiSelectProps {
-  players: Array<{
-    id: string;
-    name: string;
-    number?: number;
-  }>;
-  teams: Array<{
-    id: string;
-    name: string;
-  }>;
+  agents: AgentOption[];
   value: Agent[];
   onChange: (agents: Agent[]) => void;
   placeholder?: string;
   disabled?: boolean;
 }
 
+const roleLabels: Record<string, string> = {
+  player: "Player",
+  coach: "Coach",
+  writer: "Writer",
+};
+
+const roleIcons: Record<string, React.ReactNode> = {
+  player: <User className="h-3.5 w-3.5" />,
+  coach: <Mic className="h-3.5 w-3.5" />,
+  writer: <Pencil className="h-3.5 w-3.5" />,
+};
+
 export function AgentMultiSelect({
-  players,
-  teams,
+  agents,
   value = [],
   onChange,
   placeholder = "Search and select agents...",
@@ -53,93 +65,103 @@ export function AgentMultiSelect({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
 
-  // Update popover width when opened
   useEffect(() => {
     if (open && triggerRef.current) {
       setPopoverWidth(triggerRef.current.offsetWidth);
     }
   }, [open]);
 
-  // Combine players and teams into a unified list
-  const allAgents = useMemo(() => {
-    const agentsList: Array<{
-      id: string;
-      name: string;
-      type: "agent" | "group";
-      number?: number;
-      searchText: string;
-    }> = [
-      ...players.map((player) => ({
-        id: player.id,
-        name: player.name,
-        type: "agent" as const,
-        number: player.number,
-        searchText: `${player.name} ${player.number ? `#${player.number}` : ""} agent`.toLowerCase(),
-      })),
-      ...teams.map((team) => ({
-        id: team.id,
-        name: team.name,
-        type: "group" as const,
-        searchText: `${team.name} group`.toLowerCase(),
-      })),
-    ];
+  const availableAgents = useMemo(() => {
+    return agents
+      .filter((a) => !value.find((added) => added.id === a.id))
+      .map((a) => ({
+        ...a,
+        searchText: `${a.name} ${a.role ?? ""} ${a.number ? `#${a.number}` : ""}`.toLowerCase(),
+      }));
+  }, [agents, value]);
 
-    // Filter already added agents
-    return agentsList.filter(
-      (agent) => !value.find((added) => added.id === agent.id)
-    );
-  }, [players, teams, value]);
-
-  // Filter agents based on search
   const filteredAgents = useMemo(() => {
-    if (!search.trim()) return allAgents;
-
+    if (!search.trim()) return availableAgents;
     const searchLower = search.toLowerCase();
-    return allAgents.filter((agent) =>
-      agent.searchText.includes(searchLower)
-    );
-  }, [allAgents, search]);
+    return availableAgents.filter((a) => a.searchText.includes(searchLower));
+  }, [availableAgents, search]);
 
-  // Group by type
-  const groupedAgents = useMemo(() => {
-    const agents = filteredAgents.filter((a) => a.type === "agent");
-    const groups = filteredAgents.filter((a) => a.type === "group");
-    return { agents, groups };
+  const grouped = useMemo(() => {
+    return {
+      players: filteredAgents.filter((a) => a.type === "agent" && a.role === "player"),
+      coaches: filteredAgents.filter((a) => a.type === "agent" && a.role === "coach"),
+      writers: filteredAgents.filter((a) => a.type === "agent" && a.role === "writer"),
+      others: filteredAgents.filter((a) => a.type === "agent" && !a.role),
+      groups: filteredAgents.filter((a) => a.type === "group"),
+    };
   }, [filteredAgents]);
 
   const handleSelect = (agentId: string) => {
-    setSelectedIds(prev => {
-      if (prev.includes(agentId)) {
-        return prev.filter(id => id !== agentId);
-      } else {
-        return [...prev, agentId];
-      }
-    });
+    setSelectedIds((prev) =>
+      prev.includes(agentId) ? prev.filter((id) => id !== agentId) : [...prev, agentId]
+    );
   };
 
   const handleAdd = () => {
     if (selectedIds.length === 0) return;
-
-    const agentsToAdd = allAgents.filter((a) => selectedIds.includes(a.id));
-    const newAgents: Agent[] = agentsToAdd.map(agent => ({
-      id: agent.id,
-      name: agent.name,
-      type: agent.type,
-      ...(agent.number && { number: agent.number }),
+    const toAdd = availableAgents.filter((a) => selectedIds.includes(a.id));
+    const newAgents: Agent[] = toAdd.map((a) => ({
+      id: a.id,
+      name: a.name,
+      type: a.type,
+      role: a.role,
+      ...(a.number !== undefined && { number: a.number }),
     }));
-    
     onChange([...value, ...newAgents]);
     setSelectedIds([]);
     setSearch("");
   };
 
   const handleRemove = (agentId: string) => {
-    onChange(value.filter((agent) => agent.id !== agentId));
+    onChange(value.filter((a) => a.id !== agentId));
   };
+
+  function renderGroup(
+    items: typeof filteredAgents,
+    heading: string,
+    icon: React.ReactNode
+  ) {
+    if (items.length === 0) return null;
+    return (
+      <CommandGroup heading={heading}>
+        {items.map((agent) => {
+          const isSelected = selectedIds.includes(agent.id);
+          return (
+            <CommandItem
+              key={`${agent.type}-${agent.id}`}
+              value={`${agent.id}-${heading}`}
+              onSelect={() => handleSelect(agent.id)}
+              className={cn("cursor-pointer", isSelected && "bg-primary/10")}
+            >
+              <div className="flex items-center gap-3 w-full">
+                <div
+                  className={cn(
+                    "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
+                    isSelected ? "border-primary bg-primary" : "border-muted-foreground/50"
+                  )}
+                />
+                <span className="text-muted-foreground shrink-0">{icon}</span>
+                <p className="text-sm font-medium truncate flex-1">
+                  {agent.name}
+                  {agent.number !== undefined && (
+                    <span className="text-muted-foreground ml-1">#{agent.number}</span>
+                  )}
+                </p>
+              </div>
+            </CommandItem>
+          );
+        })}
+      </CommandGroup>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      {/* Search and selection field */}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -152,121 +174,38 @@ export function AgentMultiSelect({
           >
             <div className="flex items-center gap-2 flex-1 text-left">
               <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-muted-foreground">
-                {placeholder}
-              </span>
+              <span className="text-muted-foreground">{placeholder}</span>
             </div>
           </Button>
         </PopoverTrigger>
-        <PopoverContent 
-          className="p-0 flex flex-col" 
-          align="start" 
+        <PopoverContent
+          className="p-0 flex flex-col"
+          align="start"
           sideOffset={4}
           style={{
             width: popoverWidth ? `${popoverWidth}px` : undefined,
-            maxHeight: '70vh'
+            maxHeight: "70vh",
           }}
         >
-          <Command className="flex flex-col">
+          <Command shouldFilter={false} className="flex flex-col">
             <CommandInput
-              placeholder="Search agents or groups..."
+              placeholder="Search by name, role..."
               value={search}
               onValueChange={setSearch}
             />
-            <CommandList className="max-h-[250px] overflow-y-auto flex-1">
+            <CommandList className="max-h-[280px] overflow-y-auto flex-1">
               <CommandEmpty>No agents found.</CommandEmpty>
-
-              {/* Agents Group */}
-              {groupedAgents.agents.length > 0 && (
-                <CommandGroup heading="Agents">
-                  {groupedAgents.agents.map((agent) => {
-                    const isSelected = selectedIds.includes(agent.id);
-                    return (
-                      <CommandItem
-                        key={`agent-${agent.id}`}
-                        value={agent.id}
-                        onSelect={() => handleSelect(agent.id)}
-                        className={cn(
-                          "cursor-pointer",
-                          isSelected && "bg-primary/10"
-                        )}
-                      >
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-3 flex-1">
-                            <div
-                              className={cn(
-                                "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
-                                isSelected
-                                  ? "border-primary bg-primary"
-                                  : "border-muted-foreground/50"
-                              )}
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">
-                                {agent.name}
-                                {agent.number && (
-                                  <span className="text-muted-foreground ml-1">
-                                    #{agent.number}
-                                  </span>
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              )}
-
-              {/* Groups Group */}
-              {groupedAgents.groups.length > 0 && (
-                <CommandGroup heading="Groups">
-                  {groupedAgents.groups.map((agent) => {
-                    const isSelected = selectedIds.includes(agent.id);
-                    return (
-                      <CommandItem
-                        key={`group-${agent.id}`}
-                        value={agent.id}
-                        onSelect={() => handleSelect(agent.id)}
-                        className={cn(
-                          "cursor-pointer",
-                          isSelected && "bg-primary/10"
-                        )}
-                      >
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-3 flex-1">
-                            <div
-                              className={cn(
-                                "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
-                                isSelected
-                                  ? "border-primary bg-primary"
-                                  : "border-muted-foreground/50"
-                              )}
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">
-                                {agent.name}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              )}
+              {renderGroup(grouped.players, "Players", <User className="h-3.5 w-3.5" />)}
+              {renderGroup(grouped.coaches, "Coaches", <Mic className="h-3.5 w-3.5" />)}
+              {renderGroup(grouped.writers, "Writers", <Pencil className="h-3.5 w-3.5" />)}
+              {renderGroup(grouped.others, "Agents", <User className="h-3.5 w-3.5" />)}
+              {renderGroup(grouped.groups, "Groups", <Users className="h-3.5 w-3.5" />)}
             </CommandList>
           </Command>
 
-          {/* Add button - always visible when there's a selection */}
           {selectedIds.length > 0 && (
             <div className="border-t p-3 bg-muted/30 shrink-0">
-              <Button
-                type="button"
-                onClick={handleAdd}
-                className="w-full"
-              >
+              <Button type="button" onClick={handleAdd} className="w-full">
                 <Plus className="h-4 w-4 mr-2" />
                 Add {selectedIds.length} {selectedIds.length === 1 ? "Item" : "Items"}
               </Button>
@@ -275,13 +214,10 @@ export function AgentMultiSelect({
         </PopoverContent>
       </Popover>
 
-      {/* List of added agents */}
       {value.length > 0 && (
         <div className="border rounded-lg p-4 bg-muted/50">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium">
-              Selected Agents ({value.length})
-            </p>
+            <p className="text-sm font-medium">Selected ({value.length})</p>
             <Button
               type="button"
               variant="ghost"
@@ -293,43 +229,45 @@ export function AgentMultiSelect({
             </Button>
           </div>
           <div className="max-h-[280px] overflow-y-auto space-y-2">
-              {value.map((agent, index) => (
-                <div
-                  key={`${agent.id}-${index}`}
-                  className="flex items-center justify-between p-3 bg-background border rounded-md hover:border-primary/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    {agent.type === "agent" ? (
-                      <User className="h-4 w-4 text-muted-foreground shrink-0" />
-                    ) : (
-                      <Users className="h-4 w-4 text-muted-foreground shrink-0" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {agent.name}
-                        {agent.number && (
-                          <span className="text-muted-foreground ml-1">
-                            #{agent.number}
-                          </span>
-                        )}
-                      </p>
-                    </div>
+            {value.map((agent, index) => (
+              <div
+                key={`${agent.id}-${index}`}
+                className="flex items-center justify-between p-3 bg-background border rounded-md hover:border-primary/50 transition-colors"
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  {agent.type === "group" ? (
+                    <Users className="h-4 w-4 text-muted-foreground shrink-0" />
+                  ) : (
+                    <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {agent.name}
+                      {agent.number !== undefined && (
+                        <span className="text-muted-foreground ml-1">#{agent.number}</span>
+                      )}
+                    </p>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemove(agent.id)}
-                    className="h-8 w-8 p-0 text-destructive hover:text-destructive shrink-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  {(agent.role || agent.type === "group") && (
+                    <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">
+                      {agent.type === "group" ? "Team" : roleLabels[agent.role!] ?? "Agent"}
+                    </span>
+                  )}
                 </div>
-              ))}
-            </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemove(agent.id)}
+                  className="h-8 w-8 p-0 text-destructive hover:text-destructive shrink-0 ml-2"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
 }
-

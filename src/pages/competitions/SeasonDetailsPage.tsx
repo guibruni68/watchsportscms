@@ -608,31 +608,38 @@ export default function SeasonDetailsPage() {
       {/* Tab Content */}
       {activeTab === "overview" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="px-12 pt-12 pb-16">
-            <div className="grid grid-cols-2 gap-x-[140px] gap-y-8">
-              <div className="space-y-0">
-                <p className="text-sm text-[#999999] leading-5">Competition</p>
-                <p className="text-base text-white leading-6">{season.competitionName}</p>
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              {/* Left Column */}
+              <div className="flex-1 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Competition</h3>
+                  <p className="text-sm text-white/80">{season.competitionName}</p>
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Season Name</h3>
+                  <p className="text-sm text-white/80">{season.name}</p>
+                </div>
               </div>
-              <div className="space-y-0">
-                <p className="text-sm text-[#999999] leading-5">Season Name</p>
-                <p className="text-base text-white leading-6">{season.name}</p>
-              </div>
-              <div className="space-y-0">
-                <p className="text-sm text-[#999999] leading-5">Start Date</p>
-                <p className="text-base text-white leading-6">{formatDate(season.startDate)}</p>
-              </div>
-              <div className="space-y-0">
-                <p className="text-sm text-[#999999] leading-5">End Date</p>
-                <p className="text-base text-white leading-6">{formatDate(season.endDate)}</p>
-              </div>
-              <div className="space-y-0">
-                <p className="text-sm text-[#999999] leading-5">Teams</p>
-                <p className="text-base text-white leading-6">{teams.length}</p>
-              </div>
-              <div className="space-y-0">
-                <p className="text-sm text-[#999999] leading-5">Total Rounds</p>
-                <p className="text-base text-white leading-6">{totalRounds}</p>
+
+              {/* Right Column */}
+              <div className="w-64 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Start Date</h3>
+                  <p className="text-sm text-white/80">{formatDate(season.startDate)}</p>
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">End Date</h3>
+                  <p className="text-sm text-white/80">{formatDate(season.endDate)}</p>
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Teams</h3>
+                  <p className="text-sm text-white/80">{teams.length}</p>
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Total Rounds</h3>
+                  <p className="text-sm text-white/80">{totalRounds}</p>
+                </div>
               </div>
             </div>
           </CardContent>

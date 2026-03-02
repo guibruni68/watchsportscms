@@ -13,6 +13,7 @@ import { ArrowLeft, Save, Info, ImageIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { FileUpload } from "@/components/ui/file-upload"
 import { Input } from "@/components/ui/input"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const stadiumSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -280,6 +281,7 @@ export function StadiumForm({ initialData, isEdit = false, onClose }: StadiumFor
           </div>
         </form>
       </Form>
+      <TutorialButton />
     </div>
   )
 }

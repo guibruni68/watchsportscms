@@ -705,6 +705,33 @@ export const getContentsByAlgorithm = (algorithm: string) => {
   }
 };
 
+/**
+ * Retorna a lista unificada de agentes (jogadores, técnicos e times)
+ * para uso no AgentMultiSelect dos formulários.
+ */
+export function getAgentOptions() {
+  return [
+    ...mockPlayers.map((p) => ({
+      id: p.id,
+      name: p.name,
+      type: "agent" as const,
+      role: "player" as const,
+      number: p.number,
+    })),
+    ...mockCoaches.map((c) => ({
+      id: c.id,
+      name: c.name,
+      type: "agent" as const,
+      role: "coach" as const,
+    })),
+    ...mockTeams.map((t) => ({
+      id: t.id,
+      name: t.name,
+      type: "group" as const,
+    })),
+  ];
+}
+
 // Dados mockados para banners
 export interface Banner {
   id: string;

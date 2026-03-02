@@ -17,6 +17,7 @@ import { ArrowLeft, CalendarIcon, Save, Info, Users } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const seasonSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -411,6 +412,7 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>
   )
 }

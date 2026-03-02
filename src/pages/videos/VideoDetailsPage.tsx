@@ -309,16 +309,16 @@ export default function VideoDetailsPage() {
                 {/* Duration */}
                 {video.duration && (
                   <div>
-                    <p className="text-sm text-muted-foreground">Duration</p>
-                    <p className="text-base text-white">{video.duration}</p>
+                    <h3 className="text-base font-semibold text-white mb-4">Duration</h3>
+                    <p className="text-sm text-white/80">{video.duration}</p>
                   </div>
                 )}
 
                 {/* Age Rating */}
                 {video.ageRating && (
                   <div>
-                    <p className="text-sm text-muted-foreground">Age Rating</p>
-                    <p className="text-base text-white">{video.ageRating}</p>
+                    <h3 className="text-base font-semibold text-white mb-4">Age Rating</h3>
+                    <p className="text-sm text-white/80">{video.ageRating}</p>
                   </div>
                 )}
             </div>

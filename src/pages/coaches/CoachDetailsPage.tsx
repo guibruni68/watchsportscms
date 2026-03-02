@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Calendar, Globe, Briefcase, X, Info, ImageIcon } from "lucide-react"
+import { ArrowLeft, X, Info, ImageIcon } from "lucide-react"
 import { CoachForm } from "@/components/forms/CoachForm"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -168,69 +168,38 @@ export default function CoachDetailsPage() {
       {/* Tab Content */}
       {activeTab === "overview" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="px-12 pt-12 pb-16">
-            <div className="flex justify-between gap-[140px]">
-              {/* Left Column - Description & Details */}
-              <div className="flex-1 space-y-4">
-                {/* Description */}
-                <div className="space-y-0">
-                  <p className="text-sm text-[#999999] leading-5">Description</p>
-                  <p className="text-base text-white leading-6 max-w-[603px]">
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              {/* Left Column */}
+              <div className="flex-1 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
                     {coach.description || "No description available."}
                   </p>
                 </div>
-
-                {/* Full Name */}
-                <div className="space-y-0 pt-4">
-                  <p className="text-sm text-[#999999] leading-5">Full Name</p>
-                  <p className="text-base text-white leading-6">{coach.name}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Full Name</h3>
+                  <p className="text-sm text-white/80">{coach.name}</p>
                 </div>
-
-                {/* Role */}
                 {coach.role && (
-                  <div className="space-y-0">
-                    <p className="text-sm text-[#999999] leading-5">Role</p>
-                    <p className="text-base text-white leading-6">{coach.role}</p>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Role</h3>
+                    <p className="text-sm text-white/80">{coach.role}</p>
                   </div>
                 )}
               </div>
 
-              {/* Right Column - Info Cards */}
-              <div className="w-[189px] space-y-6">
-                {/* Nationality */}
-                <div className="flex items-center gap-[13px]">
-                  <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                    <Globe className="h-[18px] w-[18px] text-white/50" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <p className="text-sm text-white leading-[14px]">{coach.nationality}</p>
-                    <p className="text-xs text-white/50 leading-[18px]">Nationality</p>
-                  </div>
+              {/* Right Column */}
+              <div className="w-64 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Nationality</h3>
+                  <p className="text-sm text-white/80">{coach.nationality}</p>
                 </div>
-
-                {/* Birth Date */}
                 {coach.birthDate && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Calendar className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">Birth Date</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{formatDate(coach.birthDate)}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Role */}
-                {coach.role && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Briefcase className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">Role</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{coach.role}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Birth Date</h3>
+                    <p className="text-sm text-white/80">{formatDate(coach.birthDate)}</p>
                   </div>
                 )}
               </div>

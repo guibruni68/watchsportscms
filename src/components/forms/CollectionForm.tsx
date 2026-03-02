@@ -38,6 +38,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { TutorialButton } from "@/components/ui/tutorial-button";
 
 interface SeasonContent {
   id: string;
@@ -253,8 +254,8 @@ export default function CollectionForm({
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
               <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
-              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
               <TabsTrigger value="seasons" className="flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" />Seasons</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
@@ -752,6 +753,7 @@ export default function CollectionForm({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>
   );
 }

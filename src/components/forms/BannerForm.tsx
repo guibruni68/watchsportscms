@@ -18,6 +18,7 @@ import { ArrowLeft, Upload, CalendarIcon, X, Image as ImageIcon, Monitor, Smartp
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { TutorialButton } from "@/components/ui/tutorial-button";
 
 const bannerSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -545,6 +546,7 @@ export function BannerForm({ initialData, isEdit = false, onClose }: BannerFormP
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>
   );
 }

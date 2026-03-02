@@ -15,6 +15,7 @@ import { FileUpload } from "@/components/ui/file-upload"
 import { ArrowLeft, X, Info, ImageIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const sportTypes = [
   { value: "football", label: "Football" },
@@ -320,6 +321,7 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>
   )
 }

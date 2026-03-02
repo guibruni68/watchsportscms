@@ -138,7 +138,7 @@ export function CollectionSelector({ value, onValueChange, placeholder = "Seleci
                     <CommandItem
                       value="__create_new__"
                       onSelect={() => setShowNewForm(true)}
-                      className="text-primary"
+                      className="text-foreground"
                     >
                       <Plus className="mr-2 h-4 w-4" />
                       Criar nova coleção

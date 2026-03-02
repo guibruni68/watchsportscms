@@ -17,12 +17,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select"
 import { FileUpload } from "@/components/ui/file-upload"
-import { mockPlayers, mockTeams } from "@/data/mockData"
+import { getAgentOptions } from "@/data/mockData"
 import { ArrowLeft, CalendarIcon, X, Save, Info, ImageIcon, Users } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { Country, City } from 'country-state-city'
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const teamSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -527,10 +528,9 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
                         <FormLabel>Members</FormLabel>
                         <FormControl>
                           <AgentMultiSelect
+                            agents={getAgentOptions()}
                             value={field.value || []}
                             onChange={field.onChange}
-                            players={mockPlayers}
-                            teams={mockTeams}
                             placeholder="Search and select members..."
                           />
                         </FormControl>
@@ -606,6 +606,7 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <TutorialButton />
     </div>
   )
 }

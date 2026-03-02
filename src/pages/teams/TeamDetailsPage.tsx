@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ArrowLeft, User, X, Search, MapPin, Calendar, Building2, Briefcase, Trophy, Info, Users, ImageIcon } from "lucide-react"
+import { ArrowLeft, User, X, Search, MapPin, Info, Users, ImageIcon } from "lucide-react"
 import { TeamForm } from "@/components/forms/TeamForm"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { Badge } from "@/components/ui/badge"
@@ -327,111 +327,54 @@ export default function TeamDetailsPage() {
       {/* Tab Content */}
       {activeTab === "overview" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="px-12 pt-12 pb-16">
-            <div className="flex justify-between gap-[140px]">
-              {/* Left Column - Description & Details */}
-              <div className="flex-1 space-y-4">
-                {/* Description */}
-                <div className="space-y-0">
-                  <p className="text-sm text-[#999999] leading-5">Description</p>
-                  <p className="text-base text-white leading-6 max-w-[603px]">
-                    {team.description}
-                  </p>
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              {/* Left Column */}
+              <div className="flex-1 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">{team.description}</p>
                 </div>
-
-                {/* Full Name */}
-                <div className="space-y-0 pt-4">
-                  <p className="text-sm text-[#999999] leading-5">Full Name</p>
-                  <p className="text-base text-white leading-6">{team.name}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Full Name</h3>
+                  <p className="text-sm text-white/80">{team.name}</p>
                 </div>
-
-                {/* Acronym */}
-                <div className="space-y-0">
-                  <p className="text-sm text-[#999999] leading-5">Acronym</p>
-                  <p className="text-base text-white leading-6">{team.acronym}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Acronym</h3>
+                  <p className="text-sm text-white/80">{team.acronym}</p>
                 </div>
-
-                {/* President */}
                 {team.presidentName && (
-                  <div className="space-y-0">
-                    <p className="text-sm text-[#999999] leading-5">President</p>
-                    <p className="text-base text-white leading-6">{team.presidentName}</p>
-                  </div>
-                )}
-
-                {/* Team Type */}
-                {team.teamType && (
-                  <div className="space-y-0">
-                    <p className="text-sm text-[#999999] leading-5">Type</p>
-                    <p className="text-base text-white leading-6">{teamTypeLabels[team.teamType] || team.teamType}</p>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">President</h3>
+                    <p className="text-sm text-white/80">{team.presidentName}</p>
                   </div>
                 )}
               </div>
 
-              {/* Right Column - Info Cards */}
-              <div className="w-[189px] space-y-6">
-                {/* Location */}
-                {team.city && team.country && (
-                  <div className="flex items-center gap-[13px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <MapPin className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <p className="text-sm text-white leading-[14px]">{team.city}</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{team.country}</p>
-                    </div>
+              {/* Right Column */}
+              <div className="w-64 space-y-8">
+                {(team.city || team.country) && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Location</h3>
+                    <p className="text-sm text-white/80">{[team.city, team.country].filter(Boolean).join(', ')}</p>
                   </div>
                 )}
-
-                {/* Founded */}
                 {team.originDate && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Calendar className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">Founded</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{formatDate(team.originDate)}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Founded</h3>
+                    <p className="text-sm text-white/80">{formatDate(team.originDate)}</p>
                   </div>
                 )}
-
-                {/* Stadium */}
                 {team.stadiumName && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Building2 className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">Stadium</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{team.stadiumName}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Stadium</h3>
+                    <p className="text-sm text-white/80">{team.stadiumName}</p>
                   </div>
                 )}
-
-                {/* President */}
-                {team.presidentName && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <User className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">President</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{team.presidentName}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Team Type */}
                 {team.teamType && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Trophy className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">Type</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{teamTypeLabels[team.teamType] || team.teamType}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Type</h3>
+                    <p className="text-sm text-white/80">{teamTypeLabels[team.teamType] || team.teamType}</p>
                   </div>
                 )}
               </div>

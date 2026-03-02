@@ -11,28 +11,28 @@ export default function DashboardIndex() {
     change: "+12%",
     changeType: "positive" as const,
     icon: Video,
-    color: "text-primary"
+    color: "text-muted-foreground"
   }, {
     title: "Lives Agendadas",
     value: "8",
     change: "+3",
     changeType: "positive" as const,
     icon: Radio,
-    color: "text-primary"
+    color: "text-muted-foreground"
   }, {
     title: "Visualizações",
     value: "45.2K",
     change: "+18%",
     changeType: "positive" as const,
     icon: Eye,
-    color: "text-primary"
+    color: "text-muted-foreground"
   }, {
     title: "Engajamento",
     value: "78%",
     change: "+5%",
     changeType: "positive" as const,
     icon: TrendingUp,
-    color: "text-primary"
+    color: "text-muted-foreground"
   }];
   const recentVideos = [{
     id: 1,
@@ -197,7 +197,7 @@ export default function DashboardIndex() {
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm text-foreground truncate">{event.title}</h4>
                   <p className="text-xs text-muted-foreground truncate mt-1">{event.description}</p>
-                  <p className="text-xs text-primary mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {new Date(event.dateTime).toLocaleDateString("en-US", { month: "short", day: "numeric" })} • {new Date(event.dateTime).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
