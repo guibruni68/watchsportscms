@@ -80,7 +80,6 @@ const collectionSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   label: z.enum(["COLLECTION"]).optional(),
-  releaseYear: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 10, "Year cannot be too far in the future").optional(),
   scheduleDate: z.date().optional(),
   badge: z.enum(["NEW", "NEW EPISODES", "SOON"]).optional(),
   cardImageUrl: z.string().optional(),
@@ -143,7 +142,6 @@ export default function CollectionForm({
       title: "",
       description: "",
       label: "COLLECTION",
-      releaseYear: new Date().getFullYear(),
       scheduleDate: undefined,
       badge: undefined,
       cardImageUrl: "",
@@ -372,16 +370,14 @@ export default function CollectionForm({
                     />
                   </div>
 
-                  {/* Age Rating and Release Year */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
+                  <FormField
                       control={form.control}
                       name="ageRating"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Age Rating</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input
                               placeholder="G, PG, PG-13, R, etc."
                               {...field}
                             />
@@ -390,27 +386,6 @@ export default function CollectionForm({
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                      control={form.control}
-                      name="releaseYear"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Release Year</FormLabel>
-                      <FormControl>
-                        <Input 
-                              type="number"
-                              placeholder="Ex: 2025"
-                              {...field}
-                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                              value={field.value || ""}
-                            />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                      )}
-                    />
-                  </div>
 
                   {/* Genres */}
                   <FormField

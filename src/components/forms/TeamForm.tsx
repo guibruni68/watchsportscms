@@ -479,9 +479,6 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -502,9 +499,6 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>
                     )}

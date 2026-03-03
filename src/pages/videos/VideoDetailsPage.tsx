@@ -13,7 +13,6 @@ interface Video {
   title: string
   description: string
   label: "VOD" | "LIVE"
-  releaseYear?: number
   scheduleDate: string
   isPublished: boolean
   badge?: "NEW" | "NEW EPISODES" | "SOON"
@@ -39,7 +38,6 @@ const mockVideos: Video[] = [
     title: "Buzzer Beater: Vitória épica no último segundo",
     description: "Os melhores momentos da vitória dramática com cesta no estouro do cronômetro. Uma partida emocionante que ficará marcada na história do time.",
     label: "VOD",
-    releaseYear: 2024,
     scheduleDate: "2024-01-15T20:30:00",
     isPublished: true,
     badge: "NEW",
@@ -61,7 +59,6 @@ const mockVideos: Video[] = [
     title: "Triple-Double histórico do armador",
     description: "Reveja a performance incrível com pontos, assistências e rebotes. O armador entregou uma atuação memorável.",
     label: "VOD",
-    releaseYear: 2024,
     scheduleDate: "2025-12-15T14:00:00",
     isPublished: false,
     badge: "SOON",
@@ -218,9 +215,6 @@ export default function VideoDetailsPage() {
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                {video.releaseYear || "Video"}
-              </p>
             </div>
 
             {/* Edit Button */}
@@ -343,13 +337,6 @@ export default function VideoDetailsPage() {
                 </div>
               )}
 
-              {/* Release Year */}
-              {video.releaseYear && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Release Year</p>
-                  <p className="text-sm text-white">{video.releaseYear}</p>
-                </div>
-              )}
 
               {/* Label */}
               <div>

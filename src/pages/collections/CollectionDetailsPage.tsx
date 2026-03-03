@@ -37,7 +37,6 @@ interface Collection {
   title: string;
   description?: string;
   label?: "COLLECTION";
-  releaseYear?: number;
   scheduleDate?: string;
   isPublished?: boolean;
   badge?: "NEW" | "NEW EPISODES" | "SOON";
@@ -80,7 +79,6 @@ export default function CollectionDetailsPage() {
           title: collectionData.titulo,
           description: collectionData.descricao,
           label: "COLLECTION",
-          releaseYear: collectionData.releaseYear,
           scheduleDate: collectionData.published_at,
           isPublished: collectionData.status,
           badge: collectionData.badge as "NEW" | "NEW EPISODES" | "SOON" | undefined,
@@ -233,12 +231,6 @@ export default function CollectionDetailsPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {collection.releaseYear && (
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Release Year</p>
-                    <p className="text-sm">{collection.releaseYear}</p>
-                  </div>
-                )}
                 {collection.ageRating && (
                   <div className="space-y-1">
                     <p className="text-xs font-bold text-foreground uppercase tracking-wide">Age Rating</p>

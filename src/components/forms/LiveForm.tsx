@@ -32,7 +32,6 @@ const liveSchema = z.object({
   titulo: z.string().min(1, "Title is required"),
   descricao: z.string().min(1, "Description is required"),
   label: z.enum(["VOD", "LIVE"]),
-  anoLancamento: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 10, "Year cannot be too far in the future").optional(),
   scheduleDate: z.date().optional(),
   badge: z.enum(["NEW", "NEW EPISODES", "SOON"]).optional(),
   cardImageUrl: z.string().optional(),
@@ -105,7 +104,6 @@ export function LiveForm({
       titulo: initialData?.nomeEvento || "",
       descricao: initialData?.descricao || "",
       label: "LIVE",
-      anoLancamento: new Date().getFullYear(),
       scheduleDate: initialDateTime,
       badge: undefined,
       cardImageUrl: initialData?.imagemCapa || "",
@@ -234,21 +232,6 @@ export function LiveForm({
                         <FormMessage />
                       </FormItem>} />
 
-                  <FormField control={form.control} name="anoLancamento" render={({
-                  field
-                }) => <FormItem>
-                          <FormLabel>Release Year</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="Ex: 2025" 
-                              {...field} 
-                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                              value={field.value || ""}
-                            />
-                          </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
 
                   <FormField control={form.control} name="generos" render={({
                 field
@@ -291,9 +274,6 @@ export function LiveForm({
                               description="JPEG, PNG, and WEBP formats, up to 50MB"
                             />
                     </FormControl>
-                    <p className="text-sm text-muted-foreground">
-                      Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
-                    </p>
                     <FormMessage />
                   </FormItem>} />
 
@@ -309,9 +289,6 @@ export function LiveForm({
                               description="JPEG, PNG, and WEBP formats, up to 50MB"
                             />
                           </FormControl>
-                          <p className="text-sm text-muted-foreground">
-                            Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
-                          </p>
                       <FormMessage />
                     </FormItem>} />
 

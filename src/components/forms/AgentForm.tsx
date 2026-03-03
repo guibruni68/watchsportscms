@@ -251,9 +251,6 @@ export function AgentForm({ initialData, isEdit = false, defaultLabel, onClose }
                   {errors.imagePrimaryUrl && (
                     <p className="text-sm text-destructive">{errors.imagePrimaryUrl.message}</p>
                   )}
-                  <p className="text-sm text-muted-foreground">
-                    Square image for profile display (1:1 aspect ratio recommended)
-                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -267,9 +264,6 @@ export function AgentForm({ initialData, isEdit = false, defaultLabel, onClose }
                   {errors.imageSecondaryUrl && (
                     <p className="text-sm text-destructive">{errors.imageSecondaryUrl.message}</p>
                   )}
-                  <p className="text-sm text-muted-foreground">
-                    Banner image for detail pages (16:9 aspect ratio recommended)
-                  </p>
                 </div>
               </CardContent>
             </Card>

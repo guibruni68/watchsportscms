@@ -19,7 +19,6 @@ interface Live {
   title: string
   description: string
   label: "VOD" | "LIVE"
-  releaseYear?: number
   scheduleDate: string
   isPublished: boolean
   badge?: "NEW" | "NEW EPISODES" | "SOON"
@@ -46,7 +45,6 @@ const mockLives: Live[] = [
     title: "State Championship Final",
     description: "Live broadcast of the grand final against traditional rival. A decisive match for the state title with both teams at their best.",
     label: "LIVE",
-    releaseYear: 2025,
     scheduleDate: "2025-12-20T16:00:00",
     isPublished: true,
     badge: "SOON",
@@ -73,7 +71,6 @@ const mockLives: Live[] = [
     title: "2024 Squad Presentation",
     description: "Press conference with presentation of new players. Meet the new reinforcements for the upcoming season.",
     label: "LIVE",
-    releaseYear: 2024,
     scheduleDate: "2024-01-18T10:00:00",
     isPublished: true,
     badge: "NEW",
@@ -95,7 +92,6 @@ const mockLives: Live[] = [
     title: "Open Training for Fans",
     description: "Follow the team's training before the decisive game. An exclusive opportunity to see the players preparing.",
     label: "LIVE",
-    releaseYear: 2026,
     scheduleDate: "2026-01-22T09:00:00",
     isPublished: false,
     badge: "SOON",
@@ -357,13 +353,6 @@ export default function LiveDetailsPage() {
 
               {/* Right Column - Info */}
               <div className="w-64 space-y-8">
-                {/* Release Year */}
-                {live.releaseYear && (
-                  <div>
-                    <h3 className="text-base font-semibold text-white mb-4">Year</h3>
-                    <p className="text-sm text-white/80">{live.releaseYear}</p>
-                  </div>
-                )}
 
                 {/* Age Rating */}
                 {live.ageRating && (
@@ -395,13 +384,6 @@ export default function LiveDetailsPage() {
                 </div>
               )}
 
-              {/* Release Year */}
-              {live.releaseYear && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Release Year</p>
-                  <p className="text-sm text-white">{live.releaseYear}</p>
-                </div>
-              )}
 
               {/* Label */}
               <div>

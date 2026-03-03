@@ -27,7 +27,6 @@ const videoSchema = z.object({
   titulo: z.string().min(1, "Title is required"),
   descricao: z.string().min(1, "Description is required"),
   label: z.enum(["VOD", "LIVE"]),
-  anoLancamento: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 10, "Year cannot be too far in the future").optional(),
   scheduleDate: z.date().optional(),
   badge: z.enum(["NEW", "NEW EPISODES", "SOON"]).optional(),
   cardImageUrl: z.string().optional(),
@@ -71,7 +70,6 @@ export function VideoForm({
       titulo: initialData?.titulo || "",
       descricao: initialData?.descricao || "",
       label: initialData?.label || "VOD",
-      anoLancamento: initialData?.anoLancamento || new Date().getFullYear(),
       scheduleDate: initialData?.scheduleDate,
       badge: initialData?.badge,
       cardImageUrl: initialData?.cardImageUrl,
@@ -203,15 +201,6 @@ export function VideoForm({
                         </FormItem>} />
                   </div>
 
-                  <FormField control={form.control} name="anoLancamento" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Release Year</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Ex: 2024" {...field} onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} value={field.value || ""} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
 
                   <FormField control={form.control} name="generos" render={({
                   field
@@ -236,6 +225,22 @@ export function VideoForm({
                   <CardTitle>Video Media</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  <FormField control={form.control} name="videoFile" render={({
+                  field
+                }) => <FormItem>
+                        <FormLabel>Video File</FormLabel>
+                        <FormControl>
+                          <FileUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Choose a file or drag & drop it here"
+                            description="MP4 format, up to 2GB"
+                            accept="video/mp4"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>} />
+
                   <FormField control={form.control} name="cardImageUrl" render={({
                   field
                 }) => <FormItem>
@@ -248,9 +253,6 @@ export function VideoForm({
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>} />
 
@@ -266,9 +268,6 @@ export function VideoForm({
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>} />
                 </CardContent>

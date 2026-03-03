@@ -227,9 +227,6 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Square image for profile display (1:1 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -250,9 +247,6 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Banner image for detail pages (16:9 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>
                     )}

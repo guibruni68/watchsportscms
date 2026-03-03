@@ -332,9 +332,6 @@ export function CompetitionForm({ initialData, isEdit = false, onClose }: Compet
                             />
                           </div>
                         )}
-                        <p className="text-sm text-muted-foreground">
-                          Competition logo image (1:1 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -355,9 +352,6 @@ export function CompetitionForm({ initialData, isEdit = false, onClose }: Compet
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -378,9 +372,6 @@ export function CompetitionForm({ initialData, isEdit = false, onClose }: Compet
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
