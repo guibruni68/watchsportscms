@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Edit, Tag, Calendar, FileText, X, Play } from "lucide-react";
+import { ArrowLeft, Edit, Tag, Calendar, FileText, X, Play, Info, CalendarDays, Globe } from "lucide-react";
 import { getCollectionById } from "@/data/mockCatalogues";
 import { toast } from "@/hooks/use-toast";
-import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils";
+import { getContentStatus, getStatusBadgeVariant, cn } from "@/lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -61,6 +61,9 @@ export default function CollectionDetailsPage() {
   const [collection, setCollection] = useState<Collection | null>(null);
   const [loading, setLoading] = useState(true);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+
+  type TabType = "information" | "seasons" | "publishing"
+  const [activeTab, setActiveTab] = useState<TabType>("information")
 
   useEffect(() => {
     const fetchData = async () => {
@@ -157,7 +160,31 @@ export default function CollectionDetailsPage() {
         </Button>
       </div>
 
+      {/* Tab Bar */}
+      <div className="flex gap-1 p-1 bg-[#0d0d0d] border border-[#1f1f1f] rounded-xl w-fit">
+        {([
+          { id: "information" as TabType, label: "Information", icon: Info },
+          { id: "seasons"     as TabType, label: "Seasons",     icon: CalendarDays },
+          { id: "publishing"  as TabType, label: "Publishing",  icon: Globe },
+        ]).map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+              activeTab === tab.id
+                ? "bg-[#1a1a1a] text-white"
+                : "text-muted-foreground hover:text-white"
+            )}
+          >
+            <tab.icon className="h-4 w-4" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {/* Collection Information */}
+      {activeTab === "information" && (
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl flex items-center gap-2">
@@ -208,28 +235,6 @@ export default function CollectionDetailsPage() {
 
             {/* Collection Info */}
             <div className="flex-1 space-y-5">
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
-                <p className="text-sm">{collection.label || "COLLECTION"}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Status</label>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="neutral">
-                      {getContentStatus(collection.enabled ?? collection.available, collection.scheduleDate || collection.published_at)}
-                    </Badge>
-                  </div>
-                </div>
-                {collection.badge && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Badge</label>
-                    <p className="text-sm">{collection.badge}</p>
-                  </div>
-                )}
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {collection.ageRating && (
                   <div className="space-y-1">
@@ -238,22 +243,6 @@ export default function CollectionDetailsPage() {
                   </div>
                 )}
               </div>
-
-              {collection.scheduleDate && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Schedule Date</p>
-                    <div className="text-sm flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(collection.scheduleDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric"
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {collection.genres && collection.genres.length > 0 && (
                 <div className="space-y-1">
@@ -289,8 +278,10 @@ export default function CollectionDetailsPage() {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* Seasons and Contents */}
+      {activeTab === "seasons" && (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -338,7 +329,7 @@ export default function CollectionDetailsPage() {
                         </TableHeader>
                         <TableBody>
                           {season.contents.map((content) => (
-                            <TableRow 
+                            <TableRow
                               key={content.id}
                               className="cursor-pointer hover:bg-muted/50 transition-colors"
                               onClick={() => navigate(`/videos/${content.id}`)}
@@ -368,6 +359,43 @@ export default function CollectionDetailsPage() {
           )}
         </CardContent>
       </Card>
+      )}
+
+      {/* Publishing */}
+      {activeTab === "publishing" && (
+        <Card>
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold">Publishing</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Status</p>
+                <Badge variant="neutral">
+                  {getContentStatus(collection.enabled ?? collection.available, collection.scheduleDate || collection.published_at)}
+                </Badge>
+              </div>
+              {collection.badge && (
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Badge</p>
+                  <p className="text-sm">{collection.badge}</p>
+                </div>
+              )}
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
+                <p className="text-sm">{collection.label || "COLLECTION"}</p>
+              </div>
+              {collection.scheduleDate && (
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Schedule Date</p>
+                  <div className="text-sm flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    {new Date(collection.scheduleDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Lightbox Modal */}
       {lightboxImage && (
