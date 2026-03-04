@@ -3,7 +3,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3, Info, Settings2, ImageIcon, AlertTriangle, Copy, Check, Globe } from "lucide-react"
+import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3, Info, ImageIcon, AlertTriangle, Copy, Check, Globe } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { ReportIssueDialog } from "@/components/dialogs/ReportIssueDialog"
@@ -353,6 +353,57 @@ export default function LiveDetailsPage() {
         </Card>
       )}
 
+      {activeTab === "media" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Media Assets</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Card Image */}
+              {live.cardImageUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Card Image</p>
+                  <div
+                    className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setLightboxImage(live.cardImageUrl!)}
+                  >
+                    <img
+                      src={live.cardImageUrl}
+                      alt="Card"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Banner Image */}
+              {live.bannerImageUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Banner Image</p>
+                  <div
+                    className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setLightboxImage(live.bannerImageUrl!)}
+                  >
+                    <img
+                      src={live.bannerImageUrl}
+                      alt="Banner"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {!live.cardImageUrl && !live.bannerImageUrl && (
+              <div className="text-center py-12">
+                <Radio className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No media assets uploaded yet.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* STREAM TAB */}
       {activeTab === "stream" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
@@ -509,57 +560,6 @@ export default function LiveDetailsPage() {
               <div className="text-center py-8">
                 <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground">Statistics will be available after the stream starts.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {activeTab === "media" && (
-        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold text-white">Media Assets</h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Card Image */}
-              {live.cardImageUrl && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-3">Card Image</p>
-                  <div
-                    className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => setLightboxImage(live.cardImageUrl!)}
-                  >
-                    <img
-                      src={live.cardImageUrl}
-                      alt="Card"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Banner Image */}
-              {live.bannerImageUrl && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-3">Banner Image</p>
-                  <div
-                    className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => setLightboxImage(live.bannerImageUrl!)}
-                  >
-                    <img
-                      src={live.bannerImageUrl}
-                      alt="Banner"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {!live.cardImageUrl && !live.bannerImageUrl && (
-              <div className="text-center py-12">
-                <Radio className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No media assets uploaded yet.</p>
               </div>
             )}
           </CardContent>
