@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Edit, Tag, Calendar, FileText, X, Play, Info, CalendarDays, Globe } from "lucide-react";
+import { ArrowLeft, Edit, Calendar, FileText, X, Info, CalendarDays, Globe } from "lucide-react";
 import { getCollectionById } from "@/data/mockCatalogues";
 import { toast } from "@/hooks/use-toast";
-import { getContentStatus, getStatusBadgeVariant, cn } from "@/lib/utils";
+import { getContentStatus, cn } from "@/lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -55,6 +55,8 @@ interface Collection {
   seasons?: Season[];
 }
 
+type TabType = "information" | "seasons" | "publishing"
+
 export default function CollectionDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -62,7 +64,6 @@ export default function CollectionDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
-  type TabType = "information" | "seasons" | "publishing"
   const [activeTab, setActiveTab] = useState<TabType>("information")
 
   useEffect(() => {
@@ -285,7 +286,7 @@ export default function CollectionDetailsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+            <CalendarDays className="h-5 w-5" />
             Seasons ({collection.seasons?.length || 0})
           </CardTitle>
         </CardHeader>
@@ -364,8 +365,10 @@ export default function CollectionDetailsPage() {
       {/* Publishing */}
       {activeTab === "publishing" && (
         <Card>
-          <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold">Publishing</h3>
+          <CardHeader>
+            <CardTitle>Publishing</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-1">
                 <p className="text-xs font-bold text-foreground uppercase tracking-wide">Status</p>
