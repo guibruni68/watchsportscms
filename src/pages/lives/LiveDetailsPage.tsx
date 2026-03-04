@@ -3,7 +3,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3, Info, Settings2, ImageIcon, AlertTriangle } from "lucide-react"
+import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3, Info, Settings2, ImageIcon, AlertTriangle, Copy, Check, Globe } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { ReportIssueDialog } from "@/components/dialogs/ReportIssueDialog"
@@ -25,6 +25,8 @@ interface Live {
   cardImageUrl?: string
   bannerImageUrl?: string
   streamUrl?: string
+  rtmpServerUrl?: string
+  streamKey?: string
   ageRating?: string
   createdAt: string
   updatedAt: string
@@ -51,6 +53,8 @@ const mockLives: Live[] = [
     cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchThunders.png",
     bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchThunders.png",
     streamUrl: "https://example.com/stream/championship-final",
+    rtmpServerUrl: "rtmp://live.example.com/app",
+    streamKey: "sk-championship-final-abc123",
     ageRating: "L",
     createdAt: "2025-11-15T10:00:00",
     updatedAt: "2025-11-20T14:30:00",
@@ -110,7 +114,7 @@ const mockLives: Live[] = [
   },
 ]
 
-type TabType = "overview" | "details" | "stats" | "media"
+type TabType = "information" | "media" | "stream" | "agents" | "publishing" | "stats"
 
 export default function LiveDetailsPage() {
   const { id } = useParams<{ id: string }>()
@@ -118,9 +122,16 @@ export default function LiveDetailsPage() {
   const [searchParams] = useSearchParams()
   const [live, setLive] = useState<Live | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<TabType>("overview")
+  const [activeTab, setActiveTab] = useState<TabType>("information")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
   const [reportOpen, setReportOpen] = useState(false)
+  const [copiedField, setCopiedField] = useState<string | null>(null)
+
+  const handleCopy = (value: string, field: string) => {
+    navigator.clipboard.writeText(value)
+    setCopiedField(field)
+    setTimeout(() => setCopiedField(null), 2000)
+  }
 
   // Check for tab param on mount
   useEffect(() => {
@@ -186,10 +197,12 @@ export default function LiveDetailsPage() {
   }
 
   const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
-    { id: "overview", label: "Overview", icon: Info },
-    { id: "details", label: "Details", icon: Settings2 },
-    { id: "stats", label: "Stats", icon: BarChart3 },
-    { id: "media", label: "Media", icon: ImageIcon }
+    { id: "information", label: "Information", icon: Info },
+    { id: "media",       label: "Media",       icon: ImageIcon },
+    { id: "stream",      label: "Stream",      icon: Radio },
+    { id: "agents",      label: "Agents",      icon: Users },
+    { id: "publishing",  label: "Publishing",  icon: Globe },
+    { id: "stats",       label: "Stats",       icon: BarChart3 },
   ]
 
   return (
@@ -297,110 +310,155 @@ export default function LiveDetailsPage() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === "overview" && (
+
+      {/* INFORMATION TAB */}
+      {activeTab === "information" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="p-7">
-            <div className="flex gap-12">
-              {/* Left Column - Description & Genres */}
-              <div className="flex-1 space-y-8">
-                {/* Description */}
-                <div>
-                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
-                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
-                    {live.description || "No description available."}
-                  </p>
+          <CardContent className="p-7 space-y-8">
+            <div>
+              <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+              <p className="text-sm text-white/80 leading-relaxed max-w-xl">
+                {live.description || "No description available."}
+              </p>
+            </div>
+            {live.genre && live.genre.length > 0 && (
+              <div>
+                <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
+                <div className="flex flex-wrap gap-2">
+                  {live.genre.map((genre, index) => (
+                    <div key={index} className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]">
+                      <span className="text-xs font-medium text-white/50">{genre}</span>
+                    </div>
+                  ))}
                 </div>
-
-                {/* Genres */}
-                {live.genre && live.genre.length > 0 && (
-                  <div>
-                    <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {live.genre.map((genre, index) => (
-                        <div
-                          key={index}
-                          className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]"
-                        >
-                          <span className="text-xs font-medium text-white/50">{genre}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Agents */}
-                {live.agentesRelacionados && live.agentesRelacionados.length > 0 && (
-                  <div>
-                    <h3 className="text-base font-semibold text-white mb-4">Related Agents</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {live.agentesRelacionados.map((agent) => (
-                        <div
-                          key={agent.id}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]"
-                        >
-                          <span className={cn(
-                            "w-2 h-2 rounded-full",
-                            agent.type === "agent" ? "bg-blue-500" : "bg-green-500"
-                          )} />
-                          <span className="text-xs font-medium text-white/50">{agent.name}</span>
-                          <span className="text-[10px] text-white/30 uppercase">{agent.type === "agent" ? "Player" : "Team"}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
-
-              {/* Right Column - Info */}
-              <div className="w-64 space-y-8">
-
-                {/* Age Rating */}
-                {live.ageRating && (
-                  <div>
-                    <h3 className="text-base font-semibold text-white mb-4">Age Rating</h3>
-                    <p className="text-sm text-white/80">{live.ageRating}</p>
-                  </div>
-                )}
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {live.ageRating && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Age Rating</p>
+                  <p className="text-sm text-white">{live.ageRating}</p>
+                </div>
+              )}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Created At</p>
+                <p className="text-sm text-white">{formatDateTime(live.createdAt)}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Updated At</p>
+                <p className="text-sm text-white">{formatDateTime(live.updatedAt)}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {activeTab === "details" && (
+      {/* STREAM TAB */}
+      {activeTab === "stream" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
           <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold text-white">Technical Details</h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Stream URL */}
+            <h3 className="text-lg font-semibold text-white">Stream Configuration</h3>
+            <div className="space-y-4">
               {live.streamUrl && (
-                <div className="col-span-2">
+                <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">Stream URL</p>
                   <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
                     <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    <code className="text-xs text-white/60 break-all">{live.streamUrl}</code>
+                    <code className="text-xs text-white/60 break-all flex-1">{live.streamUrl}</code>
+                    <button onClick={() => handleCopy(live.streamUrl!, "streamUrl")} className="ml-auto flex-shrink-0 text-muted-foreground hover:text-white transition-colors">
+                      {copiedField === "streamUrl" ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </button>
                   </div>
                 </div>
               )}
+              {live.rtmpServerUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">RTMP Server URL</p>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
+                    <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <code className="text-xs text-white/60 break-all flex-1">{live.rtmpServerUrl}</code>
+                    <button onClick={() => handleCopy(live.rtmpServerUrl!, "rtmpServerUrl")} className="ml-auto flex-shrink-0 text-muted-foreground hover:text-white transition-colors">
+                      {copiedField === "rtmpServerUrl" ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {live.streamKey && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Stream Key</p>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
+                    <code className="text-xs text-white/60 break-all flex-1">{"•".repeat(live.streamKey.length)}</code>
+                    <button onClick={() => handleCopy(live.streamKey!, "streamKey")} className="ml-auto flex-shrink-0 text-muted-foreground hover:text-white transition-colors">
+                      {copiedField === "streamKey" ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {!live.streamUrl && !live.rtmpServerUrl && !live.streamKey && (
+                <div className="text-center py-8">
+                  <Radio className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No stream configuration available.</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
+      {/* AGENTS TAB */}
+      {activeTab === "agents" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Related Agents</h3>
+            {live.agentesRelacionados && live.agentesRelacionados.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {live.agentesRelacionados.map((agent) => (
+                  <div key={agent.id} className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]">
+                    <span className={cn("w-2 h-2 rounded-full", agent.type === "agent" ? "bg-blue-500" : "bg-green-500")} />
+                    <span className="text-xs font-medium text-white/50">{agent.name}</span>
+                    <span className="text-[10px] text-white/30 uppercase">{agent.type === "agent" ? "Player" : "Team"}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No agents associated with this live.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
-              {/* Label */}
+      {/* PUBLISHING TAB */}
+      {activeTab === "publishing" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Publishing</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2">Label</p>
                 <p className="text-sm text-white">{live.label}</p>
               </div>
-
-              {/* Created At */}
+              {live.badge && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Badge</p>
+                  <p className="text-sm text-white">{live.badge}</p>
+                </div>
+              )}
+              {live.scheduleDate && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Schedule Date</p>
+                  <p className="text-sm text-white">{formatDateTime(live.scheduleDate)}</p>
+                </div>
+              )}
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Created At</p>
-                <p className="text-sm text-white">{formatDateTime(live.createdAt)}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Status</p>
+                <p className="text-sm text-white">{live.isPublished ? "Published" : "Draft"}</p>
               </div>
-
-              {/* Updated At */}
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Updated At</p>
-                <p className="text-sm text-white">{formatDateTime(live.updatedAt)}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Enabled</p>
+                <p className="text-sm text-white">{live.enabled ? "Yes" : "No"}</p>
               </div>
             </div>
           </CardContent>
