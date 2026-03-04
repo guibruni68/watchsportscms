@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Upload, CalendarIcon, X, Image as ImageIcon, Monitor, Smartphone } from "lucide-react";
+import { ArrowLeft, Upload, CalendarIcon, X, Image as ImageIcon, Monitor, Smartphone, Info, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -160,9 +160,18 @@ export function BannerForm({ initialData, isEdit = false, onClose }: BannerFormP
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+              <TabsTrigger value="information" className="gap-2">
+                <Info className="h-4 w-4" />
+                Information
+              </TabsTrigger>
+              <TabsTrigger value="media" className="gap-2">
+                <ImageIcon className="h-4 w-4" />
+                Media
+              </TabsTrigger>
+              <TabsTrigger value="publishing" className="gap-2">
+                <Globe className="h-4 w-4" />
+                Publishing
+              </TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
