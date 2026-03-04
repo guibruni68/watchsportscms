@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Play, Tag, X, Link2, Info, Settings2, ImageIcon } from "lucide-react"
+import { ArrowLeft, Play, Tag, X, Link2, Info, ImageIcon, Globe, Users } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -77,14 +77,14 @@ const mockVideos: Video[] = [
   },
 ]
 
-type TabType = "overview" | "details" | "media"
+type TabType = "information" | "media" | "agents" | "publishing"
 
 export default function VideoDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [video, setVideo] = useState<Video | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<TabType>("overview")
+  const [activeTab, setActiveTab] = useState<TabType>("information")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
 
   // Format datetime
@@ -143,9 +143,10 @@ export default function VideoDetailsPage() {
   }
 
   const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
-    { id: "overview", label: "Overview", icon: Info },
-    { id: "details", label: "Details", icon: Settings2 },
-    { id: "media", label: "Media", icon: ImageIcon }
+    { id: "information", label: "Information", icon: Info },
+    { id: "media",       label: "Media",       icon: ImageIcon },
+    { id: "agents",      label: "Agents",      icon: Users },
+    { id: "publishing",  label: "Publishing",  icon: Globe },
   ]
 
   const getStatusLabel = () => {
@@ -253,104 +254,63 @@ export default function VideoDetailsPage() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === "overview" && (
+      {/* INFORMATION TAB */}
+      {activeTab === "information" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="p-7">
-            <div className="space-y-8">
-                {/* Description */}
-                <div>
-                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
-                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
-                    {video.description || "No description available."}
-                  </p>
-                </div>
+          <CardContent className="p-7 space-y-8">
+            <h3 className="text-lg font-semibold text-white">Information</h3>
 
-                {/* Genres */}
-                {video.genre && video.genre.length > 0 && (
-                  <div>
-                    <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {video.genre.map((genre, index) => (
-                        <div
-                          key={index}
-                          className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]"
-                        >
-                          <span className="text-xs font-medium text-white/50">{genre}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Tags */}
-                {video.tags && video.tags.length > 0 && (
-                  <div>
-                    <h3 className="text-base font-semibold text-white mb-4">Tags</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {video.tags.map((tag, index) => (
-                        <div
-                          key={index}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#1a1a1a] border border-[#262626]"
-                        >
-                          <Tag className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-xs text-white/60">{tag}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Duration */}
-                {video.duration && (
-                  <div>
-                    <h3 className="text-base font-semibold text-white mb-4">Duration</h3>
-                    <p className="text-sm text-white/80">{video.duration}</p>
-                  </div>
-                )}
-
-                {/* Age Rating */}
-                {video.ageRating && (
-                  <div>
-                    <h3 className="text-base font-semibold text-white mb-4">Age Rating</h3>
-                    <p className="text-sm text-white/80">{video.ageRating}</p>
-                  </div>
-                )}
+            <div>
+              <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+              <p className="text-sm text-white/80 leading-relaxed max-w-xl">
+                {video.description || "No description available."}
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      )}
 
-      {activeTab === "details" && (
-        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold text-white">Technical Details</h3>
+            {video.genre && video.genre.length > 0 && (
+              <div>
+                <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
+                <div className="flex flex-wrap gap-2">
+                  {video.genre.map((genre, index) => (
+                    <div key={index} className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]">
+                      <span className="text-xs font-medium text-white/50">{genre}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {video.tags && video.tags.length > 0 && (
+              <div>
+                <h3 className="text-base font-semibold text-white mb-4">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {video.tags.map((tag, index) => (
+                    <div key={index} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#1a1a1a] border border-[#262626]">
+                      <Tag className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs text-white/60">{tag}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Stream URL */}
-              {video.streamUrl && (
-                <div className="col-span-2">
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Stream URL</p>
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
-                    <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    <code className="text-xs text-white/60 break-all">{video.streamUrl}</code>
-                  </div>
+              {video.duration && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Duration</p>
+                  <p className="text-sm text-white">{video.duration}</p>
                 </div>
               )}
-
-
-              {/* Label */}
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Label</p>
-                <p className="text-sm text-white">{video.label}</p>
-              </div>
-
-              {/* Created At */}
+              {video.ageRating && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Age Rating</p>
+                  <p className="text-sm text-white">{video.ageRating}</p>
+                </div>
+              )}
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2">Created At</p>
                 <p className="text-sm text-white">{formatDateTime(video.createdAt)}</p>
               </div>
-
-              {/* Updated At */}
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2">Updated At</p>
                 <p className="text-sm text-white">{formatDateTime(video.updatedAt)}</p>
@@ -407,6 +367,63 @@ export default function VideoDetailsPage() {
                 <p className="text-muted-foreground">No media assets uploaded yet.</p>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* AGENTS TAB */}
+      {activeTab === "agents" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7">
+            <h3 className="text-lg font-semibold text-white mb-6">Agents</h3>
+            <div className="text-center py-12">
+              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">No agents associated with this video.</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* PUBLISHING TAB */}
+      {activeTab === "publishing" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Publishing</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Label</p>
+                <p className="text-sm text-white">{video.label}</p>
+              </div>
+              {video.badge && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Badge</p>
+                  <p className="text-sm text-white">{video.badge}</p>
+                </div>
+              )}
+              {video.scheduleDate && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Schedule Date</p>
+                  <p className="text-sm text-white">{formatDateTime(video.scheduleDate)}</p>
+                </div>
+              )}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Status</p>
+                <p className="text-sm text-white">{video.isPublished ? "Published" : "Draft"}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Enabled</p>
+                <p className="text-sm text-white">{video.enabled ? "Yes" : "No"}</p>
+              </div>
+              {video.streamUrl && (
+                <div className="col-span-2">
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Stream URL</p>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
+                    <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <code className="text-xs text-white/60 break-all">{video.streamUrl}</code>
+                  </div>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       )}
