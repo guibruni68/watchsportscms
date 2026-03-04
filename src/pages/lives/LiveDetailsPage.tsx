@@ -315,6 +315,7 @@ export default function LiveDetailsPage() {
       {activeTab === "information" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
           <CardContent className="p-7 space-y-8">
+            <h3 className="text-lg font-semibold text-white">Information</h3>
             <div>
               <h3 className="text-base font-semibold text-white mb-4">Description</h3>
               <p className="text-sm text-white/80 leading-relaxed max-w-xl">
@@ -521,42 +522,42 @@ export default function LiveDetailsPage() {
           <CardContent className="p-7 space-y-6">
             <h3 className="text-lg font-semibold text-white">Statistics</h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Peak Viewers */}
-              <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
-                    <Users className="h-5 w-5 text-muted-foreground" />
+            {(live.viewers !== undefined && live.viewers !== null && live.viewers > 0) ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Peak Viewers */}
+                <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                      <Users className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm font-medium text-muted-foreground">Peak Viewers</p>
                   </div>
-                  <p className="text-sm font-medium text-muted-foreground">Peak Viewers</p>
+                  <p className="text-3xl font-bold text-white">{(live.viewers || 0).toLocaleString()}</p>
                 </div>
-                <p className="text-3xl font-bold text-white">{(live.viewers || 0).toLocaleString()}</p>
-              </div>
 
-              {/* Total Views */}
-              <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
-                    <BarChart3 className="h-5 w-5 text-muted-foreground" />
+                {/* Total Views */}
+                <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                      <BarChart3 className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm font-medium text-muted-foreground">Total Views</p>
                   </div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Views</p>
+                  <p className="text-3xl font-bold text-white">{(live.viewers || 0).toLocaleString()}</p>
                 </div>
-                <p className="text-3xl font-bold text-white">{((live.viewers || 0) * 2.5).toLocaleString()}</p>
-              </div>
 
-              {/* Watch Time */}
-              <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
+                {/* Watch Time */}
+                <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                      <Clock className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm font-medium text-muted-foreground">Avg Watch Time</p>
                   </div>
-                  <p className="text-sm font-medium text-muted-foreground">Avg Watch Time</p>
+                  <p className="text-3xl font-bold text-white">24:35</p>
                 </div>
-                <p className="text-3xl font-bold text-white">24:35</p>
               </div>
-            </div>
-
-            {!live.viewers && (
+            ) : (
               <div className="text-center py-8">
                 <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground">Statistics will be available after the stream starts.</p>
