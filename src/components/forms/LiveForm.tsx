@@ -1,3 +1,4 @@
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,7 +18,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres } from "@/data/mockData";
-import { ArrowLeft, CalendarIcon, Upload, X, Info, ImageIcon, Radio, Users, Globe, BarChart3 } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Upload, X, Info, ImageIcon, Radio, Users, Globe, BarChart3, Copy, Check, Link2 } from "lucide-react";
 import { TutorialButton } from "@/components/ui/tutorial-button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +28,40 @@ import { cn } from "@/lib/utils";
 import { getAgentOptions } from "@/data/mockData";
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
 
+
+interface ReadOnlyFieldProps {
+  label: string
+  value?: string
+  icon?: React.ReactNode
+  placeholder: string
+  masked?: boolean
+  canCopy: boolean
+  copiedField: string | null
+  fieldKey: string
+  onCopy: (value: string, field: string) => void
+}
+
+function ReadOnlyField({ label, value, icon, placeholder, masked, canCopy, copiedField, fieldKey, onCopy }: ReadOnlyFieldProps) {
+  return (
+    <div className="space-y-2">
+      <p className="text-sm font-medium">{label}</p>
+      <div className="flex items-center gap-2 h-10 px-3 rounded-md border border-input bg-muted/30">
+        {icon}
+        <span className="text-sm flex-1 truncate">
+          {value
+            ? (masked ? "•".repeat(value.length) : value)
+            : <span className="text-muted-foreground italic">{placeholder}</span>
+          }
+        </span>
+        {canCopy && value && (
+          <button type="button" onClick={() => onCopy(value, fieldKey)} className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors">
+            {copiedField === fieldKey ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
 
 const liveSchema = z.object({
   titulo: z.string().min(1, "Title is required"),
@@ -77,6 +112,8 @@ interface LiveFormProps {
       name: string;
       type: "agent" | "group";
     }>;
+    rtmpServerUrl?: string;
+    streamKey?: string;
   };
   isEdit?: boolean;
   onClose?: () => void;
@@ -91,6 +128,13 @@ export function LiveForm({
     toast
   } = useToast();
   const [imageUploadMode, setImageUploadMode] = useState<"file" | "url">("file");
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleCopy = (value: string, field: string) => {
+    navigator.clipboard.writeText(value)
+    setCopiedField(field)
+    setTimeout(() => setCopiedField(null), 2000)
+  }
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
@@ -114,9 +158,9 @@ export function LiveForm({
       
       startDate: undefined,
       endDate: undefined,
-      liveToVod: false,
-      rtmpServerUrl: "",
-      streamKey: "",
+      liveToVod: true,
+      rtmpServerUrl: initialData?.rtmpServerUrl || "",
+      streamKey: initialData?.streamKey || "",
 
       // Legacy fields
       nomeEvento: initialData?.nomeEvento || "",
@@ -396,25 +440,31 @@ export function LiveForm({
                           </FormItem>} />
                   </div>
 
-                  <FormField control={form.control} name="rtmpServerUrl" render={({
-                    field
-                  }) => <FormItem>
-                        <FormLabel>RTMP Server URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="rtmp://live.example.com/app" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
-
-                  <FormField control={form.control} name="streamKey" render={({
-                    field
-                  }) => <FormItem>
-                        <FormLabel>Stream Key</FormLabel>
-                        <FormControl>
-                          <Input placeholder="your-stream-key-here" type="password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <ReadOnlyField
+                      label="RTMP Server URL"
+                      value={form.watch("rtmpServerUrl")}
+                      icon={<Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
+                      placeholder={isEdit ? "Not generated yet" : "Generated after creation"}
+                      canCopy={isEdit}
+                      copiedField={copiedField}
+                      fieldKey="rtmpServerUrl"
+                      onCopy={handleCopy}
+                    />
+                    <ReadOnlyField
+                      label="Stream Key"
+                      value={form.watch("streamKey")}
+                      placeholder={isEdit ? "Not generated yet" : "Generated after creation"}
+                      masked
+                      canCopy={isEdit}
+                      copiedField={copiedField}
+                      fieldKey="streamKey"
+                      onCopy={handleCopy}
+                    />
+                  </div>
+                  {!isEdit && (
+                    <p className="text-xs text-muted-foreground -mt-2">RTMP Server URL and Stream Key are generated automatically after the live is created</p>
+                  )}
 
                   <FormField control={form.control} name="liveToVod" render={({
                     field
