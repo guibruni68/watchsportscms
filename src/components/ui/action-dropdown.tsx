@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Eye, Edit, Trash2, BarChart3, Users, AlertTriangle } from "lucide-react"
+import { MoreHorizontal, Eye, Edit, Trash2, BarChart3, Users, AlertTriangle, Gamepad2 } from "lucide-react"
 
 interface ActionDropdownProps {
   onView?: () => void
@@ -8,12 +8,14 @@ interface ActionDropdownProps {
   onDelete?: () => void
   onStats?: () => void
   onManageSquad?: () => void
+  onMatchControl?: () => void
   onReport?: () => void
   showView?: boolean
   showEdit?: boolean
   showDelete?: boolean
   showStats?: boolean
   showManageSquad?: boolean
+  showMatchControl?: boolean
   showReport?: boolean
 }
 
@@ -23,12 +25,14 @@ export function ActionDropdown({
   onDelete,
   onStats,
   onManageSquad,
+  onMatchControl,
   onReport,
   showView = true,
   showEdit = true,
   showDelete = true,
   showStats = false,
   showManageSquad = false,
+  showMatchControl = false,
   showReport = false
 }: ActionDropdownProps) {
   return (
@@ -62,6 +66,12 @@ export function ActionDropdown({
           <DropdownMenuItem onClick={onManageSquad} className="py-2 px-3 cursor-pointer">
             <Users className="mr-3 h-4 w-4" />
             Manage Squad
+          </DropdownMenuItem>
+        )}
+        {showMatchControl && onMatchControl && (
+          <DropdownMenuItem onClick={onMatchControl} className="py-2 px-3 cursor-pointer">
+            <Gamepad2 className="mr-3 h-4 w-4" />
+            Controle de Partida
           </DropdownMenuItem>
         )}
         {showReport && onReport && (

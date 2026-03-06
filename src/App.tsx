@@ -12,6 +12,7 @@ import EditVideoPage from "./pages/videos/EditVideoPage";
 import LivesPage from "./pages/lives/LivesPage";
 import LiveDetailsPage from "./pages/lives/LiveDetailsPage";
 import EditLivePage from "./pages/lives/EditLivePage";
+import MatchControlPage from "./pages/lives/MatchControlPage";
 import AgentsPage from "./pages/agents/AgentsPage";
 import TeamsPage from "./pages/teams/TeamsPage";
 import TeamDetailsPage from "./pages/teams/TeamDetailsPage";
@@ -99,6 +100,11 @@ const App = () => (
             <Route path="/lives/edit/:id" element={
               <ProtectedRoute>
                 <EditLivePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/lives/:id/match-control" element={
+              <ProtectedRoute>
+                <MatchControlPage />
               </ProtectedRoute>
             } />
             <Route path="/players" element={
