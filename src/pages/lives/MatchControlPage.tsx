@@ -394,7 +394,10 @@ export default function MatchControlPage() {
                 <Card key={side}>
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-base">{team.name} Lineup</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <TeamLogo logo={team.logo} abbreviation={team.abbreviation} name={team.name} />
+                        <CardTitle className="text-base">{team.name} Lineup</CardTitle>
+                      </div>
                       <Badge variant={starters.length === 11 ? "default" : "outline"} className="text-xs font-normal">
                         {starters.length}/11
                       </Badge>
