@@ -475,18 +475,18 @@ export default function MatchControlPage() {
           LIVE / ENDED
       ══════════════════════════════════════════════ */}
       {(phase === "live" || phase === "ended") && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch min-h-[320px]">
 
           {/* ── Register Events ── */}
-          <div className="lg:col-span-2">
-            <Card>
+          <div className="lg:col-span-2 flex flex-col">
+            <Card className="h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-1.5">
                   <Plus className="h-4 w-4" />
                   Register Event
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex flex-col justify-center">
                 {phase === "live" ? (
                   <div className="grid grid-cols-5 gap-2">
                     {([
@@ -511,22 +511,22 @@ export default function MatchControlPage() {
           </div>
 
           {/* ── Timeline ── */}
-          <div>
-            <Card>
+          <div className="flex flex-col">
+            <Card className="h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-1.5">
                   <Clock className="h-4 w-4" />
                   Timeline ({events.length})
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 overflow-hidden flex flex-col">
                 {events.length === 0 ? (
                   <div className="py-8 text-center space-y-2">
                     <Clock className="h-8 w-8 text-muted-foreground mx-auto" />
                     <p className="text-sm text-muted-foreground">No events yet</p>
                   </div>
                 ) : (
-                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                  <div className="space-y-2 flex-1 overflow-y-auto">
                     {[...events].reverse().map(e => (
                       <div key={e.id} className="flex items-start gap-3 py-1.5">
                         <span className="text-xs font-bold tabular-nums text-muted-foreground w-8 shrink-0 mt-0.5">{e.minute}'</span>
