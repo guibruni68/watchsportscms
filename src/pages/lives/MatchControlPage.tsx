@@ -319,12 +319,12 @@ export default function MatchControlPage() {
           <p className="text-[12px] font-bold uppercase tracking-[1.2px] text-muted-foreground text-center mb-8">State Championship 2026</p>
 
           {/* Teams + score row */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center gap-16">
 
             {/* Home team: logo above name */}
             <div className="flex flex-col gap-3 items-center w-[135px]">
               <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} name={homeTeam.name} className="h-[70px] w-[70px] rounded-[7px]" />
-              <p className="text-2xl font-bold text-center">{homeTeam.name}</p>
+              <p className="text-xl font-bold text-center text-white truncate w-full">{homeTeam.name}</p>
             </div>
 
             {/* Center: score/VS + date + stadium */}
@@ -332,14 +332,14 @@ export default function MatchControlPage() {
               {phase !== "pre_game" ? (
                 <>
                   <div className="flex items-center gap-3">
-                    <span className="text-[36px] font-bold tabular-nums leading-10">{homeScore}</span>
+                    <span className="text-[36px] font-bold tabular-nums leading-10 text-white">{homeScore}</span>
                     <span className="text-2xl text-muted-foreground">×</span>
-                    <span className="text-[36px] font-bold tabular-nums leading-10">{awayScore}</span>
+                    <span className="text-[36px] font-bold tabular-nums leading-10 text-white">{awayScore}</span>
                   </div>
                   {phase === "ended" && <Badge variant="outline" className="text-xs">ENDED</Badge>}
                 </>
               ) : (
-                <span className="text-2xl font-light text-muted-foreground">VS</span>
+                <span className="text-xl font-bold text-white">VS</span>
               )}
               <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
                 <p>{matchDate} - {matchTime}</p>
@@ -350,7 +350,7 @@ export default function MatchControlPage() {
             {/* Away team: logo above name */}
             <div className="flex flex-col gap-3 items-center w-[135px]">
               <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} name={awayTeam.name} className="h-[70px] w-[70px] rounded-[7px]" />
-              <p className="text-2xl font-bold text-center">{awayTeam.name}</p>
+              <p className="text-xl font-bold text-center text-white truncate w-full">{awayTeam.name}</p>
             </div>
 
           </div>
