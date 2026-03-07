@@ -314,45 +314,48 @@ export default function MatchControlPage() {
 
       {/* ── Match Info Card ── */}
       <Card>
-        <CardContent className="px-6 pt-7 pb-8">
-          {/* League name */}
-          <p className="text-[12px] font-bold uppercase tracking-[1.2px] text-muted-foreground text-center mb-8">State Championship 2026</p>
+        <CardContent className="px-[114px] pt-[43px] pb-[43px]">
+          <div className="flex flex-col gap-8 items-center">
 
-          {/* Teams + score row */}
-          <div className="flex items-center justify-center gap-16">
+            {/* League name */}
+            <p className="text-[12px] font-bold uppercase tracking-[1.2px] text-[#999] text-center">State Championship 2026</p>
 
-            {/* Home team: logo above name */}
-            <div className="flex flex-col gap-3 items-center w-[135px]">
-              <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} name={homeTeam.name} className="h-[70px] w-[70px] rounded-[7px]" />
-              <p className="text-xl font-bold text-center text-white truncate w-full">{homeTeam.name}</p>
-            </div>
+            {/* Teams + score row */}
+            <div className="flex items-center justify-between w-full">
 
-            {/* Center: score/VS + date + stadium */}
-            <div className="flex flex-col items-center gap-4">
-              {phase !== "pre_game" ? (
-                <>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[36px] font-bold tabular-nums leading-10 text-white">{homeScore}</span>
-                    <span className="text-2xl text-muted-foreground">×</span>
-                    <span className="text-[36px] font-bold tabular-nums leading-10 text-white">{awayScore}</span>
-                  </div>
-                  {phase === "ended" && <Badge variant="outline" className="text-xs">ENDED</Badge>}
-                </>
-              ) : (
-                <span className="text-xl font-bold text-white">VS</span>
-              )}
-              <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-                <p>{matchDate} - {matchTime}</p>
-                <p>Municipal Stadium</p>
+              {/* Home team: logo above name */}
+              <div className="flex flex-col gap-3 items-center w-[135px]">
+                <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} name={homeTeam.name} className="h-[70px] w-[70px] rounded-[7px]" />
+                <p className="text-[24px] font-bold text-center text-[#fafafa] truncate w-full leading-8">{homeTeam.name}</p>
               </div>
-            </div>
 
-            {/* Away team: logo above name */}
-            <div className="flex flex-col gap-3 items-center w-[135px]">
-              <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} name={awayTeam.name} className="h-[70px] w-[70px] rounded-[7px]" />
-              <p className="text-xl font-bold text-center text-white truncate w-full">{awayTeam.name}</p>
-            </div>
+              {/* Center: score/VS + date + stadium */}
+              <div className="flex flex-col items-center gap-4">
+                {phase !== "pre_game" ? (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[36px] font-bold tabular-nums leading-10 text-[#fafafa]">{homeScore}</span>
+                      <span className="text-[24px] text-[#999]">×</span>
+                      <span className="text-[36px] font-bold tabular-nums leading-10 text-[#fafafa]">{awayScore}</span>
+                    </div>
+                    {phase === "ended" && <Badge variant="outline" className="text-xs">ENDED</Badge>}
+                  </>
+                ) : (
+                  <span className="text-[36px] font-bold text-[#fafafa] leading-10">VS</span>
+                )}
+                <div className="flex flex-col items-center gap-1 text-[14px] text-[#fafafa]">
+                  <p>{matchDate} - {matchTime}</p>
+                  <p>Municipal Stadium</p>
+                </div>
+              </div>
 
+              {/* Away team: logo above name */}
+              <div className="flex flex-col gap-3 items-center w-[135px]">
+                <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} name={awayTeam.name} className="h-[70px] w-[70px] rounded-[7px]" />
+                <p className="text-[24px] font-bold text-center text-[#fafafa] truncate w-full leading-8">{awayTeam.name}</p>
+              </div>
+
+            </div>
           </div>
         </CardContent>
       </Card>
