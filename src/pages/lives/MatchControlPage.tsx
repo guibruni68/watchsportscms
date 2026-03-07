@@ -124,6 +124,23 @@ function computeScore(events: MatchEvent[], team: "home" | "away") {
   ).length
 }
 
+function TeamLogo({ logo, abbreviation }: { logo?: string; abbreviation: string }) {
+  if (logo) {
+    return (
+      <img
+        src={logo}
+        alt={abbreviation}
+        className="h-10 w-10 rounded-[4px] object-cover shrink-0"
+      />
+    )
+  }
+  return (
+    <div className="h-10 w-10 rounded-[4px] bg-muted border flex items-center justify-center font-bold text-sm shrink-0">
+      {abbreviation}
+    </div>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function MatchControlPage() {
@@ -303,9 +320,7 @@ export default function MatchControlPage() {
           {/* Teams + score row — 40px below league name, mb-16 keeps ~65px gap to separator */}
           <div className="flex items-center justify-between mb-16">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-[4px] bg-muted border flex items-center justify-center font-bold text-sm shrink-0">
-                {homeTeam.abbreviation}
-              </div>
+              <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} />
               <p className="text-2xl font-bold">{homeTeam.name}</p>
             </div>
             <div className="flex flex-col items-center gap-1">
@@ -323,9 +338,7 @@ export default function MatchControlPage() {
               )}
             </div>
             <div className="flex items-center gap-3 flex-row-reverse">
-              <div className="h-10 w-10 rounded-[4px] bg-muted border flex items-center justify-center font-bold text-sm shrink-0">
-                {awayTeam.abbreviation}
-              </div>
+              <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} />
               <p className="text-2xl font-bold">{awayTeam.name}</p>
             </div>
           </div>
