@@ -260,11 +260,9 @@ export default function LivesPage() {
                     onView={() => handleView(live.id)}
                     onEdit={() => handleEdit(live)}
                     onDelete={() => handleDelete(live.id)}
-                    onStats={() => navigate(`/lives/${live.id}?tab=stats`)}
                     onMatchControl={() => navigate(`/lives/${live.id}/match-control`)}
                     onReport={() => setReportLive(live)}
                     showView={true}
-                    showStats={true}
                     showMatchControl={true}
                     showReport={true}
                   />
