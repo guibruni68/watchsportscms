@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { ArrowLeft, Flag, Clock, Target, ArrowLeftRight, UserPlus, Plus, X, Calendar, MapPin, Trophy } from "lucide-react"
+import { ArrowLeft, Flag, Clock, Target, ArrowLeftRight, UserPlus, Plus, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -124,18 +124,19 @@ function computeScore(events: MatchEvent[], team: "home" | "away") {
   ).length
 }
 
-function TeamLogo({ logo, abbreviation, name }: { logo?: string; abbreviation: string; name: string }) {
+function TeamLogo({ logo, abbreviation, name, className }: { logo?: string; abbreviation: string; name: string; className?: string }) {
+  const sizeClass = className ?? "h-10 w-10 rounded-[4px]"
   if (logo) {
     return (
       <img
         src={logo}
         alt={name}
-        className="h-10 w-10 rounded-[4px] object-cover shrink-0"
+        className={`object-cover shrink-0 ${sizeClass}`}
       />
     )
   }
   return (
-    <div className="h-10 w-10 rounded-[4px] bg-muted border flex items-center justify-center font-bold text-sm shrink-0">
+    <div className={`bg-muted border flex items-center justify-center font-bold text-sm shrink-0 ${sizeClass}`}>
       {abbreviation}
     </div>
   )
@@ -313,17 +314,21 @@ export default function MatchControlPage() {
 
       {/* ── Match Info Card ── */}
       <Card>
-        <CardContent className="px-6 pt-7 pb-5">
-          {/* League name — top: 27px, h: 16px → mb keeps 40px gap to teams */}
-          <p className="text-[12px] font-bold uppercase tracking-[1.2px] text-muted-foreground text-center mb-10">State Championship 2026</p>
+        <CardContent className="px-6 pt-7 pb-8">
+          {/* League name */}
+          <p className="text-[12px] font-bold uppercase tracking-[1.2px] text-muted-foreground text-center mb-8">State Championship 2026</p>
 
-          {/* Teams + score row — 40px below league name, mb-16 keeps ~65px gap to separator */}
-          <div className="flex items-center justify-between mb-16">
-            <div className="flex items-center gap-3">
-              <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} name={homeTeam.name} />
-              <p className="text-2xl font-bold">{homeTeam.name}</p>
+          {/* Teams + score row */}
+          <div className="flex items-center justify-between">
+
+            {/* Home team: logo above name */}
+            <div className="flex flex-col gap-3 items-center w-[135px]">
+              <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} name={homeTeam.name} className="h-[70px] w-[70px] rounded-[7px]" />
+              <p className="text-2xl font-bold text-center">{homeTeam.name}</p>
             </div>
-            <div className="flex flex-col items-center gap-1">
+
+            {/* Center: score/VS + date + stadium */}
+            <div className="flex flex-col items-center gap-4">
               {phase !== "pre_game" ? (
                 <>
                   <div className="flex items-center gap-3">
@@ -331,50 +336,23 @@ export default function MatchControlPage() {
                     <span className="text-2xl text-muted-foreground">×</span>
                     <span className="text-[36px] font-bold tabular-nums leading-10">{awayScore}</span>
                   </div>
-                  {phase === "ended" && <Badge variant="outline" className="text-xs mt-1">ENDED</Badge>}
+                  {phase === "ended" && <Badge variant="outline" className="text-xs">ENDED</Badge>}
                 </>
               ) : (
                 <span className="text-2xl font-light text-muted-foreground">VS</span>
               )}
+              <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
+                <p>{matchDate} - {matchTime}</p>
+                <p>Municipal Stadium</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3 flex-row-reverse">
-              <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} name={awayTeam.name} />
-              <p className="text-2xl font-bold">{awayTeam.name}</p>
-            </div>
-          </div>
 
-          {/* Separator — 16px gap to info row */}
-          <Separator className="mb-4" />
+            {/* Away team: logo above name */}
+            <div className="flex flex-col gap-3 items-center w-[135px]">
+              <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} name={awayTeam.name} className="h-[70px] w-[70px] rounded-[7px]" />
+              <p className="text-2xl font-bold text-center">{awayTeam.name}</p>
+            </div>
 
-          {/* Info row — centered with 186px gap between items (matches Figma) */}
-          <div className="flex items-center justify-center gap-[186px]">
-            <div className="flex items-center gap-4 shrink-0">
-              <div className="h-10 w-10 rounded-[10px] border border-border bg-background flex items-center justify-center shrink-0">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground leading-4">Date & Time</p>
-                <p className="text-sm leading-5">{matchDate} at {matchTime}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 shrink-0">
-              <div className="h-10 w-10 rounded-[10px] border border-border bg-background flex items-center justify-center shrink-0">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground leading-4">Location</p>
-                <p className="text-sm leading-5">Municipal Stadium</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 shrink-0">
-              <div className="h-10 w-10 rounded-[10px] border border-border bg-background flex items-center justify-center shrink-0">
-                <Trophy className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground leading-4">Competition</p>
-                <p className="text-sm leading-5">State Championship</p>
-              </div>
-            </div>
           </div>
         </CardContent>
       </Card>
