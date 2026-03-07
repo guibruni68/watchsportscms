@@ -25,6 +25,7 @@ interface MatchTeam {
   id: string
   abbreviation: string
   name: string
+  logo?: string
   players: MatchPlayer[]
 }
 
@@ -134,10 +135,18 @@ export default function MatchControlPage() {
   const [events, setEvents] = useState<MatchEvent[]>([])
 
   const [homeTeam, setHomeTeam] = useState<MatchTeam>({
-    id: "home", abbreviation: "CAS", name: "Home Team", players: defaultHomePlayers,
+    id: "home",
+    abbreviation: "BSM",
+    name: "Basement Basketball",
+    logo: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-basement.png",
+    players: defaultHomePlayers,
   })
   const [awayTeam, setAwayTeam] = useState<MatchTeam>({
-    id: "away", abbreviation: "VIS", name: "Away Team", players: defaultAwayPlayers,
+    id: "away",
+    abbreviation: "BCT",
+    name: "Big City Thunder",
+    logo: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-bigcitythunder.png",
+    players: defaultAwayPlayers,
   })
 
   // Dialog states
@@ -266,78 +275,91 @@ export default function MatchControlPage() {
   return (
     <div className="space-y-6 pb-10">
 
-      {/* ── Back button ── */}
-      <div>
+      {/* ── Top bar: Back + action button ── */}
+      <div className="flex items-center justify-between">
         <Button variant="ghost" size="icon" onClick={() => navigate("/lives")} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
         </Button>
+        {phase === "pre_game" && (
+          <Button onClick={() => setShowStartDialog(true)} disabled={!isReady} className="gap-1.5">
+            Start Match
+            {!isReady && <span className="text-xs font-normal opacity-70">({homeStarters.length}/11 · {awayStarters.length}/11)</span>}
+          </Button>
+        )}
+        {phase === "live" && (
+          <Button variant="destructive" size="sm" className="gap-1.5" onClick={() => setShowEndDialog(true)}>
+            <Flag className="h-3.5 w-3.5" />
+            End Match
+          </Button>
+        )}
       </div>
 
       {/* ── Match Info Card ── */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Match Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Teams row */}
-          <div className="flex items-start justify-between">
-            <div>
+        <CardContent className="px-6 pt-7 pb-5">
+          {/* League name — top: 27px, h: 16px → mb keeps 40px gap to teams */}
+          <p className="text-[12px] font-bold uppercase tracking-[1.2px] text-muted-foreground text-center mb-10">State Championship 2026</p>
+
+          {/* Teams + score row — 40px below league name, mb-16 keeps ~65px gap to separator */}
+          <div className="flex items-center justify-between mb-16">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-[4px] bg-muted border flex items-center justify-center font-bold text-sm shrink-0">
+                {homeTeam.abbreviation}
+              </div>
               <p className="text-2xl font-bold">{homeTeam.name}</p>
-              <p className="text-sm text-muted-foreground">Home</p>
             </div>
-            <div className="flex flex-col items-center gap-1 px-4 pt-1">
+            <div className="flex flex-col items-center gap-1">
               {phase !== "pre_game" ? (
                 <>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">State Championship 2026</p>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="text-4xl font-bold tabular-nums">{homeScore}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[36px] font-bold tabular-nums leading-10">{homeScore}</span>
                     <span className="text-2xl text-muted-foreground">×</span>
-                    <span className="text-4xl font-bold tabular-nums">{awayScore}</span>
+                    <span className="text-[36px] font-bold tabular-nums leading-10">{awayScore}</span>
                   </div>
                   {phase === "ended" && <Badge variant="outline" className="text-xs mt-1">ENDED</Badge>}
-                  {phase === "live" && (
-                    <Button variant="destructive" size="sm" className="gap-1.5 mt-2" onClick={() => setShowEndDialog(true)}>
-                      <Flag className="h-3.5 w-3.5" />
-                      End Match
-                    </Button>
-                  )}
                 </>
               ) : (
-                <>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">State Championship 2026</p>
-                  <span className="text-2xl font-light text-muted-foreground mt-2">VS</span>
-                </>
+                <span className="text-2xl font-light text-muted-foreground">VS</span>
               )}
             </div>
-            <div className="text-right">
+            <div className="flex items-center gap-3 flex-row-reverse">
+              <div className="h-10 w-10 rounded-[4px] bg-muted border flex items-center justify-center font-bold text-sm shrink-0">
+                {awayTeam.abbreviation}
+              </div>
               <p className="text-2xl font-bold">{awayTeam.name}</p>
-              <p className="text-sm text-muted-foreground">Away</p>
             </div>
           </div>
 
-          <Separator />
+          {/* Separator — 16px gap to info row */}
+          <Separator className="mb-4" />
 
-          {/* Info row: date, location, competition */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="flex items-start gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+          {/* Info row — centered with 186px gap between items (matches Figma) */}
+          <div className="flex items-center justify-center gap-[186px]">
+            <div className="flex items-center gap-4 shrink-0">
+              <div className="h-10 w-10 rounded-[10px] border border-border bg-background flex items-center justify-center shrink-0">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </div>
               <div>
-                <p className="text-xs text-muted-foreground">Date & Time</p>
-                <p className="text-sm font-medium">{matchDate} at {matchTime}</p>
+                <p className="text-xs text-muted-foreground leading-4">Date & Time</p>
+                <p className="text-sm leading-5">{matchDate} at {matchTime}</p>
               </div>
             </div>
-            <div className="flex items-start gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+            <div className="flex items-center gap-4 shrink-0">
+              <div className="h-10 w-10 rounded-[10px] border border-border bg-background flex items-center justify-center shrink-0">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+              </div>
               <div>
-                <p className="text-xs text-muted-foreground">Location</p>
-                <p className="text-sm font-medium">Municipal Stadium</p>
+                <p className="text-xs text-muted-foreground leading-4">Location</p>
+                <p className="text-sm leading-5">Municipal Stadium</p>
               </div>
             </div>
-            <div className="flex items-start gap-2">
-              <Trophy className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+            <div className="flex items-center gap-4 shrink-0">
+              <div className="h-10 w-10 rounded-[10px] border border-border bg-background flex items-center justify-center shrink-0">
+                <Trophy className="h-4 w-4 text-muted-foreground" />
+              </div>
               <div>
-                <p className="text-xs text-muted-foreground">Competition</p>
-                <p className="text-sm font-medium">State Championship</p>
+                <p className="text-xs text-muted-foreground leading-4">Competition</p>
+                <p className="text-sm leading-5">State Championship</p>
               </div>
             </div>
           </div>
@@ -349,13 +371,6 @@ export default function MatchControlPage() {
       ══════════════════════════════════════════════ */}
       {phase === "pre_game" && (
         <>
-          <div className="flex justify-end">
-            <Button onClick={() => setShowStartDialog(true)} disabled={!isReady} className="gap-1.5">
-              Start Match
-              {!isReady && <span className="text-xs font-normal opacity-70">({homeStarters.length}/11 · {awayStarters.length}/11)</span>}
-            </Button>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {(["home", "away"] as const).map(side => {
               const team     = side === "home" ? homeTeam : awayTeam
@@ -457,7 +472,7 @@ export default function MatchControlPage() {
               </CardHeader>
               <CardContent>
                 {phase === "live" ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                  <div className="grid grid-cols-5 gap-2">
                     {([
                       { type: "goal" as EventType,         label: "Goal",         icon: "⚽" },
                       { type: "substitution" as EventType, label: "Substitution", icon: "🔄" },
@@ -466,9 +481,9 @@ export default function MatchControlPage() {
                       { type: "penalty" as EventType,      label: "Penalty",      icon: "🎯" },
                     ] as const).map(({ type, label, icon }) => (
                       <button key={type} onClick={() => openEventDialog(type)}
-                        className="flex flex-col items-center gap-2 p-3 rounded-lg border border-border hover:bg-muted/60 hover:border-foreground/20 transition-colors text-center">
-                        <span className="text-2xl">{icon}</span>
-                        <span className="text-xs font-medium leading-tight">{label}</span>
+                        className="flex flex-col items-center justify-center gap-2 h-[81px] rounded-xl border border-border hover:bg-muted/60 hover:border-foreground/20 transition-colors text-center">
+                        <span className="text-2xl leading-8">{icon}</span>
+                        <span className="text-xs leading-none">{label}</span>
                       </button>
                     ))}
                   </div>
@@ -521,28 +536,6 @@ export default function MatchControlPage() {
         </div>
       )}
 
-      {/* Ended summary */}
-      {phase === "ended" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Match Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-3 gap-4 text-center">
-            <div className="rounded-lg border p-4">
-              <p className="text-2xl font-bold">{events.filter(e => e.type === "goal" || e.type === "penalty").length}</p>
-              <p className="text-xs text-muted-foreground">Total Goals</p>
-            </div>
-            <div className="rounded-lg border p-4">
-              <p className="text-2xl font-bold">{events.filter(e => e.type === "yellow_card").length}</p>
-              <p className="text-xs text-muted-foreground">Yellow Cards</p>
-            </div>
-            <div className="rounded-lg border p-4">
-              <p className="text-2xl font-bold">{events.filter(e => e.type === "substitution").length}</p>
-              <p className="text-xs text-muted-foreground">Substitutions</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* ══════════════════════════════════════════════
           DIALOGS
