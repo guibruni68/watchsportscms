@@ -124,12 +124,12 @@ function computeScore(events: MatchEvent[], team: "home" | "away") {
   ).length
 }
 
-function TeamLogo({ logo, abbreviation }: { logo?: string; abbreviation: string }) {
+function TeamLogo({ logo, abbreviation, name }: { logo?: string; abbreviation: string; name: string }) {
   if (logo) {
     return (
       <img
         src={logo}
-        alt={abbreviation}
+        alt={name}
         className="h-10 w-10 rounded-[4px] object-cover shrink-0"
       />
     )
@@ -320,7 +320,7 @@ export default function MatchControlPage() {
           {/* Teams + score row — 40px below league name, mb-16 keeps ~65px gap to separator */}
           <div className="flex items-center justify-between mb-16">
             <div className="flex items-center gap-3">
-              <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} />
+              <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} name={homeTeam.name} />
               <p className="text-2xl font-bold">{homeTeam.name}</p>
             </div>
             <div className="flex flex-col items-center gap-1">
@@ -338,7 +338,7 @@ export default function MatchControlPage() {
               )}
             </div>
             <div className="flex items-center gap-3 flex-row-reverse">
-              <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} />
+              <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} name={awayTeam.name} />
               <p className="text-2xl font-bold">{awayTeam.name}</p>
             </div>
           </div>
