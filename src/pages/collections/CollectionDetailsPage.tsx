@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Edit, Calendar, FileText, X, Info, CalendarDays, Globe } from "lucide-react";
+import { ArrowLeft, Calendar, FileText, X, Info, CalendarDays, Globe } from "lucide-react";
 import { getCollectionById } from "@/data/mockCatalogues";
 import { toast } from "@/hooks/use-toast";
 import { getContentStatus, cn } from "@/lib/utils";
@@ -148,40 +148,40 @@ export default function CollectionDetailsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-        </div>
-        <Button onClick={handleEdit} className="gap-2">
-          <Edit className="h-4 w-4" />
-          Edit Collection
-        </Button>
-      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/collections")}
+        className="text-muted-foreground hover:text-foreground gap-2 px-0"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Collections
+      </Button>
 
-      {/* Tab Bar */}
-      <div className="flex gap-1 p-1 bg-[#0d0d0d] border border-[#1f1f1f] rounded-xl w-fit">
-        {([
-          { id: "information" as TabType, label: "Information", icon: Info },
-          { id: "seasons"     as TabType, label: "Seasons",     icon: CalendarDays },
-          { id: "publishing"  as TabType, label: "Publishing",  icon: Globe },
-        ]).map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
-              activeTab === tab.id
-                ? "bg-[#1a1a1a] text-white"
-                : "text-muted-foreground hover:text-white"
-            )}
-          >
-            <tab.icon className="h-4 w-4" />
-            {tab.label}
-          </button>
-        ))}
+      {/* Tabs */}
+      <div className="border-b border-[#1f1f1f]">
+        <div className="flex gap-0">
+          {([
+            { id: "information" as TabType, label: "Information", icon: Info },
+            { id: "seasons"     as TabType, label: "Seasons",     icon: CalendarDays },
+            { id: "publishing"  as TabType, label: "Publishing",  icon: Globe },
+          ]).map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
+                activeTab === tab.id ? "text-white" : "text-muted-foreground hover:text-white/80"
+              )}
+            >
+              <tab.icon className="h-3.5 w-3.5" />
+              {tab.label}
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Collection Information */}
