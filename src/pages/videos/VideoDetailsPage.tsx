@@ -204,7 +204,7 @@ export default function VideoDetailsPage() {
 
               {/* Video Info */}
               <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold text-white">
+                <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
                   {video.title}
                 </h1>
                 <Badge variant="neutral">
