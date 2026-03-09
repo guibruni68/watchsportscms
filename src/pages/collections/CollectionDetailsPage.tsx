@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Calendar, FileText, X, Info, CalendarDays, Globe } from "lucide-react";
+import { ArrowLeft, Calendar, Info, CalendarDays, Globe } from "lucide-react";
 import { getCollectionById } from "@/data/mockCatalogues";
 import { toast } from "@/hooks/use-toast";
 import { getContentStatus, cn } from "@/lib/utils";
@@ -62,8 +62,6 @@ export default function CollectionDetailsPage() {
   const navigate = useNavigate();
   const [collection, setCollection] = useState<Collection | null>(null);
   const [loading, setLoading] = useState(true);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-
   const [activeTab, setActiveTab] = useState<TabType>("information")
 
   useEffect(() => {
@@ -120,10 +118,6 @@ export default function CollectionDetailsPage() {
 
     fetchData();
   }, [id, navigate]);
-
-  const handleEdit = () => {
-    navigate(`/collections/edit/${id}`);
-  };
 
   if (loading) {
     return (
@@ -186,94 +180,45 @@ export default function CollectionDetailsPage() {
 
       {/* Collection Information */}
       {activeTab === "information" && (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl flex items-center gap-2">
-            <FileText className="h-6 w-6" />
-            {collection.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Collection Cover */}
-            <div className="flex-shrink-0 space-y-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-2">Card Image</label>
-                <div 
-                  className="relative w-full md:w-64 aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
-                  onClick={() => collection.cardImageUrl && setLightboxImage(collection.cardImageUrl)}
-                >
-                  {collection.cardImageUrl ? (
-                    <img 
-                      src={collection.cardImageUrl} 
-                      alt={collection.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <FileText className="h-12 w-12 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {collection.bannerImageUrl && (
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+        <CardContent className="p-7">
+          <div className="flex gap-12">
+            <div className="flex-1 space-y-8">
+              {collection.description && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground block mb-2">Banner Image</label>
-                  <div 
-                    className="relative w-full md:w-64 aspect-[21/9] rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => setLightboxImage(collection.bannerImageUrl!)}
-                  >
-                    <img 
-                      src={collection.bannerImageUrl} 
-                      alt={`${collection.title} banner`}
-                      className="w-full h-full object-cover"
-                    />
+                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+                  <p className="text-sm text-white/80 leading-relaxed">{collection.description}</p>
+                </div>
+              )}
+              {collection.genres && collection.genres.length > 0 && (
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {collection.genres.map((genre, i) => (
+                      <Badge key={i} variant="neutral">{genre}</Badge>
+                    ))}
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Collection Info */}
-            <div className="flex-1 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {collection.ageRating && (
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">Age Rating</p>
-                    <p className="text-sm">{collection.ageRating}</p>
-                  </div>
-                )}
+            <div className="w-64 space-y-8">
+              {collection.ageRating && (
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Age Rating</h3>
+                  <p className="text-sm text-white/80">{collection.ageRating}</p>
+                </div>
+              )}
+              <div>
+                <h3 className="text-base font-semibold text-white mb-4">Created At</h3>
+                <p className="text-sm text-white/80">
+                  {new Date(collection.createdAt || collection.published_at).toLocaleDateString("en-US")}
+                </p>
               </div>
-
-              {collection.genres && collection.genres.length > 0 && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Genres</p>
-                  <p className="text-sm">
-                    {collection.genres.join(", ")}
-                  </p>
-                </div>
-              )}
-
-              {collection.description && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Description</p>
-                  <p className="text-sm bg-muted/50 p-3 rounded-md">{collection.description}</p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Created At</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(collection.createdAt || collection.published_at).toLocaleDateString("en-US")}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Last Updated</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(collection.updatedAt || collection.updated_at).toLocaleDateString("en-US")}
-                  </p>
-                </div>
+              <div>
+                <h3 className="text-base font-semibold text-white mb-4">Last Updated</h3>
+                <p className="text-sm text-white/80">
+                  {new Date(collection.updatedAt || collection.updated_at).toLocaleDateString("en-US")}
+                </p>
               </div>
             </div>
           </div>
@@ -283,14 +228,9 @@ export default function CollectionDetailsPage() {
 
       {/* Seasons and Contents */}
       {activeTab === "seasons" && (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CalendarDays className="h-5 w-5" />
-            Seasons ({collection.seasons?.length || 0})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+        <CardContent className="p-7">
+          <h3 className="text-base font-semibold text-white mb-6">Seasons ({collection.seasons?.length || 0})</h3>
           {!collection.seasons || collection.seasons.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               No seasons available for this collection yet.
@@ -364,34 +304,35 @@ export default function CollectionDetailsPage() {
 
       {/* Publishing */}
       {activeTab === "publishing" && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Publishing</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Status</p>
-                <Badge variant="neutral">
-                  {getContentStatus(collection.enabled ?? collection.available, collection.scheduleDate || collection.published_at)}
-                </Badge>
-              </div>
-              {collection.badge && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Badge</p>
-                  <p className="text-sm">{collection.badge}</p>
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              <div className="flex-1 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Status</h3>
+                  <Badge variant="neutral">
+                    {getContentStatus(collection.enabled ?? collection.available, collection.scheduleDate || collection.published_at)}
+                  </Badge>
                 </div>
-              )}
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-foreground uppercase tracking-wide">Label</p>
-                <p className="text-sm">{collection.label || "COLLECTION"}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Label</h3>
+                  <p className="text-sm text-white/80">{collection.label || "COLLECTION"}</p>
+                </div>
+                {collection.badge && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Badge</h3>
+                    <p className="text-sm text-white/80">{collection.badge}</p>
+                  </div>
+                )}
               </div>
               {collection.scheduleDate && (
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-foreground uppercase tracking-wide">Schedule Date</p>
-                  <div className="text-sm flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    {new Date(collection.scheduleDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                <div className="w-64 space-y-8">
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Schedule Date</h3>
+                    <p className="text-sm text-white/80 flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      {new Date(collection.scheduleDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                    </p>
                   </div>
                 </div>
               )}
@@ -400,28 +341,6 @@ export default function CollectionDetailsPage() {
         </Card>
       )}
 
-      {/* Lightbox Modal */}
-      {lightboxImage && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setLightboxImage(null)}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 right-4 text-white hover:bg-white/20"
-            onClick={() => setLightboxImage(null)}
-          >
-            <X className="h-6 w-6" />
-          </Button>
-          <img 
-            src={lightboxImage} 
-            alt="Enlarged view"
-            className="max-w-full max-h-full object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
     </div>
   );
 }

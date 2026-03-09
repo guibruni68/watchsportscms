@@ -71,7 +71,7 @@ export function ActionDropdown({
         {showMatchControl && onMatchControl && (
           <DropdownMenuItem onClick={onMatchControl} className="py-2 px-3 cursor-pointer">
             <Gamepad2 className="mr-3 h-4 w-4" />
-            Controle de Partida
+            Play by Play
           </DropdownMenuItem>
         )}
         {showReport && onReport && (

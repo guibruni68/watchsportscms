@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { ArrowLeft, Flag, Clock, Target, ArrowLeftRight, UserPlus, Plus, X } from "lucide-react"
+import { ArrowLeft, Flag, Clock, Target, ArrowLeftRight, UserPlus, User, Plus, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -33,7 +33,9 @@ interface MatchEvent {
   id: string
   type: "goal" | "yellow_card" | "red_card" | "penalty" | "substitution"
   team: "home" | "away"
+  playerId: string
   playerName: string
+  playerInId?: string
   playerInName?: string
   minute: number
   period?: "1st" | "2nd" | "extra_time"
@@ -196,7 +198,16 @@ export default function MatchControlPage() {
   const awayReserves = awayTeam.players.filter(p => !p.isStarter)
   const isReady      = homeStarters.length === 11 && awayStarters.length === 11
 
-  const teamForSide    = (side: "home" | "away") => side === "home" ? homeTeam : awayTeam
+  const teamForSide = (side: "home" | "away") => side === "home" ? homeTeam : awayTeam
+
+  function getPlayersOnField(side: "home" | "away") {
+    const redCardedIds = new Set(
+      events.filter(e => e.type === "red_card" && e.team === side).map(e => e.playerId)
+    )
+    return teamForSide(side).players
+      .filter(p => p.isStarter && !redCardedIds.has(p.id))
+      .sort((a, b) => a.number - b.number)
+  }
   const setTeamForSide = (side: "home" | "away", team: MatchTeam) =>
     side === "home" ? setHomeTeam(team) : setAwayTeam(team)
 
@@ -237,6 +248,7 @@ export default function MatchControlPage() {
       id: `evt-${Date.now()}`,
       type: eventDialog.type,
       team: teamSide,
+      playerId,
       playerName: player.name,
       minute: parseInt(minute),
     }
@@ -266,7 +278,9 @@ export default function MatchControlPage() {
       id: `sub-${Date.now()}`,
       type: "substitution",
       team: teamSide,
+      playerId: playerOutId,
       playerName: playerOut.name,
+      playerInId,
       playerInName: playerIn.name,
       minute: parseInt(minute),
       period,
@@ -293,24 +307,10 @@ export default function MatchControlPage() {
   return (
     <div className="space-y-6 pb-10">
 
-      {/* ── Top bar: Back + action button ── */}
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/lives")} className="text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        {phase === "pre_game" && (
-          <Button onClick={() => setShowStartDialog(true)} disabled={!isReady} className="gap-1.5">
-            Start Match
-            {!isReady && <span className="text-xs font-normal opacity-70">({homeStarters.length}/11 · {awayStarters.length}/11)</span>}
-          </Button>
-        )}
-        {phase === "live" && (
-          <Button variant="destructive" size="sm" className="gap-1.5" onClick={() => setShowEndDialog(true)}>
-            <Flag className="h-3.5 w-3.5" />
-            End Match
-          </Button>
-        )}
-      </div>
+      {/* ── Top bar: Back ── */}
+      <Button variant="ghost" size="icon" onClick={() => navigate("/lives")} className="text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" />
+      </Button>
 
       {/* ── Match Info Card ── */}
       <Card>
@@ -325,8 +325,8 @@ export default function MatchControlPage() {
 
               {/* Home team: logo above name */}
               <div className="flex flex-col gap-3 items-center w-[160px]">
-                <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} name={homeTeam.name} className="h-[72px] w-[72px] rounded-[7px]" />
-                <p className="text-[20px] font-bold text-center text-[#fafafa] truncate w-full leading-7">{homeTeam.name}</p>
+                <TeamLogo logo={homeTeam.logo} abbreviation={homeTeam.abbreviation} name={homeTeam.name} className="h-[88px] w-[88px] rounded-[7px]" />
+                <p className="text-[20px] font-bold text-center text-[#fafafa] line-clamp-2 w-full leading-7">{homeTeam.name}</p>
               </div>
 
               {/* Center: score/VS (aligned with logos) + date + stadium */}
@@ -347,12 +347,24 @@ export default function MatchControlPage() {
                   <p>{matchDate} - {matchTime}</p>
                   <p>Municipal Stadium</p>
                 </div>
+                {phase === "pre_game" && (
+                  <Button onClick={() => setShowStartDialog(true)} disabled={!isReady} className="gap-1.5 mt-2">
+                    Start Match
+                    {!isReady && <span className="text-xs font-normal opacity-70">({homeStarters.length}/11 · {awayStarters.length}/11)</span>}
+                  </Button>
+                )}
+                {phase === "live" && (
+                  <Button variant="destructive" size="sm" className="gap-1.5 mt-2" onClick={() => setShowEndDialog(true)}>
+                    <Flag className="h-3.5 w-3.5" />
+                    End Match
+                  </Button>
+                )}
               </div>
 
               {/* Away team: logo above name */}
               <div className="flex flex-col gap-3 items-center w-[160px]">
-                <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} name={awayTeam.name} className="h-[72px] w-[72px] rounded-[7px]" />
-                <p className="text-[20px] font-bold text-center text-[#fafafa] truncate w-full leading-7">{awayTeam.name}</p>
+                <TeamLogo logo={awayTeam.logo} abbreviation={awayTeam.abbreviation} name={awayTeam.name} className="h-[88px] w-[88px] rounded-[7px]" />
+                <p className="text-[20px] font-bold text-center text-[#fafafa] line-clamp-2 w-full leading-7">{awayTeam.name}</p>
               </div>
 
             </div>
@@ -375,16 +387,16 @@ export default function MatchControlPage() {
                 <Card key={side}>
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <TeamLogo logo={team.logo} abbreviation={team.abbreviation} name={team.name} />
-                        <CardTitle className="text-base">{team.name} Lineup</CardTitle>
+                      <div className="flex items-center gap-3">
+                        <TeamLogo logo={team.logo} abbreviation={team.abbreviation} name={team.name} className="h-10 w-10 rounded-[4px]" />
+                        <CardTitle className="text-base">Match Lineup</CardTitle>
                       </div>
                       <Badge variant={starters.length === 11 ? "default" : "outline"} className="text-xs font-normal">
                         {starters.length}/11
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-3 pt-5">
                     {/* Starters */}
                     <div className="space-y-2">
                       {starters.length === 0 && (
@@ -392,6 +404,9 @@ export default function MatchControlPage() {
                       )}
                       {starters.map(p => (
                         <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border bg-muted/20">
+                          <div className="p-1.5 rounded-lg bg-muted/50 shrink-0">
+                            <User className="h-3.5 w-3.5 text-muted-foreground" />
+                          </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium">{p.name}</p>
                             <p className="text-xs text-muted-foreground">{p.position}</p>
@@ -415,6 +430,9 @@ export default function MatchControlPage() {
                           <div className="space-y-2">
                             {reserves.map(p => (
                               <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-dashed">
+                                <div className="p-1.5 rounded-lg bg-muted/30 shrink-0">
+                                  <User className="h-3.5 w-3.5 text-muted-foreground/50" />
+                                </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm text-muted-foreground">{p.name}</p>
                                   <p className="text-xs text-muted-foreground/60">{p.position}</p>
@@ -469,16 +487,16 @@ export default function MatchControlPage() {
               </CardHeader>
               <CardContent className="flex-1 flex flex-col justify-center">
                 {phase === "live" ? (
-                  <div className="grid grid-cols-5 gap-2">
+                  <div className="grid grid-cols-6 gap-3">
                     {([
-                      { type: "goal" as EventType,         label: "Goal",         icon: "⚽" },
-                      { type: "substitution" as EventType, label: "Substitution", icon: "🔄" },
-                      { type: "yellow_card" as EventType,  label: "Yellow Card",  icon: "🟨" },
-                      { type: "red_card" as EventType,     label: "Red Card",     icon: "🟥" },
-                      { type: "penalty" as EventType,      label: "Penalty",      icon: "🎯" },
-                    ] as const).map(({ type, label, icon }) => (
+                      { type: "goal" as EventType,         label: "Goal",         icon: "⚽",  col: "" },
+                      { type: "substitution" as EventType, label: "Substitution", icon: "🔄", col: "" },
+                      { type: "yellow_card" as EventType,  label: "Yellow Card",  icon: "🟨", col: "" },
+                      { type: "red_card" as EventType,     label: "Red Card",     icon: "🟥", col: "col-start-2" },
+                      { type: "penalty" as EventType,      label: "Penalty",      icon: "🎯",  col: "" },
+                    ] as const).map(({ type, label, icon, col }) => (
                       <button key={type} onClick={() => openEventDialog(type)}
-                        className="flex flex-col items-center justify-center gap-2 h-[81px] rounded-xl border border-border hover:bg-muted/60 hover:border-foreground/20 transition-colors text-center">
+                        className={`col-span-2 ${col} flex flex-col items-center justify-center gap-2 h-[96px] rounded-xl border border-border hover:bg-muted/60 hover:border-foreground/20 transition-colors text-center`}>
                         <span className="text-2xl leading-8">{icon}</span>
                         <span className="text-xs leading-none">{label}</span>
                       </button>
@@ -502,8 +520,8 @@ export default function MatchControlPage() {
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden flex flex-col">
                 {events.length === 0 ? (
-                  <div className="py-8 text-center space-y-2">
-                    <Clock className="h-8 w-8 text-muted-foreground mx-auto" />
+                  <div className="flex-1 flex flex-col items-center justify-center gap-2">
+                    <Clock className="h-8 w-8 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground">No events yet</p>
                   </div>
                 ) : (
@@ -658,9 +676,7 @@ export default function MatchControlPage() {
               <Select value={eventForm.playerId} onValueChange={v => setEventForm(f => ({ ...f, playerId: v }))}>
                 <SelectTrigger><SelectValue placeholder="Select player" /></SelectTrigger>
                 <SelectContent>
-                  {teamForSide(eventForm.teamSide).players
-                    .filter(p => p.isStarter)
-                    .sort((a, b) => a.number - b.number)
+                  {getPlayersOnField(eventForm.teamSide)
                     .map(p => <SelectItem key={p.id} value={p.id}>{p.number} — {p.name}</SelectItem>)}
                 </SelectContent>
               </Select>
@@ -707,9 +723,8 @@ export default function MatchControlPage() {
               <Select value={subForm.playerOutId} onValueChange={v => setSubForm(f => ({ ...f, playerOutId: v }))}>
                 <SelectTrigger><SelectValue placeholder="Select player" /></SelectTrigger>
                 <SelectContent>
-                  {teamForSide(subForm.teamSide).players
-                    .filter(p => p.isStarter && p.id !== subForm.playerInId)
-                    .sort((a, b) => a.number - b.number)
+                  {getPlayersOnField(subForm.teamSide)
+                    .filter(p => p.id !== subForm.playerInId)
                     .map(p => <SelectItem key={p.id} value={p.id}>{p.number} — {p.name}</SelectItem>)}
                 </SelectContent>
               </Select>

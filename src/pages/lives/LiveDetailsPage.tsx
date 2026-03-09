@@ -318,40 +318,41 @@ export default function LiveDetailsPage() {
       {/* INFORMATION TAB */}
       {activeTab === "information" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="p-7 space-y-8">
-            <h3 className="text-lg font-semibold text-white">Information</h3>
-            <div>
-              <h3 className="text-base font-semibold text-white mb-4">Description</h3>
-              <p className="text-sm text-white/80 leading-relaxed max-w-xl">
-                {live.description || "No description available."}
-              </p>
-            </div>
-            {live.genre && live.genre.length > 0 && (
-              <div>
-                <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
-                <div className="flex flex-wrap gap-2">
-                  {live.genre.map((genre, index) => (
-                    <div key={index} className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]">
-                      <span className="text-xs font-medium text-white/50">{genre}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {live.ageRating && (
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              <div className="flex-1 space-y-8">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Age Rating</p>
-                  <p className="text-sm text-white">{live.ageRating}</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+                  <p className="text-sm text-white/80 leading-relaxed">
+                    {live.description || "No description available."}
+                  </p>
                 </div>
-              )}
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Created At</p>
-                <p className="text-sm text-white">{formatDateTime(live.createdAt)}</p>
+                {live.genre && live.genre.length > 0 && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {live.genre.map((genre, index) => (
+                        <Badge key={index} variant="neutral">{genre}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Updated At</p>
-                <p className="text-sm text-white">{formatDateTime(live.updatedAt)}</p>
+              <div className="w-64 space-y-8">
+                {live.ageRating && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Age Rating</h3>
+                    <p className="text-sm text-white/80">{live.ageRating}</p>
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Created At</h3>
+                  <p className="text-sm text-white/80">{formatDateTime(live.createdAt)}</p>
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Updated At</h3>
+                  <p className="text-sm text-white/80">{formatDateTime(live.updatedAt)}</p>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -361,13 +362,11 @@ export default function LiveDetailsPage() {
       {activeTab === "media" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
           <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold text-white">Media Assets</h3>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Card Image */}
               {live.cardImageUrl && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-3">Card Image</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Card Image</h3>
                   <div
                     className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => setLightboxImage(live.cardImageUrl!)}
@@ -384,7 +383,7 @@ export default function LiveDetailsPage() {
               {/* Banner Image */}
               {live.bannerImageUrl && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-3">Banner Image</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Banner Image</h3>
                   <div
                     className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => setLightboxImage(live.bannerImageUrl!)}
