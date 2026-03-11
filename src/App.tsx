@@ -42,7 +42,6 @@ import BannerDetailsPage from "./pages/banners/BannerDetailsPage";
 import NewBannerPage from "./pages/banners/NewBannerPage";
 import EditBannerPage from "./pages/banners/EditBannerPage";
 import AdsPage from "./pages/ads/AdsPage";
-import AnalyticsPage from "./pages/analytics/AnalyticsPage";
 import CollectionsPage from "./pages/collections/CollectionsPage";
 import CollectionForm from "./components/forms/CollectionForm";
 import EditCollectionPage from "./pages/collections/EditCollectionPage";
@@ -103,6 +102,11 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/lives/:id/match-control" element={
+              <ProtectedRoute>
+                <MatchControlPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/seasons/:seasonId/games/:gameId/match-control" element={
               <ProtectedRoute>
                 <MatchControlPage />
               </ProtectedRoute>
@@ -255,11 +259,6 @@ const App = () => (
             <Route path="/ads" element={
               <ProtectedRoute>
                 <AdsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/analytics" element={
-              <ProtectedRoute>
-                <AnalyticsPage />
               </ProtectedRoute>
             } />
             <Route path="/collections" element={

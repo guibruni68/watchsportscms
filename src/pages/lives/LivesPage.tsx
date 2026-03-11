@@ -260,10 +260,8 @@ export default function LivesPage() {
                     onView={() => handleView(live.id)}
                     onEdit={() => handleEdit(live)}
                     onDelete={() => handleDelete(live.id)}
-                    onMatchControl={() => navigate(`/lives/${live.id}/match-control`)}
                     onReport={() => setReportLive(live)}
                     showView={true}
-                    showMatchControl={true}
                     showReport={true}
                   />
                 </TableCell>

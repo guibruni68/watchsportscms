@@ -308,7 +308,7 @@ export default function MatchControlPage() {
     <div className="space-y-6 pb-10">
 
       {/* ── Top bar: Back ── */}
-      <Button variant="ghost" size="icon" onClick={() => navigate("/lives")} className="text-muted-foreground hover:text-foreground">
+      <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" />
       </Button>
 
@@ -515,36 +515,44 @@ export default function MatchControlPage() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-1.5">
                   <Clock className="h-4 w-4" />
-                  Timeline ({events.length})
+                  Timeline
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex-1 overflow-hidden flex flex-col">
-                {events.length === 0 ? (
-                  <div className="flex-1 flex flex-col items-center justify-center gap-2">
-                    <Clock className="h-8 w-8 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">No events yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2 flex-1 overflow-y-auto">
-                    {[...events].reverse().map(e => (
-                      <div key={e.id} className="flex items-start gap-3 py-1.5">
-                        <span className="text-xs font-bold tabular-nums text-muted-foreground w-8 shrink-0 mt-0.5">{e.minute}'</span>
-                        <div className="shrink-0 mt-0.5">{eventIcon(e.type)}</div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm leading-tight truncate">
-                            {e.type === "substitution"
-                              ? <><span className="line-through text-muted-foreground">{e.playerName}</span> · {e.playerInName}</>
-                              : e.playerName
-                            }
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {eventLabel(e.type)} · {e.team === "home" ? homeTeam.abbreviation : awayTeam.abbreviation}
-                          </p>
+              <CardContent className="p-4 pt-0">
+                <div className="h-[280px] overflow-y-auto">
+                  {events.length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center gap-2">
+                      <Clock className="h-8 w-8 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">No events yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {[...events].reverse().map(e => (
+                        <div key={e.id} className="flex items-start gap-3 py-1.5">
+                          <span className="text-xs font-bold tabular-nums text-muted-foreground w-8 shrink-0 mt-0.5">{e.minute}'</span>
+                          <div className="shrink-0 mt-0.5">{eventIcon(e.type)}</div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm leading-tight truncate">
+                              {e.type === "substitution"
+                                ? <><span className="line-through text-muted-foreground">{e.playerName}</span> · {e.playerInName}</>
+                                : e.playerName
+                              }
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {eventLabel(e.type)} · {e.team === "home" ? homeTeam.abbreviation : awayTeam.abbreviation}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setEvents(prev => prev.filter(ev => ev.id !== e.id))}
+                            className="shrink-0 text-muted-foreground hover:text-destructive transition-colors p-1 rounded hover:bg-destructive/10"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -683,7 +691,7 @@ export default function MatchControlPage() {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Minute</label>
-              <Input type="number" min={1} max={120} placeholder="e.g. 45"
+              <Input type="number" min={1} max={130} placeholder="e.g. 45"
                 value={eventForm.minute}
                 onChange={e => setEventForm(f => ({ ...f, minute: e.target.value }))} />
             </div>
@@ -744,22 +752,11 @@ export default function MatchControlPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Minute</label>
-                <Input type="number" min={1} max={120} placeholder="e.g. 23"
-                  value={subForm.minute}
-                  onChange={e => setSubForm(f => ({ ...f, minute: e.target.value }))} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Period</label>
-                <Select value={subForm.period} onValueChange={v => setSubForm(f => ({ ...f, period: v as NonNullable<MatchEvent["period"]> }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {PERIODS.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Minute</label>
+              <Input type="number" min={1} max={130} placeholder="e.g. 23"
+                value={subForm.minute}
+                onChange={e => setSubForm(f => ({ ...f, minute: e.target.value }))} />
             </div>
           </div>
           <DialogFooter>

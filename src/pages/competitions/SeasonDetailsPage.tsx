@@ -9,12 +9,13 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Trophy, Users, Search, Plus, Calendar, MapPin, ChevronDown, ChevronRight, ChevronLeft, ChevronsLeft, ChevronsRight, Info, CalendarDays } from "lucide-react"
+import { ArrowLeft, Trophy, Users, Search, Plus, Calendar, ChevronDown, ChevronRight, Info, CalendarDays } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { SeasonForm } from "@/components/forms/SeasonForm"
 import { GameForm } from "@/components/forms/GameForm"
 import { ManageSquadDialog } from "@/components/dialogs/ManageSquadDialog"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
+import { ListPagination } from "@/components/ui/list-controls"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
@@ -830,17 +831,13 @@ export default function SeasonDetailsPage() {
                                   </div>
                                 </div>
 
-                                {/* Location */}
-                                <div className="flex items-center gap-1.5 min-w-[140px] text-sm text-muted-foreground">
-                                  <MapPin className="h-3.5 w-3.5 shrink-0" />
-                                  <span className="truncate">{game.venue}</span>
-                                </div>
-
                                 {/* Actions */}
                                 <ActionDropdown
                                   onEdit={() => handleEditGame(game)}
                                   onDelete={() => handleDeleteGame(game.id)}
+                                  onMatchControl={() => navigate(`/seasons/${effectiveSeasonId}/games/${game.id}/match-control`)}
                                   showView={false}
+                                  showMatchControl={true}
                                 />
                               </div>
                             )
@@ -852,53 +849,15 @@ export default function SeasonDetailsPage() {
                 })}
 
                 {/* Rounds Pagination */}
-                {totalRoundPages > 1 && selectedRoundFilter === "all" && (
-                  <div className="flex items-center justify-between pt-4 border-t border-[#1f1f1f]">
-                    <span className="text-sm text-muted-foreground">
-                      Showing rounds {(currentRoundPage - 1) * ROUNDS_PER_PAGE + 1} - {Math.min(currentRoundPage * ROUNDS_PER_PAGE, filteredRounds.length)} of {filteredRounds.length}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 border-[#1f1f1f]"
-                        onClick={() => setCurrentRoundPage(1)}
-                        disabled={currentRoundPage === 1}
-                      >
-                        <ChevronsLeft className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 border-[#1f1f1f]"
-                        onClick={() => setCurrentRoundPage(p => Math.max(1, p - 1))}
-                        disabled={currentRoundPage === 1}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      <span className="px-3 text-sm text-white">
-                        {currentRoundPage} / {totalRoundPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 border-[#1f1f1f]"
-                        onClick={() => setCurrentRoundPage(p => Math.min(totalRoundPages, p + 1))}
-                        disabled={currentRoundPage === totalRoundPages}
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 border-[#1f1f1f]"
-                        onClick={() => setCurrentRoundPage(totalRoundPages)}
-                        disabled={currentRoundPage === totalRoundPages}
-                      >
-                        <ChevronsRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
+                {selectedRoundFilter === "all" && (
+                  <ListPagination
+                    currentPage={currentRoundPage}
+                    totalPages={totalRoundPages}
+                    onPageChange={setCurrentRoundPage}
+                    itemsPerPage={ROUNDS_PER_PAGE}
+                    onItemsPerPageChange={() => {}}
+                    totalItems={filteredRounds.length}
+                  />
                 )}
               </>
             )}

@@ -1,4 +1,4 @@
-import { Home, Video, Radio, Users, Calendar, Newspaper, BarChart3, Layout, Megaphone, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, UserCircle, Trophy, Briefcase, MapPin, Scale, HelpCircle } from "lucide-react";
+import { Home, Video, Radio, Users, Calendar, Newspaper, Layout, Megaphone, User, LogOut, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, Trophy, Briefcase, MapPin, Scale, HelpCircle } from "lucide-react";
 import teamLogo from "/assets/mosca.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
@@ -106,11 +106,7 @@ const mainNavItems = [{
     }
   ]
 },
-{
-  title: "Analytics",
-  url: "/analytics",
-  icon: BarChart3
-}];
+];
 export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
