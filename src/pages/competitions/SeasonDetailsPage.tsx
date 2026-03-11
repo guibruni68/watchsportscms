@@ -550,22 +550,17 @@ export default function SeasonDetailsPage() {
       </Button>
 
       {/* Header Card */}
-      <Card className="border-[#1f1f1f] bg-[#171717] rounded-xl overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-[#262626] to-[#171717]" />
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
+        <div className="h-32 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
         <div className="px-7 pb-7 -mt-14">
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
               <div className="w-[116px] h-[116px] rounded-full bg-primary overflow-hidden flex items-center justify-center shadow-lg mb-4">
                 <Trophy className="h-12 w-12 text-white" />
               </div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
-                  {season.name}
-                </h1>
-                <Badge variant={getSeasonStatusVariant(season.status)} className="capitalize">
-                  {season.status}
-                </Badge>
-              </div>
+              <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
+                {season.name}
+              </h1>
               <p className="text-sm text-muted-foreground mt-1">
                 {season.competitionName}
               </p>

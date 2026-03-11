@@ -127,7 +127,7 @@ export default function ChampionshipDetailsPage() {
 
       {/* Header Card */}
       <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
-        <div className="h-28 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d]" />
+        <div className="h-28 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
 
         <div className="px-7 pb-7 -mt-14">
           <div className="flex items-start justify-between">

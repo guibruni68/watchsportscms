@@ -82,8 +82,8 @@ export default function NewsDetailPage() {
       </Button>
 
       {/* Header Card */}
-      <Card className="border-[#1f1f1f] bg-[#171717] rounded-xl overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-[#262626] to-[#171717]" />
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
+        <div className="h-32 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
         <div className="px-7 pb-7 -mt-14">
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
@@ -94,10 +94,7 @@ export default function NewsDetailPage() {
                   <Newspaper className="h-10 w-10 text-muted-foreground" />
                 )}
               </div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">{newsItem.header}</h1>
-                <Badge variant="neutral">{newsItem.enabled ? "Enabled" : "Disabled"}</Badge>
-              </div>
+              <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">{newsItem.header}</h1>
               <p className="text-sm text-muted-foreground mt-1">{format(new Date(newsItem.date), "PPP")}</p>
             </div>
             <Button

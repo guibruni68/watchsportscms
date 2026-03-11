@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Calendar, Info, CalendarDays, Globe } from "lucide-react";
+import { ArrowLeft, Calendar, Info, CalendarDays, Globe, Library } from "lucide-react";
 import { getCollectionById } from "@/data/mockCatalogues";
 import { toast } from "@/hooks/use-toast";
 import { getContentStatus, cn } from "@/lib/utils";
@@ -151,6 +151,30 @@ export default function CollectionDetailsPage() {
         <ArrowLeft className="h-4 w-4" />
         Back to Collections
       </Button>
+
+      {/* Header Card */}
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
+        <div className="h-32 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
+        <div className="px-7 pb-7 -mt-14">
+          <div className="flex items-start justify-between">
+            <div className="flex flex-col">
+              <div className="w-[116px] h-[116px] rounded-2xl bg-[#1a1a1a] overflow-hidden flex items-center justify-center shadow-lg mb-4">
+                {collection.cardImageUrl || collection.cover_url ? (
+                  <img
+                    src={collection.cardImageUrl || collection.cover_url}
+                    alt={collection.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Library className="h-10 w-10 text-muted-foreground" />
+                )}
+              </div>
+              <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">{collection.title}</h1>
+              <p className="text-sm text-muted-foreground mt-1">{collection.label || "Collection"}</p>
+            </div>
+          </div>
+        </div>
+      </Card>
 
       {/* Tabs */}
       <div className="border-b border-[#1f1f1f]">

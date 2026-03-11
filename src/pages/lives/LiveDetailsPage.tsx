@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
@@ -225,7 +226,7 @@ export default function LiveDetailsPage() {
       {/* Header Card */}
       <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
         {/* Top banner bar */}
-        <div className="h-28 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d]" />
+        <div className="h-28 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
 
         {/* Header Content */}
         <div className="px-7 pb-7 -mt-14">
