@@ -3,6 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { format } from "date-fns"
 import { useState, useEffect } from "react"
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog"
+import { useNavigationGuard } from "@/hooks/useNavigationGuard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -14,7 +16,6 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select"
 import { FileUpload } from "@/components/ui/file-upload"
 import { getAgentOptions } from "@/data/mockData"
@@ -72,8 +73,6 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
   const navigate = useNavigate()
   const { toast } = useToast()
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false)
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
   const [selectedCountryCode, setSelectedCountryCode] = useState<string>("")
 
   const form = useForm<TeamFormData>({
@@ -97,6 +96,7 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
   })
 
   const { formState: { isDirty } } = form
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty)
 
   // Initialize country code when editing
   useEffect(() => {
@@ -108,20 +108,6 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
       }
     }
   }, [initialData?.country])
-
-  const handleNavigation = (navigateFn: () => void) => {
-    if (isDirty) {
-      setPendingNavigation(() => navigateFn)
-      setShowExitConfirmation(true)
-    } else {
-      navigateFn()
-    }
-  }
-
-  const handleConfirmExit = () => {
-    setShowExitConfirmation(false)
-    pendingNavigation?.()
-  }
 
   const onSubmit = (data: TeamFormData) => {
     console.log("Saving team:", data)
@@ -150,7 +136,7 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/teams"))}
+          onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/teams"))}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -545,7 +531,7 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/teams"))}
+              onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/teams"))}
               className="flex-1"
             >
               Cancel
@@ -581,25 +567,7 @@ export function TeamForm({ initialData, isEdit = false, onClose }: TeamFormProps
         </DialogContent>
       </Dialog>
 
-      {/* Unsaved Changes Confirmation Dialog */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
-              Continue Editing
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmExit}>
-              Discard Changes
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
       <TutorialButton />
     </div>
   )
