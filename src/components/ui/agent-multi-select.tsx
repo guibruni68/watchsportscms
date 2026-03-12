@@ -1,14 +1,7 @@
 import { useState, useMemo } from "react";
-import { User, Users, Plus, X, Mic, Pencil } from "lucide-react";
+import { Search, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export interface Agent {
@@ -41,10 +34,10 @@ const roleLabels: Record<string, string> = {
   writer: "Writer",
 };
 
-const roleIcons: Record<string, React.ReactNode> = {
-  player: <User className="h-3.5 w-3.5" />,
-  coach: <Mic className="h-3.5 w-3.5" />,
-  writer: <Pencil className="h-3.5 w-3.5" />,
+const groupLabels: Record<string, string> = {
+  player: "Players",
+  coach: "Coaches",
+  writer: "Writers",
 };
 
 export function AgentMultiSelect({
@@ -73,13 +66,16 @@ export function AgentMultiSelect({
   }, [availableAgents, search]);
 
   const grouped = useMemo(() => {
-    return {
-      players: filteredAgents.filter((a) => a.type === "agent" && a.role === "player"),
-      coaches: filteredAgents.filter((a) => a.type === "agent" && a.role === "coach"),
-      writers: filteredAgents.filter((a) => a.type === "agent" && a.role === "writer"),
-      others: filteredAgents.filter((a) => a.type === "agent" && !a.role),
-      groups: filteredAgents.filter((a) => a.type === "group"),
-    };
+    const byRole: Record<string, typeof filteredAgents> = {};
+    const others: typeof filteredAgents = [];
+    for (const a of filteredAgents) {
+      if (a.type === "agent" && a.role) {
+        (byRole[a.role] ??= []).push(a);
+      } else {
+        others.push(a);
+      }
+    }
+    return { byRole, others };
   }, [filteredAgents]);
 
   const handleSelect = (agentId: string) => {
@@ -107,62 +103,69 @@ export function AgentMultiSelect({
     onChange(value.filter((a) => a.id !== agentId));
   };
 
-  function renderGroup(
-    items: typeof filteredAgents,
-    heading: string,
-    icon: React.ReactNode
-  ) {
+  function renderGroup(items: typeof filteredAgents, heading: string) {
     if (items.length === 0) return null;
     return (
-      <CommandGroup heading={heading}>
+      <div key={heading}>
+        <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground">{heading}</p>
         {items.map((agent) => {
           const isSelected = selectedIds.includes(agent.id);
           return (
-            <CommandItem
-              key={`${agent.type}-${agent.id}`}
-              value={`${agent.id}-${heading}`}
-              onSelect={() => handleSelect(agent.id)}
-              className={cn("cursor-pointer", isSelected && "bg-primary/10")}
+            <button
+              key={agent.id}
+              type="button"
+              onClick={() => handleSelect(agent.id)}
+              className={cn(
+                "w-full flex items-center gap-3 px-2 py-2 text-sm rounded-sm hover:bg-accent transition-colors text-left",
+                isSelected && "bg-primary/10"
+              )}
             >
-              <div className="flex items-center gap-3 w-full">
-                <div
-                  className={cn(
-                    "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
-                    isSelected ? "border-primary bg-primary" : "border-muted-foreground/50"
-                  )}
-                />
-                <span className="text-muted-foreground shrink-0">{icon}</span>
-                <p className="text-sm font-medium truncate flex-1">
-                  {agent.name}
-                  {agent.number !== undefined && (
-                    <span className="text-muted-foreground ml-1">#{agent.number}</span>
-                  )}
-                </p>
-              </div>
-            </CommandItem>
+              <div
+                className={cn(
+                  "w-4 h-4 rounded-sm border-2 flex items-center justify-center shrink-0",
+                  isSelected ? "border-primary bg-primary" : "border-muted-foreground/50"
+                )}
+              />
+              <span className="truncate flex-1">
+                {agent.name}
+                {agent.number !== undefined && (
+                  <span className="text-muted-foreground ml-1">#{agent.number}</span>
+                )}
+              </span>
+            </button>
           );
         })}
-      </CommandGroup>
+      </div>
     );
   }
 
+  const hasResults = filteredAgents.length > 0;
+
   return (
     <div className="space-y-4">
-      <Command shouldFilter={false} className="border rounded-md">
-        <CommandInput
+      {/* Search input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <Input
           placeholder={placeholder}
           value={search}
-          onValueChange={setSearch}
+          onChange={(e) => setSearch(e.target.value)}
           disabled={disabled}
+          className="pl-9"
         />
-        <CommandList className="max-h-[280px] overflow-y-auto">
-          <CommandEmpty>No agents found.</CommandEmpty>
-          {renderGroup(grouped.players, "Players", <User className="h-3.5 w-3.5" />)}
-          {renderGroup(grouped.coaches, "Coaches", <Mic className="h-3.5 w-3.5" />)}
-          {renderGroup(grouped.writers, "Writers", <Pencil className="h-3.5 w-3.5" />)}
-          {renderGroup(grouped.others, "Agents", <User className="h-3.5 w-3.5" />)}
-          {renderGroup(grouped.groups, "Groups", <Users className="h-3.5 w-3.5" />)}
-        </CommandList>
+      </div>
+
+      {/* List */}
+      <div className="border rounded-md">
+        <div className="max-h-[280px] overflow-y-auto p-1">
+          {!hasResults && (
+            <p className="py-6 text-center text-sm text-muted-foreground">No agents found.</p>
+          )}
+          {Object.entries(grouped.byRole).map(([role, items]) =>
+            renderGroup(items, groupLabels[role] ?? role)
+          )}
+          {renderGroup(grouped.others, "Groups")}
+        </div>
         {selectedIds.length > 0 && (
           <div className="border-t p-3 bg-muted/30">
             <Button type="button" onClick={handleAdd} className="w-full">
@@ -171,8 +174,9 @@ export function AgentMultiSelect({
             </Button>
           </div>
         )}
-      </Command>
+      </div>
 
+      {/* Selected items */}
       {value.length > 0 && (
         <div className="border rounded-lg p-4 bg-muted/50">
           <div className="flex items-center justify-between mb-3">
@@ -194,14 +198,12 @@ export function AgentMultiSelect({
                 className="flex items-center justify-between p-3 bg-background border rounded-md hover:border-primary/50 transition-colors"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {agent.name}
-                      {agent.number !== undefined && (
-                        <span className="text-muted-foreground ml-1">#{agent.number}</span>
-                      )}
-                    </p>
-                  </div>
+                  <p className="text-sm font-medium truncate flex-1">
+                    {agent.name}
+                    {agent.number !== undefined && (
+                      <span className="text-muted-foreground ml-1">#{agent.number}</span>
+                    )}
+                  </p>
                   {(agent.role || agent.type === "group") && (
                     <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">
                       {agent.type === "group" ? "Team" : roleLabels[agent.role!] ?? "Agent"}
