@@ -11,14 +11,14 @@ export function UnsavedChangesDialog({ open, onConfirm, onCancel }: UnsavedChang
     <AlertDialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onCancel() }}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Alterações não salvas</AlertDialogTitle>
+          <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
           <AlertDialogDescription>
-            Você tem alterações não salvas. Tem certeza que deseja sair? Suas alterações serão perdidas.
+            You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>Continuar editando</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Descartar alterações</AlertDialogAction>
+          <AlertDialogCancel onClick={onCancel}>Keep Editing</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>Discard Changes</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
