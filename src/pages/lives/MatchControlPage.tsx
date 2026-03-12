@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
+import { useNavigationGuard } from "@/hooks/useNavigationGuard"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -189,6 +191,9 @@ export default function MatchControlPage() {
     minute: "", period: "1st" as NonNullable<MatchEvent["period"]>,
   })
 
+  const hasUnsavedData = phase !== "pre_game" || events.length > 0
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(hasUnsavedData)
+
   // ── Derived ──
   const homeScore    = computeScore(events, "home")
   const awayScore    = computeScore(events, "away")
@@ -308,7 +313,7 @@ export default function MatchControlPage() {
     <div className="space-y-6 pb-10">
 
       {/* ── Top bar: Back ── */}
-      <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
+      <Button variant="ghost" size="icon" onClick={() => guardNavigation(() => navigate(-1))} className="text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" />
       </Button>
 
@@ -768,6 +773,7 @@ export default function MatchControlPage() {
         </DialogContent>
       </Dialog>
 
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
     </div>
   )
 }
