@@ -1,8 +1,16 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useBlocker } from "react-router-dom"
 
 export function useNavigationGuard(isDirty: boolean) {
-  const blocker = useBlocker(isDirty)
+  // Keep a ref in sync so the stable blocker callback always reads current value
+  const isDirtyRef = useRef(isDirty)
+  isDirtyRef.current = isDirty
+
+  // Stable function reference — registered once, never re-registered on dirty changes
+  const blocker = useBlocker(
+    useCallback(() => isDirtyRef.current, [])
+  )
+
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null)
   const [manualBlocked, setManualBlocked] = useState(false)
 
