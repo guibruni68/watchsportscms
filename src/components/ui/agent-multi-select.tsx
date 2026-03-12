@@ -1,5 +1,5 @@
-import { useState, useMemo, useRef, useEffect } from "react";
-import { User, Users, Search, Plus, X, Mic, Pencil } from "lucide-react";
+import { useState, useMemo } from "react";
+import { User, Users, Plus, X, Mic, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -9,11 +9,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 export interface Agent {
@@ -59,17 +54,8 @@ export function AgentMultiSelect({
   placeholder = "Search and select agents...",
   disabled = false,
 }: AgentMultiSelectProps) {
-  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
-
-  useEffect(() => {
-    if (open && triggerRef.current) {
-      setPopoverWidth(triggerRef.current.offsetWidth);
-    }
-  }, [open]);
 
   const availableAgents = useMemo(() => {
     return agents
@@ -162,57 +148,30 @@ export function AgentMultiSelect({
 
   return (
     <div className="space-y-4">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            ref={triggerRef}
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            disabled={disabled}
-            className="w-full justify-between h-auto min-h-[52px]"
-          >
-            <div className="flex items-center gap-2 flex-1 text-left">
-              <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-muted-foreground">{placeholder}</span>
-            </div>
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          className="p-0 flex flex-col"
-          align="start"
-          sideOffset={4}
-          style={{
-            width: popoverWidth ? `${popoverWidth}px` : undefined,
-            maxHeight: "70vh",
-          }}
-        >
-          <Command shouldFilter={false} className="flex flex-col">
-            <CommandInput
-              placeholder="Search by name, role..."
-              value={search}
-              onValueChange={setSearch}
-            />
-            <CommandList className="max-h-[280px] overflow-y-auto flex-1">
-              <CommandEmpty>No agents found.</CommandEmpty>
-              {renderGroup(grouped.players, "Players", <User className="h-3.5 w-3.5" />)}
-              {renderGroup(grouped.coaches, "Coaches", <Mic className="h-3.5 w-3.5" />)}
-              {renderGroup(grouped.writers, "Writers", <Pencil className="h-3.5 w-3.5" />)}
-              {renderGroup(grouped.others, "Agents", <User className="h-3.5 w-3.5" />)}
-              {renderGroup(grouped.groups, "Groups", <Users className="h-3.5 w-3.5" />)}
-            </CommandList>
-          </Command>
-
-          {selectedIds.length > 0 && (
-            <div className="border-t p-3 bg-muted/30 shrink-0">
-              <Button type="button" onClick={handleAdd} className="w-full">
-                <Plus className="h-4 w-4 mr-2" />
-                Add {selectedIds.length} {selectedIds.length === 1 ? "Item" : "Items"}
-              </Button>
-            </div>
-          )}
-        </PopoverContent>
-      </Popover>
+      <Command shouldFilter={false} className="border rounded-md">
+        <CommandInput
+          placeholder={placeholder}
+          value={search}
+          onValueChange={setSearch}
+          disabled={disabled}
+        />
+        <CommandList className="max-h-[280px] overflow-y-auto">
+          <CommandEmpty>No agents found.</CommandEmpty>
+          {renderGroup(grouped.players, "Players", <User className="h-3.5 w-3.5" />)}
+          {renderGroup(grouped.coaches, "Coaches", <Mic className="h-3.5 w-3.5" />)}
+          {renderGroup(grouped.writers, "Writers", <Pencil className="h-3.5 w-3.5" />)}
+          {renderGroup(grouped.others, "Agents", <User className="h-3.5 w-3.5" />)}
+          {renderGroup(grouped.groups, "Groups", <Users className="h-3.5 w-3.5" />)}
+        </CommandList>
+        {selectedIds.length > 0 && (
+          <div className="border-t p-3 bg-muted/30">
+            <Button type="button" onClick={handleAdd} className="w-full">
+              <Plus className="h-4 w-4 mr-2" />
+              Add {selectedIds.length} {selectedIds.length === 1 ? "Item" : "Items"}
+            </Button>
+          </div>
+        )}
+      </Command>
 
       {value.length > 0 && (
         <div className="border rounded-lg p-4 bg-muted/50">
@@ -235,11 +194,6 @@ export function AgentMultiSelect({
                 className="flex items-center justify-between p-3 bg-background border rounded-md hover:border-primary/50 transition-colors"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {agent.type === "group" ? (
-                    <Users className="h-4 w-4 text-muted-foreground shrink-0" />
-                  ) : (
-                    <User className="h-4 w-4 text-muted-foreground shrink-0" />
-                  )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">
                       {agent.name}
