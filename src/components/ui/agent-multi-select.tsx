@@ -1,11 +1,11 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { User, Users, Search, Plus, X, Mic, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
@@ -56,7 +56,7 @@ export function AgentMultiSelect({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLInputElement>(null);
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
 
   useEffect(() => {
@@ -153,35 +153,30 @@ export function AgentMultiSelect({
     <div className="space-y-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            ref={triggerRef}
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            disabled={disabled}
-            className="w-full justify-between h-auto min-h-[52px]"
-          >
-            <div className="flex items-center gap-2 flex-1 text-left">
-              <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-muted-foreground">{placeholder}</span>
-            </div>
-          </Button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              ref={triggerRef}
+              placeholder={placeholder}
+              value={search}
+              disabled={disabled}
+              className="pl-9"
+              onChange={(e) => { setSearch(e.target.value); setOpen(true) }}
+              onFocus={() => setOpen(true)}
+            />
+          </div>
         </PopoverTrigger>
         <PopoverContent
           className="p-0 flex flex-col"
           align="start"
           sideOffset={4}
+          onOpenAutoFocus={(e) => e.preventDefault()}
           style={{
             width: popoverWidth ? `${popoverWidth}px` : undefined,
             maxHeight: "70vh",
           }}
         >
           <Command shouldFilter={false} className="flex flex-col">
-            <CommandInput
-              placeholder="Search by name, role..."
-              value={search}
-              onValueChange={setSearch}
-            />
             <CommandList className="max-h-[280px] overflow-y-auto flex-1">
               <CommandEmpty>No agents found.</CommandEmpty>
               {renderGroup(grouped.players, "Players")}
