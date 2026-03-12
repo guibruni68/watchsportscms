@@ -1,7 +1,19 @@
-import { useState, useMemo } from "react";
-import { Search, Plus, X } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { User, Users, Search, Plus, X, Mic, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 export interface Agent {
@@ -34,12 +46,6 @@ const roleLabels: Record<string, string> = {
   writer: "Writer",
 };
 
-const groupLabels: Record<string, string> = {
-  player: "Players",
-  coach: "Coaches",
-  writer: "Writers",
-};
-
 export function AgentMultiSelect({
   agents,
   value = [],
@@ -47,8 +53,17 @@ export function AgentMultiSelect({
   placeholder = "Search and select agents...",
   disabled = false,
 }: AgentMultiSelectProps) {
+  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (open && triggerRef.current) {
+      setPopoverWidth(triggerRef.current.offsetWidth);
+    }
+  }, [open]);
 
   const availableAgents = useMemo(() => {
     return agents
@@ -66,16 +81,13 @@ export function AgentMultiSelect({
   }, [availableAgents, search]);
 
   const grouped = useMemo(() => {
-    const byRole: Record<string, typeof filteredAgents> = {};
-    const others: typeof filteredAgents = [];
-    for (const a of filteredAgents) {
-      if (a.type === "agent" && a.role) {
-        (byRole[a.role] ??= []).push(a);
-      } else {
-        others.push(a);
-      }
-    }
-    return { byRole, others };
+    return {
+      players: filteredAgents.filter((a) => a.type === "agent" && a.role === "player"),
+      coaches: filteredAgents.filter((a) => a.type === "agent" && a.role === "coach"),
+      writers: filteredAgents.filter((a) => a.type === "agent" && a.role === "writer"),
+      others: filteredAgents.filter((a) => a.type === "agent" && !a.role),
+      groups: filteredAgents.filter((a) => a.type === "group"),
+    };
   }, [filteredAgents]);
 
   const handleSelect = (agentId: string) => {
@@ -106,77 +118,91 @@ export function AgentMultiSelect({
   function renderGroup(items: typeof filteredAgents, heading: string) {
     if (items.length === 0) return null;
     return (
-      <div key={heading}>
-        <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground">{heading}</p>
+      <CommandGroup heading={heading}>
         {items.map((agent) => {
           const isSelected = selectedIds.includes(agent.id);
           return (
-            <button
-              key={agent.id}
-              type="button"
-              onClick={() => handleSelect(agent.id)}
-              className={cn(
-                "w-full flex items-center gap-3 px-2 py-2 text-sm rounded-sm hover:bg-accent transition-colors text-left",
-                isSelected && "bg-primary/10"
-              )}
+            <CommandItem
+              key={`${agent.type}-${agent.id}`}
+              value={`${agent.id}-${heading}`}
+              onSelect={() => handleSelect(agent.id)}
+              className={cn("cursor-pointer", isSelected && "bg-primary/10")}
             >
-              <div
-                className={cn(
-                  "w-4 h-4 rounded-sm border-2 flex items-center justify-center shrink-0",
-                  isSelected ? "border-primary bg-primary" : "border-muted-foreground/50"
-                )}
-              />
-              <span className="truncate flex-1">
-                {agent.name}
-                {agent.number !== undefined && (
-                  <span className="text-muted-foreground ml-1">#{agent.number}</span>
-                )}
-              </span>
-            </button>
+              <div className="flex items-center gap-3 w-full">
+                <div
+                  className={cn(
+                    "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
+                    isSelected ? "border-primary bg-primary" : "border-muted-foreground/50"
+                  )}
+                />
+                <p className="text-sm font-medium truncate flex-1">
+                  {agent.name}
+                  {agent.number !== undefined && (
+                    <span className="text-muted-foreground ml-1">#{agent.number}</span>
+                  )}
+                </p>
+              </div>
+            </CommandItem>
           );
         })}
-      </div>
+      </CommandGroup>
     );
   }
 
-  const hasResults = filteredAgents.length > 0;
-
   return (
     <div className="space-y-4">
-      {/* Search input */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-        <Input
-          placeholder={placeholder}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          disabled={disabled}
-          className="pl-9"
-        />
-      </div>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            ref={triggerRef}
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            disabled={disabled}
+            className="w-full justify-between h-auto min-h-[52px]"
+          >
+            <div className="flex items-center gap-2 flex-1 text-left">
+              <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-muted-foreground">{placeholder}</span>
+            </div>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="p-0 flex flex-col"
+          align="start"
+          sideOffset={4}
+          style={{
+            width: popoverWidth ? `${popoverWidth}px` : undefined,
+            maxHeight: "70vh",
+          }}
+        >
+          <Command shouldFilter={false} className="flex flex-col">
+            <CommandInput
+              placeholder="Search by name, role..."
+              value={search}
+              onValueChange={setSearch}
+            />
+            <CommandList className="max-h-[280px] overflow-y-auto flex-1">
+              <CommandEmpty>No agents found.</CommandEmpty>
+              {renderGroup(grouped.players, "Players")}
+              {renderGroup(grouped.coaches, "Coaches")}
+              {renderGroup(grouped.writers, "Writers")}
+              {renderGroup(grouped.others, "Agents")}
+              {renderGroup(grouped.groups, "Groups")}
+            </CommandList>
+          </Command>
 
-      {/* List */}
-      <div className="border rounded-md">
-        <div className="max-h-[280px] overflow-y-auto p-1">
-          {!hasResults && (
-            <p className="py-6 text-center text-sm text-muted-foreground">No agents found.</p>
+          {selectedIds.length > 0 && (
+            <div className="border-t p-3 bg-muted/30 shrink-0">
+              <Button type="button" onClick={handleAdd} className="w-full">
+                <Plus className="h-4 w-4 mr-2" />
+                Add {selectedIds.length} {selectedIds.length === 1 ? "Item" : "Items"}
+              </Button>
+            </div>
           )}
-          {Object.entries(grouped.byRole).map(([role, items]) =>
-            renderGroup(items, groupLabels[role] ?? role)
-          )}
-          {renderGroup(grouped.others, "Groups")}
-        </div>
-        {selectedIds.length > 0 && (
-          <div className="border-t p-3 bg-muted/30">
-            <Button type="button" onClick={handleAdd} className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Add {selectedIds.length} {selectedIds.length === 1 ? "Item" : "Items"}
-            </Button>
-          </div>
-        )}
-      </div>
+        </PopoverContent>
+      </Popover>
 
-      {/* Selected items */}
       {value.length > 0 && (
         <div className="border rounded-lg p-4 bg-muted/50">
           <div className="flex items-center justify-between mb-3">
@@ -197,7 +223,7 @@ export function AgentMultiSelect({
                 key={`${agent.id}-${index}`}
                 className="flex items-center justify-between p-3 bg-background border rounded-md hover:border-primary/50 transition-colors"
               >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
                   <p className="text-sm font-medium truncate flex-1">
                     {agent.name}
                     {agent.number !== undefined && (
