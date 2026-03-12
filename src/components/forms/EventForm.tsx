@@ -12,9 +12,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileUpload } from "@/components/ui/file-upload"
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog"
 import { ArrowLeft, CalendarIcon, X, Info, ImageIcon, Globe } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import { useNavigationGuard } from "@/hooks/useNavigationGuard"
 import { cn } from "@/lib/utils"
 import { TutorialButton } from "@/components/ui/tutorial-button"
 
@@ -51,6 +53,9 @@ export function EventForm({ initialData, isEdit = false, onClose }: EventFormPro
     },
   })
 
+  const { formState: { isDirty } } = form
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty)
+
   const onSubmit = (data: EventFormData) => {
     console.log("Saving event:", data)
     
@@ -72,7 +77,7 @@ export function EventForm({ initialData, isEdit = false, onClose }: EventFormPro
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => onClose ? onClose() : navigate("/schedule")}
+          onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/schedule"))}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -272,7 +277,7 @@ export function EventForm({ initialData, isEdit = false, onClose }: EventFormPro
             <Button
               type="button"
               variant="outline"
-              onClick={() => onClose ? onClose() : navigate("/schedule")}
+              onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/schedule"))}
             >
               Cancel
             </Button>
@@ -282,6 +287,7 @@ export function EventForm({ initialData, isEdit = false, onClose }: EventFormPro
           </div>
         </form>
       </Form>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
       <TutorialButton />
     </div>
   )

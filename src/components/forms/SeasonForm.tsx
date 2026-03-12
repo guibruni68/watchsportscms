@@ -11,8 +11,9 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog"
 import { TeamMultiSelect, TeamOption } from "@/components/ui/team-multi-select"
+import { useNavigationGuard } from "@/hooks/useNavigationGuard"
 import { ArrowLeft, CalendarIcon, Save, Info, Users } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
@@ -91,8 +92,6 @@ const mockAvailableTeams: TeamOption[] = [
 export function SeasonForm({ competitionId, competitionName, initialData, initialTeams = [], isEdit = false, onClose }: SeasonFormProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false)
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
 
   // Team selection state
   const [selectedTeams, setSelectedTeams] = useState<TeamOption[]>(initialTeams)
@@ -123,19 +122,7 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
   const teamsModified = initialTeamIds !== currentTeamIds
   const hasChanges = isDirty || teamsModified
 
-  const handleNavigation = (navigateFn: () => void) => {
-    if (hasChanges) {
-      setPendingNavigation(() => navigateFn)
-      setShowExitConfirmation(true)
-    } else {
-      navigateFn()
-    }
-  }
-
-  const handleConfirmExit = () => {
-    setShowExitConfirmation(false)
-    pendingNavigation?.()
-  }
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty || teamsModified)
 
   const onSubmit = (data: SeasonFormData) => {
     console.log("Saving season:", data)
@@ -160,7 +147,7 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleNavigation(() => {
+          onClick={() => guardNavigation(() => {
             if (onClose) {
               onClose()
             } else {
@@ -373,7 +360,7 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleNavigation(() => {
+              onClick={() => guardNavigation(() => {
                 if (onClose) {
                   onClose()
                 } else {
@@ -393,25 +380,7 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
         </form>
       </Form>
 
-      {/* Unsaved Changes Confirmation Dialog */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
-              Continue Editing
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmExit}>
-              Discard Changes
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
       <TutorialButton />
     </div>
   )
