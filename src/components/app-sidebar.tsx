@@ -164,10 +164,10 @@ export function AppSidebar() {
     const name = getUserDisplayName();
     return name.substring(0, 2).toUpperCase();
   };
-  return <Sidebar className="w-64">
+  return <Sidebar collapsible="icon">
       <SidebarContent className="bg-gradient-to-b from-card to-muted/20">
         {/* Logo Section */}
-        <div className="px-4 pt-16 pb-[72px] border-b border-border/50 flex justify-center">
+        <div className="px-4 pt-16 pb-[72px] border-b border-border/50 flex justify-center group-data-[collapsible=icon]:hidden">
           <div className="flex items-center justify-center overflow-hidden w-full">
             <img src={teamLogo} alt="Logo do Clube" className="w-48 h-14 object-scale-down" />
           </div>
@@ -223,7 +223,7 @@ export function AppSidebar() {
         {/* User Profile Footer */}
         <SidebarFooter className="mt-auto border-t border-border/50">
           {/* Help & Support Micro Banner */}
-          <div className="px-3 pt-4 pb-1">
+          <div className="px-3 pt-4 pb-1 group-data-[collapsible=icon]:hidden">
             <NavLink to="/help" className="block">
               <div className={`rounded-xl border p-4 transition-colors cursor-pointer ${isActive("/help") ? "border-border bg-muted/40" : "border-border/50 bg-card hover:bg-muted/30"}`}>
                 <HelpCircle className="h-5 w-5 text-muted-foreground mb-3" />
@@ -234,7 +234,7 @@ export function AppSidebar() {
               </div>
             </NavLink>
           </div>
-          <div className="border-t border-border/50 mx-4" />
+          <div className="border-t border-border/50 mx-4 group-data-[collapsible=icon]:hidden" />
           <div className="p-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -245,7 +245,7 @@ export function AppSidebar() {
                       {getUserInitials()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 overflow-hidden">
+                  <div className="flex-1 overflow-hidden group-data-[collapsible=icon]:hidden">
                     <p className="text-sm font-medium text-foreground truncate">
                       {getUserDisplayName()}
                     </p>
@@ -253,7 +253,7 @@ export function AppSidebar() {
                       {isGuest ? "Modo visitante" : user?.email}
                     </p>
                   </div>
-                  <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                  <MoreVertical className="h-4 w-4 text-muted-foreground group-data-[collapsible=icon]:hidden" />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">

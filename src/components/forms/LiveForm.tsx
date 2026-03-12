@@ -14,7 +14,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres } from "@/data/mockData";
@@ -136,9 +137,6 @@ export function LiveForm({
     setTimeout(() => setCopiedField(null), 2000)
   }
   const [showPublishDialog, setShowPublishDialog] = useState(false);
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
-
   // Parse initial datetime if provided
   const initialDateTime = initialData?.dataHora ? new Date(initialData.dataHora) : new Date();
   
@@ -176,18 +174,7 @@ export function LiveForm({
       isDirty
     }
   } = form;
-  const handleNavigation = (navigateFn: () => void) => {
-    if (isDirty) {
-      setPendingNavigation(() => navigateFn);
-      setShowExitConfirmation(true);
-    } else {
-      navigateFn();
-    }
-  };
-  const handleConfirmExit = () => {
-    setShowExitConfirmation(false);
-    pendingNavigation?.();
-  };
+  const { isBlocked, proceed, reset, guardNavigation } = useNavigationGuard(isDirty);
   const onSubmit = (data: LiveFormData) => {
     console.log("Saving live:", data);
     toast({
@@ -213,7 +200,7 @@ export function LiveForm({
   ];
   return <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/lives"))} className="text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="icon" onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/lives"))} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
@@ -631,7 +618,7 @@ export function LiveForm({
           </Tabs>
 
           <div className="flex gap-4">
-            <Button type="button" variant="outline" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/lives"))} className="flex-1">
+            <Button type="button" variant="outline" onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/lives"))} className="flex-1">
               Cancel
             </Button>
             <Button type="submit" className="flex-1">
@@ -641,25 +628,7 @@ export function LiveForm({
         </form>
       </Form>
 
-      {/* Unsaved Changes Confirmation Dialog */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
-              Continue Editing
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmExit}>
-              Discard Changes
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={reset} />
       <TutorialButton />
     </div>;
 }

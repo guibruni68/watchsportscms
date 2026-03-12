@@ -19,6 +19,8 @@ import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres } from "@/data/mockData";
 import { ArrowLeft, Plus, X, Upload, CalendarIcon, Trash2, Info, Globe, CalendarDays } from "lucide-react";
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { Badge } from "@/components/ui/badge";
 import { ContentMultiSelect, ContentItem } from "@/components/ui/content-multi-select";
 import { cn } from "@/lib/utils";
@@ -159,6 +161,9 @@ export default function CollectionForm({
     }
   });
 
+  const { formState: { isDirty } } = form;
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty);
+
   const seasons = form.watch("seasons") || [];
 
   const addSeason = () => {
@@ -230,18 +235,20 @@ export default function CollectionForm({
   };
 
   const handleCancel = () => {
-    if (onSuccess) {
-      onSuccess();
-    } else {
-      navigate(-1);
-    }
+    guardNavigation(() => {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate(-1);
+      }
+    });
   };
 
   return (
     <div className="space-y-6">
       {!isInline && (
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="icon" onClick={() => guardNavigation(() => navigate(-1))}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
@@ -728,6 +735,7 @@ export default function CollectionForm({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
       <TutorialButton />
     </div>
   );

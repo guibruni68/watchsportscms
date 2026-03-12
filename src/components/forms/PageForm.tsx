@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, GripVertical, X, Search, Info, Layout } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
@@ -237,6 +239,9 @@ export function PageForm({ initialData, isEdit = false, onClose }: PageFormProps
     },
   });
 
+  const { formState: { isDirty } } = form;
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty);
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -308,11 +313,13 @@ export function PageForm({ initialData, isEdit = false, onClose }: PageFormProps
   };
 
   const handleCancel = () => {
-    if (onClose) {
-      onClose();
-    } else {
-      navigate("/pages");
-    }
+    guardNavigation(() => {
+      if (onClose) {
+        onClose();
+      } else {
+        navigate("/pages");
+      }
+    });
   };
 
   // Filter available shelves (exclude already added ones)
@@ -428,6 +435,7 @@ export function PageForm({ initialData, isEdit = false, onClose }: PageFormProps
           </div>
         </form>
       </Form>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
       <TutorialButton />
     </div>
   );
