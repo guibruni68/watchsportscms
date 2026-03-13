@@ -12,6 +12,7 @@ import { CoachForm } from "@/components/forms/CoachForm"
 import { Badge } from "@/components/ui/badge"
 import { getEnabledBadgeVariant, getEnabledLabel } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Coach {
   id: string
@@ -81,6 +82,7 @@ export default function CoachesPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingCoach, setEditingCoach] = useState<Coach | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   const { toast } = useToast()
 
@@ -142,11 +144,14 @@ export default function CoachesPage() {
   }
 
   const handleDelete = (id: string) => {
-    setCoaches(coaches.filter(coach => coach.id !== id))
-    toast({
-      title: "Coach deleted",
-      description: "The coach was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setCoaches(prev => prev.filter(coach => coach.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
 
@@ -279,6 +284,12 @@ export default function CoachesPage() {
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={() => {}}
         totalItems={filteredCoaches.length}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

@@ -12,6 +12,7 @@ import { PlayerForm } from "@/components/forms/PlayerForm"
 import { Badge } from "@/components/ui/badge"
 import { getEnabledBadgeVariant, getEnabledLabel } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Player {
   id: string
@@ -93,6 +94,7 @@ export default function PlayersPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   const { toast } = useToast()
 
@@ -154,11 +156,14 @@ export default function PlayersPage() {
   }
 
   const handleDelete = (id: string) => {
-    setPlayers(players.filter(player => player.id !== id))
-    toast({
-      title: "Player deleted",
-      description: "The player was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setPlayers(prev => prev.filter(player => player.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
 
@@ -291,6 +296,12 @@ export default function PlayersPage() {
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={() => {}}
         totalItems={filteredPlayers.length}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

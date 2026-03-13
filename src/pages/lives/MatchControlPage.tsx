@@ -18,8 +18,8 @@ import { useNavigationGuard } from "@/hooks/useNavigationGuard"
 interface MatchPlayer {
   id: string
   name: string
-  number: number
-  position: string
+  number?: number
+  position?: string
   isStarter: boolean
 }
 
@@ -90,7 +90,18 @@ const defaultAwayPlayers: MatchPlayer[] = [
   { id: "a18", name: "Roberto Faria",    number: 18, position: "Forward",      isStarter: false },
 ]
 
-const POSITIONS = ["Goalkeeper", "Right Back", "Left Back", "Centre Back", "Midfielder", "Attacking Mid", "Forward", "Winger"]
+// Registered players not yet in the match squad (available to be added)
+const registeredHomePool: MatchPlayer[] = [
+  { id: "h19", name: "Vinicius Mota",    isStarter: false },
+  { id: "h20", name: "Wellington Cruz",  isStarter: false },
+  { id: "h21", name: "Xavier Lima",      isStarter: false },
+]
+const registeredAwayPool: MatchPlayer[] = [
+  { id: "a19", name: "Sandro Vieira",    isStarter: false },
+  { id: "a20", name: "Tiago Almeida",    isStarter: false },
+  { id: "a21", name: "Ubiratan Costa",   isStarter: false },
+]
+
 
 const PERIODS = [
   { value: "1st",        label: "1st Half" },
@@ -178,8 +189,12 @@ export default function MatchControlPage() {
   const [eventDialog, setEventDialog]         = useState<{ open: boolean; type: EventType }>({ open: false, type: "goal" })
   const [showSubDialog, setShowSubDialog]     = useState(false)
 
+  // Available registered players not yet in the match squad
+  const [availableHome, setAvailableHome] = useState<MatchPlayer[]>(registeredHomePool)
+  const [availableAway, setAvailableAway] = useState<MatchPlayer[]>(registeredAwayPool)
+
   // Form state: add player
-  const [newPlayer, setNewPlayer] = useState({ name: "", number: "", position: "Midfielder", isStarter: false })
+  const [newPlayer, setNewPlayer] = useState({ playerId: "", isStarter: false })
 
   // Form state: register event (goal / card / penalty)
   const [eventForm, setEventForm] = useState({ teamSide: "home" as "home" | "away", playerId: "", minute: "" })
@@ -211,7 +226,7 @@ export default function MatchControlPage() {
     )
     return teamForSide(side).players
       .filter(p => p.isStarter && !redCardedIds.has(p.id))
-      .sort((a, b) => a.number - b.number)
+      .sort((a, b) => (a.number ?? 0) - (b.number ?? 0))
   }
   const setTeamForSide = (side: "home" | "away", team: MatchTeam) =>
     side === "home" ? setHomeTeam(team) : setAwayTeam(team)
@@ -228,17 +243,15 @@ export default function MatchControlPage() {
   }
 
   function handleAddPlayer() {
-    if (!addPlayerTeam || !newPlayer.name.trim() || !newPlayer.number) return
+    if (!addPlayerTeam || !newPlayer.playerId) return
+    const available = addPlayerTeam === "home" ? availableHome : availableAway
+    const setAvailable = addPlayerTeam === "home" ? setAvailableHome : setAvailableAway
+    const player = available.find(p => p.id === newPlayer.playerId)
+    if (!player) return
     const team = teamForSide(addPlayerTeam)
-    const player: MatchPlayer = {
-      id: `${addPlayerTeam}-${Date.now()}`,
-      name: newPlayer.name.trim(),
-      number: parseInt(newPlayer.number),
-      position: newPlayer.position,
-      isStarter: newPlayer.isStarter,
-    }
-    setTeamForSide(addPlayerTeam, { ...team, players: [...team.players, player] })
-    setNewPlayer({ name: "", number: "", position: "Midfielder", isStarter: false })
+    setTeamForSide(addPlayerTeam, { ...team, players: [...team.players, { ...player, isStarter: newPlayer.isStarter }] })
+    setAvailable(prev => prev.filter(p => p.id !== newPlayer.playerId))
+    setNewPlayer({ playerId: "", isStarter: false })
     setAddPlayerTeam(null)
     toast({ title: "Player added", description: `${player.name} added to lineup.` })
   }
@@ -248,6 +261,10 @@ export default function MatchControlPage() {
     const team   = teamForSide(teamSide)
     const player = team.players.find(p => p.id === playerId)
     if (!player || !minute) return
+    if (parseInt(minute) > 130) {
+      toast({ title: "Invalid minute", description: "Events can only be registered up to 130 minutes.", variant: "destructive" })
+      return
+    }
 
     const event: MatchEvent = {
       id: `evt-${Date.now()}`,
@@ -269,6 +286,10 @@ export default function MatchControlPage() {
     const playerOut = team.players.find(p => p.id === playerOutId)
     const playerIn  = team.players.find(p => p.id === playerInId)
     if (!playerOut || !playerIn || !minute) return
+    if (parseInt(minute) > 130) {
+      toast({ title: "Invalid minute", description: "Events can only be registered up to 130 minutes.", variant: "destructive" })
+      return
+    }
 
     setTeamForSide(teamSide, {
       ...team,
@@ -408,13 +429,12 @@ export default function MatchControlPage() {
                         <p className="text-xs text-muted-foreground py-4 text-center">No starters added</p>
                       )}
                       {starters.map(p => (
-                        <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border bg-muted/20">
+                        <div key={p.id} className="flex items-center gap-3 p-4 rounded-lg border bg-muted/20">
                           <div className="p-1.5 rounded-lg bg-muted/50 shrink-0">
                             <User className="h-3.5 w-3.5 text-muted-foreground" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium">{p.name}</p>
-                            <p className="text-xs text-muted-foreground">{p.position}</p>
                           </div>
                           <button
                             onClick={() => demoteFromStarter(side, p.id)}
@@ -434,13 +454,12 @@ export default function MatchControlPage() {
                           <p className="text-xs text-muted-foreground mb-2">Reserves ({reserves.length})</p>
                           <div className="space-y-2">
                             {reserves.map(p => (
-                              <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg border border-dashed">
+                              <div key={p.id} className="flex items-center gap-3 p-4 rounded-lg border border-dashed">
                                 <div className="p-1.5 rounded-lg bg-muted/30 shrink-0">
                                   <User className="h-3.5 w-3.5 text-muted-foreground/50" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm text-muted-foreground">{p.name}</p>
-                                  <p className="text-xs text-muted-foreground/60">{p.position}</p>
                                 </div>
                                 {starters.length < 11 && (
                                   <button
@@ -571,7 +590,7 @@ export default function MatchControlPage() {
 
       {/* Start Match */}
       <AlertDialog open={showStartDialog} onOpenChange={setShowStartDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle>Start Match?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -622,21 +641,13 @@ export default function MatchControlPage() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Player Name *</label>
-              <Input placeholder="e.g. Roberto Silva" value={newPlayer.name}
-                onChange={e => setNewPlayer(p => ({ ...p, name: e.target.value }))} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Shirt Number *</label>
-              <Input type="number" placeholder="e.g. 10" value={newPlayer.number}
-                onChange={e => setNewPlayer(p => ({ ...p, number: e.target.value }))} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Position</label>
-              <Select value={newPlayer.position} onValueChange={v => setNewPlayer(p => ({ ...p, position: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <label className="text-sm font-medium">Player *</label>
+              <Select value={newPlayer.playerId} onValueChange={v => setNewPlayer(p => ({ ...p, playerId: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select registered player" /></SelectTrigger>
                 <SelectContent>
-                  {POSITIONS.map(pos => <SelectItem key={pos} value={pos}>{pos}</SelectItem>)}
+                  {(addPlayerTeam === "home" ? availableHome : availableAway).map(p => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -654,7 +665,7 @@ export default function MatchControlPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddPlayerTeam(null)}>Cancel</Button>
-            <Button onClick={handleAddPlayer} disabled={!newPlayer.name.trim() || !newPlayer.number}>
+            <Button onClick={handleAddPlayer} disabled={!newPlayer.playerId}>
               Add Player
             </Button>
           </DialogFooter>
@@ -752,7 +763,7 @@ export default function MatchControlPage() {
                 <SelectContent>
                   {teamForSide(subForm.teamSide).players
                     .filter(p => !p.isStarter && p.id !== subForm.playerOutId)
-                    .sort((a, b) => a.number - b.number)
+                    .sort((a, b) => (a.number ?? 0) - (b.number ?? 0))
                     .map(p => <SelectItem key={p.id} value={p.id}>{p.number} — {p.name}</SelectItem>)}
                 </SelectContent>
               </Select>

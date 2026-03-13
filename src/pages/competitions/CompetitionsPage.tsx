@@ -11,6 +11,7 @@ import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { CompetitionForm } from "@/components/forms/CompetitionForm"
 import { useToast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Competition {
   id: string
@@ -123,6 +124,7 @@ export default function CompetitionsPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingCompetition, setEditingCompetition] = useState<Competition | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   const { toast } = useToast()
 
@@ -186,11 +188,14 @@ export default function CompetitionsPage() {
   }
 
   const handleDelete = (id: string) => {
-    setCompetitions(competitions.filter(c => c.id !== id))
-    toast({
-      title: "Competition deleted",
-      description: "The competition was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setCompetitions(prev => prev.filter(competition => competition.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
   const getTypeLabel = (type: string) => {
@@ -337,6 +342,12 @@ export default function CompetitionsPage() {
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={() => {}}
         totalItems={filteredCompetitions.length}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

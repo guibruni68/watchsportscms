@@ -10,6 +10,7 @@ import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { SeasonForm } from "@/components/forms/SeasonForm"
 import { useToast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 import { format } from "date-fns"
 
 interface Season {
@@ -102,6 +103,7 @@ export default function SeasonsPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingSeason, setEditingSeason] = useState<Season | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   const { toast } = useToast()
 
@@ -160,11 +162,14 @@ export default function SeasonsPage() {
   }
 
   const handleDelete = (id: string) => {
-    setSeasons(seasons.filter(s => s.id !== id))
-    toast({
-      title: "Season deleted",
-      description: "The season was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setSeasons(prev => prev.filter(season => season.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
   const getSeasonStatusVariant = (status: string): "success" | "info" | "outline" => {
@@ -325,6 +330,12 @@ export default function SeasonsPage() {
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={() => {}}
         totalItems={filteredSeasons.length}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

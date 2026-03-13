@@ -18,6 +18,7 @@ import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { ListPagination } from "@/components/ui/list-controls"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Season {
   id: string
@@ -320,6 +321,7 @@ export default function SeasonDetailsPage() {
   // Game form state
   const [showGameForm, setShowGameForm] = useState(false)
   const [editingGame, setEditingGame] = useState<Game | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   // Determine back navigation path
   const getBackPath = () => {
@@ -444,11 +446,14 @@ export default function SeasonDetailsPage() {
   }
 
   const handleDeleteGame = (gameId: string) => {
-    setGames(games.filter(g => g.id !== gameId))
-    toast({
-      title: "Match deleted",
-      description: "The match was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id: gameId })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setGames(prev => prev.filter(game => game.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
   const handleSaveGame = (data: {
@@ -966,6 +971,12 @@ export default function SeasonDetailsPage() {
         initialData={gameFormInitialData}
         isEdit={!!editingGame}
         onSave={handleSaveGame}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

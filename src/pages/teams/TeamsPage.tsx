@@ -11,6 +11,7 @@ import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { TeamForm } from "@/components/forms/TeamForm"
 import { useToast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Team {
   id: string
@@ -225,6 +226,7 @@ export default function TeamsPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingTeam, setEditingTeam] = useState<Team | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   const { toast } = useToast()
 
@@ -291,11 +293,14 @@ export default function TeamsPage() {
   }
 
   const handleDelete = (id: string) => {
-    setTeams(teams.filter(team => team.id !== id))
-    toast({
-      title: "Team deleted",
-      description: "The team was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setTeams(prev => prev.filter(team => team.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
 
@@ -430,6 +435,12 @@ export default function TeamsPage() {
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={() => {}}
         totalItems={filteredTeams.length}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Plus, Search, Edit, Trash2, Play, Users } from "lucide-react"
 import { ImportButton } from "@/components/ui/import-button"
 import { LiveForm } from "@/components/forms/LiveForm"
@@ -15,6 +14,7 @@ import { ReportIssueDialog } from "@/components/dialogs/ReportIssueDialog"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { toast } from "@/hooks/use-toast"
 import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Live {
   id: string
@@ -93,6 +93,7 @@ export default function LivesPage() {
   const [reportLive, setReportLive] = useState<Live | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   // Check for new param on mount
   useEffect(() => {
@@ -147,11 +148,14 @@ export default function LivesPage() {
   }
 
   const handleDelete = (id: string) => {
-    setLives(lives.filter(live => live.id !== id))
-    toast({
-      title: "Live deleted",
-      description: "The broadcast was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setLives(prev => prev.filter(live => live.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
   if (showForm) {
@@ -315,6 +319,12 @@ export default function LivesPage() {
         onOpenChange={(v) => !v && setReportLive(null)}
         liveTitle={reportLive?.eventName}
         liveId={reportLive?.id}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

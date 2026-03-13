@@ -137,9 +137,6 @@ export function AgentMultiSelect({
                 />
                 <p className="text-sm font-medium truncate flex-1">
                   {agent.name}
-                  {agent.number !== undefined && (
-                    <span className="text-muted-foreground ml-1">#{agent.number}</span>
-                  )}
                 </p>
               </div>
             </CommandItem>
@@ -221,9 +218,6 @@ export function AgentMultiSelect({
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <p className="text-sm font-medium truncate flex-1">
                     {agent.name}
-                    {agent.number !== undefined && (
-                      <span className="text-muted-foreground ml-1">#{agent.number}</span>
-                    )}
                   </p>
                   {(agent.role || agent.type === "group") && (
                     <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">
