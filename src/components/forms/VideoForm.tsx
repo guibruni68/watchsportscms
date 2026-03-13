@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format } from "date-fns";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -12,21 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
-import { mockGenres, mockPlayers, mockTeams } from "@/data/mockData";
-import { ArrowLeft, CalendarIcon } from "lucide-react";
+import { mockGenres, getAgentOptions } from "@/data/mockData";
+import { ArrowLeft, CalendarIcon, Info, ImageIcon, Globe, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { TutorialButton } from "@/components/ui/tutorial-button";
 const videoSchema = z.object({
   titulo: z.string().min(1, "Title is required"),
   descricao: z.string().min(1, "Description is required"),
   label: z.enum(["VOD", "LIVE"]),
-  anoLancamento: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 10, "Year cannot be too far in the future").optional(),
   scheduleDate: z.date().optional(),
   badge: z.enum(["NEW", "NEW EPISODES", "SOON"]).optional(),
   cardImageUrl: z.string().optional(),
@@ -62,15 +62,12 @@ export function VideoForm({
   const {
     toast
   } = useToast();
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const form = useForm<VideoFormData>({
     resolver: zodResolver(videoSchema),
     defaultValues: {
       titulo: initialData?.titulo || "",
       descricao: initialData?.descricao || "",
       label: initialData?.label || "VOD",
-      anoLancamento: initialData?.anoLancamento || new Date().getFullYear(),
       scheduleDate: initialData?.scheduleDate,
       badge: initialData?.badge,
       cardImageUrl: initialData?.cardImageUrl,
@@ -93,18 +90,7 @@ export function VideoForm({
       isDirty
     }
   } = form;
-  const handleNavigation = (navigateFn: () => void) => {
-    if (isDirty) {
-      setPendingNavigation(() => navigateFn);
-      setShowExitConfirmation(true);
-    } else {
-      navigateFn();
-    }
-  };
-  const handleConfirmExit = () => {
-    setShowExitConfirmation(false);
-    pendingNavigation?.();
-  };
+  const { isBlocked, proceed, reset, guardNavigation } = useNavigationGuard(isDirty);
   const onSubmit = (data: VideoFormData) => {
     console.log("Saving video:", data);
     toast({
@@ -119,23 +105,23 @@ export function VideoForm({
   };
   return <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/videos"))} className="text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="icon" onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/videos"))} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <Tabs defaultValue="content" className="w-full">
+          <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="content">Information</TabsTrigger>
-              <TabsTrigger value="images">Media</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
-              <TabsTrigger value="agents">Agents</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
+              <TabsTrigger value="agents" className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />Agents</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
-            <TabsContent value="content">
+            <TabsContent value="information">
               <Card>
                 <CardHeader>
                   <CardTitle>Video Information</CardTitle>
@@ -202,15 +188,6 @@ export function VideoForm({
                         </FormItem>} />
                   </div>
 
-                  <FormField control={form.control} name="anoLancamento" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Release Year</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Ex: 2024" {...field} onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} value={field.value || ""} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
 
                   <FormField control={form.control} name="generos" render={({
                   field
@@ -229,12 +206,28 @@ export function VideoForm({
             </TabsContent>
 
             {/* Tab 2: Media */}
-            <TabsContent value="images">
+            <TabsContent value="media">
               <Card>
                 <CardHeader>
                   <CardTitle>Video Media</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  <FormField control={form.control} name="videoFile" render={({
+                  field
+                }) => <FormItem>
+                        <FormLabel>Video File</FormLabel>
+                        <FormControl>
+                          <FileUpload
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            label="Choose a file or drag & drop it here"
+                            description="MP4 format, up to 2GB"
+                            accept="video/mp4"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>} />
+
                   <FormField control={form.control} name="cardImageUrl" render={({
                   field
                 }) => <FormItem>
@@ -247,9 +240,6 @@ export function VideoForm({
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>} />
 
@@ -265,16 +255,45 @@ export function VideoForm({
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>} />
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* Tab 3: Publishing */}
+            {/* Tab 3: Agents */}
+            <TabsContent value="agents">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Related Agents</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="agentesRelacionados"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Agents</FormLabel>
+                        <FormControl>
+                          <AgentMultiSelect
+                            agents={getAgentOptions()}
+                            value={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Search and select agents..."
+                          />
+                        </FormControl>
+                        <p className="text-sm text-muted-foreground">
+                          Add agents (players, coaches, writers) related to this video content
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Tab 4: Publishing */}
             <TabsContent value="publishing">
               <Card>
                 <CardHeader>
@@ -343,43 +362,10 @@ export function VideoForm({
                 </CardContent>
               </Card>
             </TabsContent>
-
-            {/* Tab 4: Agents */}
-            <TabsContent value="agents">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Related Agents</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="agentesRelacionados"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Agents</FormLabel>
-                        <FormControl>
-                          <AgentMultiSelect
-                            value={field.value || []}
-                            onChange={field.onChange}
-                            players={mockPlayers}
-                            teams={mockTeams}
-                            placeholder="Search and select agents..."
-                          />
-                        </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Add agents (players, coaches, writers) related to this video content
-                        </p>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
           </Tabs>
 
           <div className="flex gap-4">
-            <Button type="button" variant="outline" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/videos"))} className="flex-1">
+            <Button type="button" variant="outline" onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/videos"))} className="flex-1">
               Cancel
             </Button>
             <Button type="submit" className="flex-1">
@@ -389,24 +375,7 @@ export function VideoForm({
         </form>
       </Form>
 
-      {/* Unsaved Changes Confirmation Dialog */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
-              Continue Editing
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmExit}>
-              Discard Changes
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={reset} />
+      <TutorialButton />
     </div>;
 }

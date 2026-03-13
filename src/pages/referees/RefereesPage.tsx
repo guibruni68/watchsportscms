@@ -9,7 +9,10 @@ import { ListPagination } from "@/components/ui/list-controls"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { RefereeForm } from "@/components/forms/RefereeForm"
+import { Badge } from "@/components/ui/badge"
+import { getEnabledBadgeVariant, getEnabledLabel } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Referee {
   id: string
@@ -82,6 +85,7 @@ export default function RefereesPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingReferee, setEditingReferee] = useState<Referee | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   const { toast } = useToast()
 
@@ -140,12 +144,16 @@ export default function RefereesPage() {
   }
 
   const handleDelete = (id: string) => {
-    setReferees(referees.filter(referee => referee.id !== id))
-    toast({
-      title: "Referee deleted",
-      description: "The referee was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
   }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setReferees(prev => prev.filter(referee => referee.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
+  }
+
 
   if (showForm) {
     return (
@@ -254,9 +262,9 @@ export default function RefereesPage() {
                   <TableCell>{referee.fullName}</TableCell>
                   <TableCell>{sportTypeLabels[referee.sportType] || referee.sportType}</TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {referee.enabled ? "Enabled" : "Disabled"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown
@@ -278,6 +286,12 @@ export default function RefereesPage() {
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={() => {}}
         totalItems={filteredReferees.length}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

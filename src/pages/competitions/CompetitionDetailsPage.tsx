@@ -1,4 +1,4 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -9,9 +9,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ArrowLeft, Calendar, Trophy, Users, X, Search, MapPin, Plus, Globe } from "lucide-react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { ArrowLeft, Calendar, Trophy, Users, X, Search, MapPin, Plus, ChevronRight, Info, ImageIcon } from "lucide-react"
 import { CompetitionForm } from "@/components/forms/CompetitionForm"
 import { SeasonForm } from "@/components/forms/SeasonForm"
+import { ManageSquadDialog } from "@/components/dialogs/ManageSquadDialog"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { cn } from "@/lib/utils"
 
@@ -40,6 +42,7 @@ interface Team {
   city?: string
   country?: string
   enabled: boolean
+  squadCount?: number
 }
 
 interface Season {
@@ -49,6 +52,7 @@ interface Season {
   endDate: string
   status: "upcoming" | "active" | "completed"
   teamsCount: number
+  teams: Team[]
 }
 
 const mockCompetition: Competition = {
@@ -125,7 +129,39 @@ const mockSeasons: Season[] = [
     startDate: "2024-09-01",
     endDate: "2025-05-31",
     status: "active",
-    teamsCount: 12
+    teamsCount: 3,
+    teams: [
+      {
+        id: "1",
+        name: "Basement Basketball",
+        acronym: "BSM",
+        logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-basement.png",
+        city: "Curitiba",
+        country: "Brazil",
+        enabled: true,
+        squadCount: 15
+      },
+      {
+        id: "2",
+        name: "Big City Thunder",
+        acronym: "BCT",
+        logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-bigcitythunder.png",
+        city: "São Paulo",
+        country: "Brazil",
+        enabled: true,
+        squadCount: 12
+      },
+      {
+        id: "3",
+        name: "Watch Thunders",
+        acronym: "WTH",
+        logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-watchthunders.png",
+        city: "Rio de Janeiro",
+        country: "Brazil",
+        enabled: true,
+        squadCount: 14
+      },
+    ]
   },
   {
     id: "2",
@@ -133,7 +169,29 @@ const mockSeasons: Season[] = [
     startDate: "2023-09-01",
     endDate: "2024-05-31",
     status: "completed",
-    teamsCount: 12
+    teamsCount: 2,
+    teams: [
+      {
+        id: "1",
+        name: "Basement Basketball",
+        acronym: "BSM",
+        logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-basement.png",
+        city: "Curitiba",
+        country: "Brazil",
+        enabled: true,
+        squadCount: 12
+      },
+      {
+        id: "2",
+        name: "Big City Thunder",
+        acronym: "BCT",
+        logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-bigcitythunder.png",
+        city: "São Paulo",
+        country: "Brazil",
+        enabled: true,
+        squadCount: 11
+      },
+    ]
   },
   {
     id: "3",
@@ -141,7 +199,19 @@ const mockSeasons: Season[] = [
     startDate: "2022-09-01",
     endDate: "2023-05-31",
     status: "completed",
-    teamsCount: 10
+    teamsCount: 1,
+    teams: [
+      {
+        id: "1",
+        name: "Basement Basketball",
+        acronym: "BSM",
+        logoUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/group/cardImageUrl/Card-basement.png",
+        city: "Curitiba",
+        country: "Brazil",
+        enabled: true,
+        squadCount: 10
+      },
+    ]
   },
 ]
 
@@ -163,6 +233,14 @@ export default function CompetitionDetailsPage() {
   const [showAddTeamDialog, setShowAddTeamDialog] = useState(false)
   const [teamSearchTerm, setTeamSearchTerm] = useState("")
   const [selectedTeamIds, setSelectedTeamIds] = useState<string[]>([])
+
+  // Seasons collapsible state
+  const [expandedSeasons, setExpandedSeasons] = useState<string[]>([])
+
+  // Manage Squad Dialog state
+  const [showSquadDialog, setShowSquadDialog] = useState(false)
+  const [selectedTeamForSquad, setSelectedTeamForSquad] = useState<Team | null>(null)
+  const [selectedSeasonForSquad, setSelectedSeasonForSquad] = useState<Season | null>(null)
 
   // Filter available teams based on search
   const filteredAvailableTeams = mockAvailableTeams.filter(team =>
@@ -201,6 +279,20 @@ export default function CompetitionDetailsPage() {
     )
   }
 
+  const toggleSeasonExpanded = (seasonId: string) => {
+    setExpandedSeasons(prev =>
+      prev.includes(seasonId)
+        ? prev.filter(id => id !== seasonId)
+        : [...prev, seasonId]
+    )
+  }
+
+  const handleManageSquad = (team: Team, season: Season) => {
+    setSelectedTeamForSquad(team)
+    setSelectedSeasonForSquad(season)
+    setShowSquadDialog(true)
+  }
+
   const getTypeLabel = (type: string) => {
     switch (type) {
       case "league": return "League"
@@ -210,16 +302,15 @@ export default function CompetitionDetailsPage() {
     }
   }
 
-  const getSeasonStatusStyle = (status: Season["status"]) => {
+  const getSeasonStatusVariant = (status: Season["status"]): "success" | "info" | "outline" => {
     switch (status) {
       case "active":
-        return "bg-green-500/10 text-green-500 border-green-500/20"
+        return "success"
       case "upcoming":
-        return "bg-blue-500/10 text-blue-500 border-blue-500/20"
+        return "info"
       case "completed":
-        return "bg-muted text-muted-foreground border-border"
       default:
-        return "bg-muted text-muted-foreground border-border"
+        return "outline"
     }
   }
 
@@ -267,11 +358,11 @@ export default function CompetitionDetailsPage() {
     )
   }
 
-  const tabs: { id: TabType; label: string; count?: number }[] = [
-    { id: "overview", label: "Overview" },
-    { id: "seasons", label: "Seasons", count: seasons.length },
-    { id: "teams", label: "Teams", count: teams.length },
-    { id: "media", label: "Media" }
+  const tabs: { id: TabType; label: string; icon: React.ElementType; count?: number }[] = [
+    { id: "overview", label: "Overview", icon: Info },
+    { id: "seasons", label: "Seasons", icon: Calendar, count: seasons.length },
+    { id: "teams", label: "Teams", icon: Users, count: teams.length },
+    { id: "media", label: "Media", icon: ImageIcon }
   ]
 
   return (
@@ -288,9 +379,9 @@ export default function CompetitionDetailsPage() {
       </Button>
 
       {/* Header Card */}
-      <Card className="border-[#1f1f1f] bg-[#171717] rounded-xl overflow-hidden">
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
         {/* Top banner bar - 128px height */}
-        <div className="h-32 bg-gradient-to-r from-[#262626] to-[#171717]" />
+        <div className="h-32 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
 
         {/* Header Content */}
         <div className="px-7 pb-7 -mt-14">
@@ -311,14 +402,9 @@ export default function CompetitionDetailsPage() {
               </div>
 
               {/* Competition Info */}
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
-                  {competition.name}
-                </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
-                  {competition.enabled ? "Enabled" : "Disabled"}
-                </span>
-              </div>
+              <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
+                {competition.name}
+              </h1>
               <p className="text-sm text-muted-foreground mt-1">
                 {competition.acronym} • {getTypeLabel(competition.type)}
               </p>
@@ -327,7 +413,7 @@ export default function CompetitionDetailsPage() {
             {/* Edit Button */}
             <Button
               onClick={() => setShowEditForm(true)}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-[10px] px-6 h-10 mt-16"
+              className="bg-primary hover:bg-primary/80 text-white rounded-[10px] px-6 h-10 mt-16"
             >
               Edit
             </Button>
@@ -343,16 +429,17 @@ export default function CompetitionDetailsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
                 activeTab === tab.id
                   ? "text-white"
                   : "text-muted-foreground hover:text-white/80"
               )}
             >
+              <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
               {tab.count !== undefined && ` (${tab.count})`}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
               )}
             </button>
           ))}
@@ -362,79 +449,47 @@ export default function CompetitionDetailsPage() {
       {/* Tab Content */}
       {activeTab === "overview" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="px-12 pt-12 pb-16">
-            <div className="flex justify-between gap-[140px]">
-              {/* Left Column - Description & Details */}
-              <div className="flex-1 space-y-4">
-                {/* Description */}
-                <div className="space-y-0">
-                  <p className="text-sm text-[#999999] leading-5">Description</p>
-                  <p className="text-base text-white leading-6 max-w-[603px]">
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              {/* Left Column */}
+              <div className="flex-1 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
                     {competition.description || "No description available."}
                   </p>
                 </div>
 
-                {/* Full Name */}
-                <div className="space-y-0 pt-4">
-                  <p className="text-sm text-[#999999] leading-5">Full Name</p>
-                  <p className="text-base text-white leading-6">{competition.name}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Full Name</h3>
+                  <p className="text-sm text-white/80">{competition.name}</p>
                 </div>
 
-                {/* Acronym */}
-                <div className="space-y-0">
-                  <p className="text-sm text-[#999999] leading-5">Acronym</p>
-                  <p className="text-base text-white leading-6">{competition.acronym}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Acronym</h3>
+                  <p className="text-sm text-white/80">{competition.acronym}</p>
                 </div>
               </div>
 
-              {/* Right Column - Info Cards */}
-              <div className="w-[189px] space-y-6">
-                {/* Country */}
+              {/* Right Column */}
+              <div className="w-64 space-y-8">
                 {competition.country && (
-                  <div className="flex items-center gap-[13px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Globe className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <p className="text-sm text-white leading-[14px]">{competition.country}</p>
-                      <p className="text-xs text-white/50 leading-[18px]">Country</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Country</h3>
+                    <p className="text-sm text-white/80">{competition.country}</p>
                   </div>
                 )}
 
-                {/* Founded */}
                 {competition.originDate && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Calendar className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">Founded</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{formatDate(competition.originDate)}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Founded</h3>
+                    <p className="text-sm text-white/80">{formatDate(competition.originDate)}</p>
                   </div>
                 )}
 
-                {/* Type */}
-                <div className="flex items-center gap-[10px]">
-                  <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                    <Trophy className="h-[18px] w-[18px] text-white/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-white leading-[14px]">Type</p>
-                    <p className="text-xs text-white/50 leading-[18px]">{getTypeLabel(competition.type)}</p>
-                  </div>
-                </div>
-
-                {/* Teams Count */}
-                <div className="flex items-center gap-[10px]">
-                  <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                    <Users className="h-[18px] w-[18px] text-white/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm text-white leading-[14px]">Teams</p>
-                    <p className="text-xs text-white/50 leading-[18px]">{teams.length} participating</p>
-                  </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Type</h3>
+                  <p className="text-sm text-white/80">{getTypeLabel(competition.type)}</p>
                 </div>
               </div>
             </div>
@@ -449,60 +504,98 @@ export default function CompetitionDetailsPage() {
             <Button
               size="sm"
               onClick={handleNewSeason}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg"
+              className="bg-primary hover:bg-primary/80 text-white rounded-lg"
             >
               <Plus className="h-4 w-4 mr-2" />
               New Season
             </Button>
           </div>
-          <div className="p-0">
+          <div className="p-6">
             {seasons.length === 0 ? (
               <div className="p-12 text-center">
                 <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground mb-4">No seasons registered yet.</p>
-                <Button onClick={handleNewSeason} className="bg-[#153A8A] hover:bg-[#1a4aa8]">
+                <Button onClick={handleNewSeason} className="bg-primary hover:bg-primary/80">
                   <Plus className="h-4 w-4 mr-2" />
                   Create First Season
                 </Button>
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-[#1f1f1f] hover:bg-transparent">
-                    <TableHead className="text-muted-foreground">Name</TableHead>
-                    <TableHead className="text-muted-foreground">Start Date</TableHead>
-                    <TableHead className="text-muted-foreground">End Date</TableHead>
-                    <TableHead className="text-muted-foreground">Teams</TableHead>
-                    <TableHead className="text-muted-foreground">Status</TableHead>
-                    <TableHead className="text-right text-muted-foreground">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {seasons.map((season) => (
-                    <TableRow key={season.id} className="border-[#1f1f1f]">
-                      <TableCell className="font-medium text-white">{season.name}</TableCell>
-                      <TableCell className="text-muted-foreground">{formatDate(season.startDate)}</TableCell>
-                      <TableCell className="text-muted-foreground">{formatDate(season.endDate)}</TableCell>
-                      <TableCell className="text-muted-foreground">{season.teamsCount}</TableCell>
-                      <TableCell>
-                        <span className={cn(
-                          "inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium border capitalize",
-                          getSeasonStatusStyle(season.status)
-                        )}>
+              <div className="space-y-2">
+                {seasons.map((season) => (
+                  <Collapsible
+                    key={season.id}
+                    open={expandedSeasons.includes(season.id)}
+                    onOpenChange={() => toggleSeasonExpanded(season.id)}
+                  >
+                    <div className="bg-muted rounded-md">
+                      <div className="flex items-center gap-3 px-3 py-4">
+                        <CollapsibleTrigger asChild>
+                          <button className="p-1 rounded hover:bg-accent transition-colors">
+                            <ChevronRight className={cn(
+                              "h-5 w-5 text-muted-foreground transition-transform duration-200",
+                              expandedSeasons.includes(season.id) && "rotate-90"
+                            )} />
+                          </button>
+                        </CollapsibleTrigger>
+                        <span className="font-medium text-white min-w-[180px]">{season.name}</span>
+                        <span className="text-sm text-muted-foreground min-w-[100px]">{formatDate(season.startDate)}</span>
+                        <span className="text-sm text-muted-foreground min-w-[100px]">{formatDate(season.endDate)}</span>
+                        <span className="text-sm text-muted-foreground min-w-[80px]">{season.teams.length} teams</span>
+                        <Badge variant={getSeasonStatusVariant(season.status)} className="capitalize min-w-[80px] justify-center">
                           {season.status}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
+                        </Badge>
+                        <div className="flex-1" />
                         <ActionDropdown
                           onView={() => navigate(`/competitions/${competition.id}/seasons/${season.id}`)}
                           onEdit={() => handleEditSeason(season)}
                           onDelete={() => {}}
                         />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                      </div>
+                      <CollapsibleContent>
+                        <div className="px-4 pb-4 pt-0">
+                          <div className="border-t border-[#1f1f1f] pt-4">
+                            {season.teams.length === 0 ? (
+                              <p className="text-sm text-muted-foreground py-2">No teams in this season.</p>
+                            ) : (
+                              <div className="space-y-3">
+                                <p className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Participating Teams</p>
+                                <div className="space-y-2">
+                                  {season.teams.map((team) => (
+                                    <div
+                                      key={team.id}
+                                      className="flex items-center gap-4 p-3 rounded-lg hover:bg-[#1f1f1f]/50 transition-colors"
+                                    >
+                                      <div className="w-8 h-8 rounded-full bg-white overflow-hidden flex items-center justify-center flex-shrink-0">
+                                        {team.logoUrl ? (
+                                          <img src={team.logoUrl} alt={team.name} className="w-full h-full object-cover rounded-full" />
+                                        ) : (
+                                          <span className="text-xs font-bold text-gray-400">{team.acronym}</span>
+                                        )}
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <span className="text-sm text-white">{team.name}</span>
+                                      </div>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleManageSquad(team, season)}
+                                        className="h-7 px-2 text-xs border-[#1f1f1f]"
+                                      >
+                                        Manage Squad
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CollapsibleContent>
+                    </div>
+                  </Collapsible>
+                ))}
+              </div>
             )}
           </div>
         </Card>
@@ -515,7 +608,7 @@ export default function CompetitionDetailsPage() {
             <Button
               size="sm"
               onClick={() => setShowAddTeamDialog(true)}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg"
+              className="bg-primary hover:bg-primary/80 text-white rounded-lg"
             >
               <Users className="h-4 w-4 mr-2" />
               Add Team
@@ -528,7 +621,7 @@ export default function CompetitionDetailsPage() {
                 <p className="text-muted-foreground mb-4">No teams added yet.</p>
                 <Button
                   onClick={() => setShowAddTeamDialog(true)}
-                  className="bg-[#153A8A] hover:bg-[#1a4aa8]"
+                  className="bg-primary hover:bg-primary/80"
                 >
                   <Users className="h-4 w-4 mr-2" />
                   Add First Team
@@ -562,9 +655,9 @@ export default function CompetitionDetailsPage() {
                         <Badge variant="outline">{team.acronym}</Badge>
                       </TableCell>
                       <TableCell>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                        <Badge variant="neutral">
                           {team.enabled ? "Enabled" : "Disabled"}
-                        </span>
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <ActionDropdown
@@ -696,9 +789,9 @@ export default function CompetitionDetailsPage() {
                         <p className="font-medium text-white">{team.name}</p>
                         <p className="text-sm text-muted-foreground">{team.city}, {team.country}</p>
                       </div>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                      <Badge variant="neutral">
                         {team.enabled ? "Enabled" : "Disabled"}
-                      </span>
+                      </Badge>
                     </div>
                   ))
                 )}
@@ -721,7 +814,7 @@ export default function CompetitionDetailsPage() {
             <Button
               onClick={handleAddTeams}
               disabled={selectedTeamIds.length === 0}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8]"
+              className="bg-primary hover:bg-primary/80"
             >
               Add {selectedTeamIds.length > 0 && `(${selectedTeamIds.length})`} Team{selectedTeamIds.length !== 1 ? 's' : ''}
             </Button>
@@ -751,6 +844,20 @@ export default function CompetitionDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Manage Squad Dialog */}
+      {selectedTeamForSquad && selectedSeasonForSquad && (
+        <ManageSquadDialog
+          open={showSquadDialog}
+          onOpenChange={setShowSquadDialog}
+          team={{
+            ...selectedTeamForSquad,
+            squadCount: selectedTeamForSquad.squadCount || 0
+          }}
+          seasonId={selectedSeasonForSquad.id}
+          seasonName={selectedSeasonForSquad.name}
+        />
+      )}
     </div>
   )
 }

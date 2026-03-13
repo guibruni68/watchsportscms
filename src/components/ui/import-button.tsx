@@ -129,7 +129,7 @@ export function ImportButton({ entityName, onImport, templateUrl }: ImportButton
             <Label htmlFor="file-upload">Selecionar arquivo</Label>
             {selectedFile ? (
               <div className="flex items-center gap-3 p-3 border rounded-lg bg-background">
-                <FileSpreadsheet className="h-4 w-4 text-primary" />
+                <FileSpreadsheet className="h-4 w-4 text-muted-foreground" />
                 <span className="flex-1 text-sm font-medium truncate">
                   {selectedFile.name}
                 </span>

@@ -13,6 +13,8 @@ interface Live {
   viewers?: number;
   playerEmbed?: string;
   coverImage?: string;
+  rtmpServerUrl?: string;
+  streamKey?: string;
 }
 
 // Mock data - same as LivesPage and LiveDetailsPage
@@ -24,7 +26,9 @@ const mockLives: Live[] = [
     dateTime: "2024-01-20T16:00:00",
     genre: ["Championship", "Final"],
     status: "upcoming",
-    viewers: 0
+    viewers: 0,
+    rtmpServerUrl: "rtmp://live.example.com/app",
+    streamKey: "sk-championship-final-abc123"
   },
   {
     id: "2",
@@ -33,7 +37,9 @@ const mockLives: Live[] = [
     dateTime: "2024-01-18T10:00:00",
     genre: ["Press Conference", "Institutional"],
     status: "live",
-    viewers: 1247
+    viewers: 1247,
+    rtmpServerUrl: "rtmp://live.example.com/app",
+    streamKey: "sk-squad-presentation-def456"
   },
   {
     id: "3",
@@ -75,6 +81,8 @@ export default function EditLivePage() {
           available: data.status === "live" || data.status === "ended",
           playerEmbed: data.playerEmbed,
           imagemCapa: data.coverImage,
+          rtmpServerUrl: data.rtmpServerUrl,
+          streamKey: data.streamKey,
         };
 
         setInitialData(transformedData);

@@ -11,6 +11,7 @@ import { NewsForm } from "@/components/forms/NewsForm"
 import { toast } from "@/hooks/use-toast"
 import { mockNews, News, mockGenres } from "@/data/mockData"
 import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 export default function NewsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -23,6 +24,7 @@ export default function NewsPage() {
   const [editingNews, setEditingNews] = useState<News | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   // Check for new param on mount
   useEffect(() => {
@@ -73,11 +75,14 @@ export default function NewsPage() {
   }
 
   const handleDelete = (id: string) => {
-    setNews(news.filter(item => item.id !== id))
-    toast({
-      title: "News deleted",
-      description: "The news item was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setNews(prev => prev.filter(item => item.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
   if (showForm) {
@@ -185,9 +190,9 @@ export default function NewsPage() {
                     {new Date(item.date).toLocaleDateString("pt-BR")}
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {status}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown
@@ -241,6 +246,12 @@ export default function NewsPage() {
           </CardContent>
         </Card>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
+      />
     </div>
   )
 }

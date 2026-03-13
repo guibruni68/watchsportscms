@@ -1,24 +1,33 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3 } from "lucide-react"
+import { ArrowLeft, Clock, Users, Radio, X, Link2, BarChart3, Info, ImageIcon, AlertTriangle, Copy, Check, Globe } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { ReportIssueDialog } from "@/components/dialogs/ReportIssueDialog"
+
+interface Agent {
+  id: string
+  name: string
+  type: "agent" | "group"
+}
 
 interface Live {
   id: string
   title: string
   description: string
   label: "VOD" | "LIVE"
-  releaseYear?: number
   scheduleDate: string
   isPublished: boolean
   badge?: "NEW" | "NEW EPISODES" | "SOON"
   cardImageUrl?: string
   bannerImageUrl?: string
   streamUrl?: string
+  rtmpServerUrl?: string
+  streamKey?: string
   ageRating?: string
   createdAt: string
   updatedAt: string
@@ -29,6 +38,7 @@ interface Live {
   available?: boolean
   viewers?: number
   playerEmbed?: string
+  agentesRelacionados?: Agent[]
 }
 
 // Mock data
@@ -38,13 +48,14 @@ const mockLives: Live[] = [
     title: "State Championship Final",
     description: "Live broadcast of the grand final against traditional rival. A decisive match for the state title with both teams at their best.",
     label: "LIVE",
-    releaseYear: 2025,
     scheduleDate: "2025-12-20T16:00:00",
     isPublished: true,
     badge: "SOON",
     cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchThunders.png",
     bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchThunders.png",
     streamUrl: "https://example.com/stream/championship-final",
+    rtmpServerUrl: "rtmp://live.example.com/app",
+    streamKey: "sk-championship-final-abc123",
     ageRating: "L",
     createdAt: "2025-11-15T10:00:00",
     updatedAt: "2025-11-20T14:30:00",
@@ -53,20 +64,26 @@ const mockLives: Live[] = [
     dateTime: "2025-12-20T16:00:00",
     genre: ["Championship", "Final"],
     available: false,
-    viewers: 0
+    viewers: 0,
+    agentesRelacionados: [
+      { id: "player1", name: "Carlos Eduardo", type: "agent" },
+      { id: "player2", name: "André Silva", type: "agent" },
+      { id: "team1", name: "Watch Thunders", type: "group" }
+    ]
   },
   {
     id: "2",
     title: "2024 Squad Presentation",
     description: "Press conference with presentation of new players. Meet the new reinforcements for the upcoming season.",
     label: "LIVE",
-    releaseYear: 2024,
     scheduleDate: "2024-01-18T10:00:00",
     isPublished: true,
     badge: "NEW",
     cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchersIron.png",
     bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-WatchersIron.png",
     streamUrl: "https://example.com/stream/squad-presentation",
+    rtmpServerUrl: "rtmp://live.example.com/app",
+    streamKey: "sk-squad-presentation-def456",
     ageRating: "L",
     createdAt: "2024-01-10T09:00:00",
     updatedAt: "2024-01-17T16:45:00",
@@ -82,13 +99,14 @@ const mockLives: Live[] = [
     title: "Open Training for Fans",
     description: "Follow the team's training before the decisive game. An exclusive opportunity to see the players preparing.",
     label: "LIVE",
-    releaseYear: 2026,
     scheduleDate: "2026-01-22T09:00:00",
     isPublished: false,
     badge: "SOON",
     cardImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-NovaThunder.png",
     bannerImageUrl: "https://syjavjcfemexcqkemcsi.supabase.co/storage/v1/object/public/content/cardImageUrl/cardGame-NovaThunder.png",
     streamUrl: "https://example.com/stream/open-training",
+    rtmpServerUrl: "rtmp://live.example.com/app",
+    streamKey: "sk-open-training-ghi789",
     ageRating: "L",
     createdAt: "2026-01-10T08:00:00",
     updatedAt: "2026-01-20T10:00:00",
@@ -101,7 +119,7 @@ const mockLives: Live[] = [
   },
 ]
 
-type TabType = "overview" | "details" | "stats" | "media"
+type TabType = "information" | "media" | "stream" | "agents" | "publishing" | "stats"
 
 export default function LiveDetailsPage() {
   const { id } = useParams<{ id: string }>()
@@ -109,8 +127,16 @@ export default function LiveDetailsPage() {
   const [searchParams] = useSearchParams()
   const [live, setLive] = useState<Live | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<TabType>("overview")
+  const [activeTab, setActiveTab] = useState<TabType>("information")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+  const [reportOpen, setReportOpen] = useState(false)
+  const [copiedField, setCopiedField] = useState<string | null>(null)
+
+  const handleCopy = (value: string, field: string) => {
+    navigator.clipboard.writeText(value)
+    setCopiedField(field)
+    setTimeout(() => setCopiedField(null), 2000)
+  }
 
   // Check for tab param on mount
   useEffect(() => {
@@ -175,29 +201,14 @@ export default function LiveDetailsPage() {
     return null
   }
 
-  const tabs: { id: TabType; label: string }[] = [
-    { id: "overview", label: "Overview" },
-    { id: "details", label: "Details" },
-    { id: "stats", label: "Stats" },
-    { id: "media", label: "Media" }
+  const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
+    { id: "information", label: "Information", icon: Info },
+    { id: "media",       label: "Media",       icon: ImageIcon },
+    { id: "stream",      label: "Stream",      icon: Radio },
+    { id: "agents",      label: "Agents",      icon: Users },
+    { id: "publishing",  label: "Publishing",  icon: Globe },
+    { id: "stats",       label: "Stats",       icon: BarChart3 },
   ]
-
-  const getStatusLabel = () => {
-    if (!live.enabled) return "Disabled"
-    if (!live.isPublished) return "Draft"
-    const now = new Date()
-    const scheduleDate = new Date(live.scheduleDate)
-    if (live.available) return "Live Now"
-    if (scheduleDate > now) return "Scheduled"
-    return "Ended"
-  }
-
-  const getStatusStyle = () => {
-    const status = getStatusLabel()
-    if (status === "Live Now") return "bg-red-500/20 text-red-500 border-red-500/30"
-    if (status === "Scheduled") return "bg-blue-500/20 text-blue-500 border-blue-500/30"
-    return "bg-muted text-muted-foreground border-border"
-  }
 
   return (
     <div className="space-y-6">
@@ -215,7 +226,7 @@ export default function LiveDetailsPage() {
       {/* Header Card */}
       <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
         {/* Top banner bar */}
-        <div className="h-28 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d]" />
+        <div className="h-28 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
 
         {/* Header Content */}
         <div className="px-7 pb-7 -mt-14">
@@ -252,33 +263,29 @@ export default function LiveDetailsPage() {
 
               {/* Live Info */}
               <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold text-white">
+                <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
                   {live.title}
                 </h1>
-                <span className={cn(
-                  "inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium border",
-                  getStatusStyle()
-                )}>
-                  {getStatusLabel()}
-                </span>
-                {live.badge && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-[#153A8A]/20 text-[#4a90d9] border border-[#153A8A]/30">
-                    {live.badge}
-                  </span>
-                )}
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                {live.releaseYear || "Live Stream"}
-              </p>
             </div>
 
-            {/* Edit Button */}
-            <Button
-              onClick={handleEdit}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg px-6 h-10 mt-20"
-            >
-              Edit
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 mt-20">
+              <Button
+                variant="outline"
+                onClick={() => setReportOpen(true)}
+                className="gap-2"
+              >
+                <AlertTriangle className="h-4 w-4" />
+                Reportar Problema
+              </Button>
+              <Button
+                onClick={handleEdit}
+                className="bg-primary hover:bg-primary/80 text-white rounded-lg px-6 h-10"
+              >
+                Edit
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
@@ -291,15 +298,16 @@ export default function LiveDetailsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
                 activeTab === tab.id
                   ? "text-white"
                   : "text-muted-foreground hover:text-white/80"
               )}
             >
+              <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
               )}
             </button>
           ))}
@@ -307,151 +315,47 @@ export default function LiveDetailsPage() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === "overview" && (
+
+      {/* INFORMATION TAB */}
+      {activeTab === "information" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
           <CardContent className="p-7">
             <div className="flex gap-12">
-              {/* Left Column - Description & Genres */}
               <div className="flex-1 space-y-8">
-                {/* Description */}
                 <div>
                   <h3 className="text-base font-semibold text-white mb-4">Description</h3>
-                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
+                  <p className="text-sm text-white/80 leading-relaxed">
                     {live.description || "No description available."}
                   </p>
                 </div>
-
-                {/* Genres */}
                 {live.genre && live.genre.length > 0 && (
                   <div>
                     <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
                     <div className="flex flex-wrap gap-2">
                       {live.genre.map((genre, index) => (
-                        <div
-                          key={index}
-                          className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]"
-                        >
-                          <span className="text-xs font-medium text-white/50">{genre}</span>
-                        </div>
+                        <Badge key={index} variant="neutral">{genre}</Badge>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
-
-              {/* Right Column - Info Cards */}
-              <div className="w-64 space-y-6">
-                {/* Age Rating */}
+              <div className="w-64 space-y-8">
                 {live.ageRating && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-bold text-muted-foreground">{live.ageRating}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Age Rating</p>
-                      <p className="text-xs text-muted-foreground">{live.ageRating}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Age Rating</h3>
+                    <p className="text-sm text-white/80">{live.ageRating}</p>
                   </div>
                 )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {activeTab === "details" && (
-        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold text-white">Technical Details</h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Stream URL */}
-              {live.streamUrl && (
-                <div className="col-span-2">
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Stream URL</p>
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
-                    <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    <code className="text-xs text-white/60 break-all">{live.streamUrl}</code>
-                  </div>
-                </div>
-              )}
-
-              {/* Release Year */}
-              {live.releaseYear && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Release Year</p>
-                  <p className="text-sm text-white">{live.releaseYear}</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Created At</h3>
+                  <p className="text-sm text-white/80">{formatDateTime(live.createdAt)}</p>
                 </div>
-              )}
-
-              {/* Label */}
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Label</p>
-                <p className="text-sm text-white">{live.label}</p>
-              </div>
-
-              {/* Created At */}
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Created At</p>
-                <p className="text-sm text-white">{formatDateTime(live.createdAt)}</p>
-              </div>
-
-              {/* Updated At */}
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Updated At</p>
-                <p className="text-sm text-white">{formatDateTime(live.updatedAt)}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Updated At</h3>
+                  <p className="text-sm text-white/80">{formatDateTime(live.updatedAt)}</p>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {activeTab === "stats" && (
-        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold text-white">Statistics</h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Peak Viewers */}
-              <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
-                    <Users className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm font-medium text-muted-foreground">Peak Viewers</p>
-                </div>
-                <p className="text-3xl font-bold text-white">{(live.viewers || 0).toLocaleString()}</p>
-              </div>
-
-              {/* Total Views */}
-              <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
-                    <BarChart3 className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Views</p>
-                </div>
-                <p className="text-3xl font-bold text-white">{((live.viewers || 0) * 2.5).toLocaleString()}</p>
-              </div>
-
-              {/* Watch Time */}
-              <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm font-medium text-muted-foreground">Avg Watch Time</p>
-                </div>
-                <p className="text-3xl font-bold text-white">24:35</p>
-              </div>
-            </div>
-
-            {!live.viewers && (
-              <div className="text-center py-8">
-                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Statistics will be available after the stream starts.</p>
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
@@ -459,13 +363,11 @@ export default function LiveDetailsPage() {
       {activeTab === "media" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
           <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold text-white">Media Assets</h3>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Card Image */}
               {live.cardImageUrl && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-3">Card Image</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Card Image</h3>
                   <div
                     className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => setLightboxImage(live.cardImageUrl!)}
@@ -482,7 +384,7 @@ export default function LiveDetailsPage() {
               {/* Banner Image */}
               {live.bannerImageUrl && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-3">Banner Image</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Banner Image</h3>
                   <div
                     className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => setLightboxImage(live.bannerImageUrl!)}
@@ -501,6 +403,168 @@ export default function LiveDetailsPage() {
               <div className="text-center py-12">
                 <Radio className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground">No media assets uploaded yet.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* STREAM TAB */}
+      {activeTab === "stream" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Stream Configuration</h3>
+            <div className="space-y-4">
+              {live.streamUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Stream URL</p>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
+                    <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <code className="text-xs text-white/60 break-all flex-1">{live.streamUrl}</code>
+                    <button onClick={() => handleCopy(live.streamUrl!, "streamUrl")} className="ml-auto flex-shrink-0 text-muted-foreground hover:text-white transition-colors">
+                      {copiedField === "streamUrl" ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {live.rtmpServerUrl && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">RTMP Server URL</p>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
+                    <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <code className="text-xs text-white/60 break-all flex-1">{live.rtmpServerUrl}</code>
+                    <button onClick={() => handleCopy(live.rtmpServerUrl!, "rtmpServerUrl")} className="ml-auto flex-shrink-0 text-muted-foreground hover:text-white transition-colors">
+                      {copiedField === "rtmpServerUrl" ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {live.streamKey && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Stream Key</p>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
+                    <code className="text-xs text-white/60 break-all flex-1">{"•".repeat(live.streamKey.length)}</code>
+                    <button onClick={() => handleCopy(live.streamKey!, "streamKey")} className="ml-auto flex-shrink-0 text-muted-foreground hover:text-white transition-colors">
+                      {copiedField === "streamKey" ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {!live.streamUrl && !live.rtmpServerUrl && !live.streamKey && (
+                <div className="text-center py-8">
+                  <Radio className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No stream configuration available.</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* AGENTS TAB */}
+      {activeTab === "agents" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Related Agents</h3>
+            {live.agentesRelacionados && live.agentesRelacionados.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {live.agentesRelacionados.map((agent) => (
+                  <div key={agent.id} className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]">
+                    <span className={cn("w-2 h-2 rounded-full", agent.type === "agent" ? "bg-blue-500" : "bg-green-500")} />
+                    <span className="text-xs font-medium text-white/50">{agent.name}</span>
+                    <span className="text-[10px] text-white/30 uppercase">{agent.type === "agent" ? "Player" : "Team"}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No agents associated with this live.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* PUBLISHING TAB */}
+      {activeTab === "publishing" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Publishing</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Label</p>
+                <p className="text-sm text-white">{live.label}</p>
+              </div>
+              {live.badge && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Badge</p>
+                  <p className="text-sm text-white">{live.badge}</p>
+                </div>
+              )}
+              {live.scheduleDate && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Schedule Date</p>
+                  <p className="text-sm text-white">{formatDateTime(live.scheduleDate)}</p>
+                </div>
+              )}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Status</p>
+                <p className="text-sm text-white">{live.isPublished ? "Published" : "Draft"}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Enabled</p>
+                <p className="text-sm text-white">{live.enabled ? "Yes" : "No"}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {activeTab === "stats" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7 space-y-6">
+            <h3 className="text-lg font-semibold text-white">Statistics</h3>
+
+            {(live.viewers !== undefined && live.viewers !== null && live.viewers > 0) ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Peak Viewers */}
+                <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                      <Users className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm font-medium text-muted-foreground">Peak Viewers</p>
+                  </div>
+                  <p className="text-3xl font-bold text-white">{(live.viewers || 0).toLocaleString()}</p>
+                </div>
+
+                {/* Total Views */}
+                <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                      <BarChart3 className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm font-medium text-muted-foreground">Total Views</p>
+                  </div>
+                  <p className="text-3xl font-bold text-white">{(live.viewers || 0).toLocaleString()}</p>
+                </div>
+
+                {/* Watch Time */}
+                <div className="p-6 rounded-xl bg-[#090909] border border-[#262626]">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                      <Clock className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm font-medium text-muted-foreground">Avg Watch Time</p>
+                  </div>
+                  <p className="text-3xl font-bold text-white">24:35</p>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">Statistics will be available after the stream starts.</p>
               </div>
             )}
           </CardContent>
@@ -529,6 +593,14 @@ export default function LiveDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Report Issue Dialog */}
+      <ReportIssueDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        liveTitle={live.title}
+        liveId={live.id}
+      />
     </div>
   )
 }

@@ -12,6 +12,8 @@ import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { VideoForm } from "@/components/forms/VideoForm"
 import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils"
+import { toast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Video {
   id: string
@@ -268,6 +270,7 @@ export default function VideosPage() {
   const [editingVideo, setEditingVideo] = useState<Video | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   // Check for new param on mount
   useEffect(() => {
@@ -308,7 +311,14 @@ export default function VideosPage() {
   }
 
   const handleDelete = (id: string) => {
-    setVideos(videos.filter(video => video.id !== id))
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setVideos(prev => prev.filter(video => video.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
   const handleView = (id: string) => {
@@ -419,9 +429,9 @@ export default function VideosPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                  <Badge variant="neutral">
                     {getContentStatus(video.available, video.publishDate)}
-                  </span>
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   <ActionDropdown
@@ -499,6 +509,12 @@ export default function VideosPage() {
           </CardContent>
         </Card>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
+      />
     </div>
   )
 }

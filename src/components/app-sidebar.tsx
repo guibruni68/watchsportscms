@@ -1,5 +1,5 @@
-import { Home, Video, Radio, Users, Calendar, Palette, Newspaper, DollarSign, BarChart3, Settings, Layout, Megaphone, MonitorSpeaker, UserCheck, User, LogOut, ChevronDown, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, UserCircle, Trophy, Briefcase, MapPin, Scale } from "lucide-react";
-import teamLogo from "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png";
+import { Home, Video, Radio, Users, Calendar, Newspaper, Layout, Megaphone, User, LogOut, Tag, Folder, ChevronRight, MoreVertical, LayoutPanelTop, Trophy, Briefcase, MapPin, Scale, HelpCircle } from "lucide-react";
+import teamLogo from "/assets/mosca.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from "@/components/ui/sidebar";
 import { useGuestMode } from "@/hooks/useGuestMode";
@@ -44,6 +44,11 @@ const mainNavItems = [{
       icon: Trophy
     },
     {
+      title: "Seasons",
+      url: "/seasons",
+      icon: Calendar
+    },
+    {
       title: "Stadiums",
       url: "/stadiums",
       icon: MapPin
@@ -79,7 +84,7 @@ const mainNavItems = [{
       icon: Calendar
     }
   ]
-}, 
+},
 {
   title: "Pages & Shelves",
   icon: LayoutPanelTop,
@@ -87,7 +92,7 @@ const mainNavItems = [{
     {
       title: "Banners",
       url: "/banners",
-      icon: MonitorSpeaker
+      icon: Megaphone
     },
     {
       title: "Shelves",
@@ -97,38 +102,11 @@ const mainNavItems = [{
     {
       title: "Pages",
       url: "/pages",
-      icon: MonitorSpeaker
+      icon: LayoutPanelTop
     }
   ]
-}, 
-{
-  title: "Analytics",
-  url: "/analytics",
-  icon: BarChart3
 },
-{
-  title: "Ads Management",
-  url: "/advertising",
-  icon: Megaphone
-},
-{
-  title: "Subscriptions & Billing",
-  url: "/billing",
-  icon: DollarSign
-}, {
-  title: "Users Management",
-  url: "/users-management",
-  icon: UserCheck
-}];
-const settingsNavItems = [{
-  title: "Personalização",
-  url: "/customization",
-  icon: Palette
-}, {
-  title: "Configurações",
-  url: "/settings",
-  icon: Settings
-}];
+];
 export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -186,12 +164,12 @@ export function AppSidebar() {
     const name = getUserDisplayName();
     return name.substring(0, 2).toUpperCase();
   };
-  return <Sidebar className="w-64">
+  return <Sidebar collapsible="icon">
       <SidebarContent className="bg-gradient-to-b from-card to-muted/20">
         {/* Logo Section */}
-        <div className="px-6 pt-6 pb-3 border-b border-border/50 flex justify-center">
-          <div className="flex items-center justify-center overflow-hidden">
-            <img src={teamLogo} alt="Logo do Clube" className="w-40 h-40 object-scale-down" />
+        <div className="px-4 pt-16 pb-[72px] border-b border-border/50 flex justify-center group-data-[collapsible=icon]:hidden">
+          <div className="flex items-center justify-center overflow-hidden w-full">
+            <img src={teamLogo} alt="Logo do Clube" className="w-48 h-14 object-scale-down" />
           </div>
         </div>
 
@@ -244,6 +222,19 @@ export function AppSidebar() {
 
         {/* User Profile Footer */}
         <SidebarFooter className="mt-auto border-t border-border/50">
+          {/* Help & Support Micro Banner */}
+          <div className="px-3 pt-4 pb-1 group-data-[collapsible=icon]:hidden">
+            <NavLink to="/help" className="block">
+              <div className={`rounded-xl border p-4 transition-colors cursor-pointer ${isActive("/help") ? "border-border bg-muted/40" : "border-border/50 bg-card hover:bg-muted/30"}`}>
+                <HelpCircle className="h-5 w-5 text-muted-foreground mb-3" />
+                <p className="text-sm font-medium text-foreground mb-1">Need Help?</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Browse guides and answers to your questions.
+                </p>
+              </div>
+            </NavLink>
+          </div>
+          <div className="border-t border-border/50 mx-4 group-data-[collapsible=icon]:hidden" />
           <div className="p-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -254,7 +245,7 @@ export function AppSidebar() {
                       {getUserInitials()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 overflow-hidden">
+                  <div className="flex-1 overflow-hidden group-data-[collapsible=icon]:hidden">
                     <p className="text-sm font-medium text-foreground truncate">
                       {getUserDisplayName()}
                     </p>
@@ -262,7 +253,7 @@ export function AppSidebar() {
                       {isGuest ? "Modo visitante" : user?.email}
                     </p>
                   </div>
-                  <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                  <MoreVertical className="h-4 w-4 text-muted-foreground group-data-[collapsible=icon]:hidden" />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">

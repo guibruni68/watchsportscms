@@ -16,6 +16,7 @@ import { SearchFilters } from "@/components/ui/search-filters";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Shelf } from "@/types/shelf";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 
 interface ShelfWithOrder extends Shelf {
   order: number;
@@ -116,6 +117,7 @@ export default function ShelvesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
   const { toast } = useToast();
 
   const categories = [
@@ -143,11 +145,14 @@ export default function ShelvesPage() {
   };
 
   const handleDeleteShelf = (id: string) => {
-    setShelves(shelves.filter(s => s.id !== id));
-    toast({
-      title: "Shelf removed",
-      description: "The shelf was deleted successfully.",
-    });
+    setDeleteDialog({ open: true, id });
+  };
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setShelves(prev => prev.filter(shelf => shelf.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   };
 
   const handleNewShelf = () => {
@@ -215,9 +220,9 @@ export default function ShelvesPage() {
                     <span className="text-sm">{getDomainLabel(shelf.domain)}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center rounded-[9px] bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {shelf.enabled ? "Active" : "Inactive"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown
@@ -274,6 +279,12 @@ export default function ShelvesPage() {
           </div>
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
+      />
     </div>
   );
 }

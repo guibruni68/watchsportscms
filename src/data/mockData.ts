@@ -705,6 +705,33 @@ export const getContentsByAlgorithm = (algorithm: string) => {
   }
 };
 
+/**
+ * Retorna a lista unificada de agentes (jogadores, técnicos e times)
+ * para uso no AgentMultiSelect dos formulários.
+ */
+export function getAgentOptions() {
+  return [
+    ...mockPlayers.map((p) => ({
+      id: p.id,
+      name: p.name,
+      type: "agent" as const,
+      role: "player" as const,
+      number: p.number,
+    })),
+    ...mockCoaches.map((c) => ({
+      id: c.id,
+      name: c.name,
+      type: "agent" as const,
+      role: "coach" as const,
+    })),
+    ...mockTeams.map((t) => ({
+      id: t.id,
+      name: t.name,
+      type: "group" as const,
+    })),
+  ];
+}
+
 // Dados mockados para banners
 export interface Banner {
   id: string;
@@ -734,8 +761,8 @@ export const mockBanners: Banner[] = [
     buttonRedirectionUrl: "/live/final-championship",
     scheduleDate: new Date(Date.now() - 3600000).toISOString(),
     isPublished: true,
-    bgImageUrl: "/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png",
-    bgMobileUrl: "/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png",
+    bgImageUrl: "/assets/178882be-43bc-492f-ab1c-036716604bc1.png",
+    bgMobileUrl: "/assets/178882be-43bc-492f-ab1c-036716604bc1.png",
     createdAt: new Date(Date.now() - 86400000).toISOString(),
     updatedAt: new Date().toISOString(),
     enabled: true
@@ -750,8 +777,8 @@ export const mockBanners: Banner[] = [
     buttonRedirectionUrl: "/schedule/semifinal",
     scheduleDate: new Date(Date.now() + 21600000).toISOString(),
     isPublished: false,
-    bgImageUrl: "/lovable-uploads/3e4f7302-40a3-4b04-95b2-f925cfb43250.png",
-    bgMobileUrl: "/lovable-uploads/3e4f7302-40a3-4b04-95b2-f925cfb43250.png",
+    bgImageUrl: "/assets/3e4f7302-40a3-4b04-95b2-f925cfb43250.png",
+    bgMobileUrl: "/assets/3e4f7302-40a3-4b04-95b2-f925cfb43250.png",
     createdAt: new Date(Date.now() - 172800000).toISOString(),
     updatedAt: new Date().toISOString(),
     enabled: false
@@ -766,8 +793,8 @@ export const mockBanners: Banner[] = [
     buttonRedirectionUrl: "/videos/best-moments-round-15",
     scheduleDate: new Date(Date.now() - 172800000).toISOString(),
     isPublished: true,
-    bgImageUrl: "/lovable-uploads/56b1b2ee-687f-4828-8038-c0902cb9f932.png",
-    bgMobileUrl: "/lovable-uploads/56b1b2ee-687f-4828-8038-c0902cb9f932.png",
+    bgImageUrl: "/assets/56b1b2ee-687f-4828-8038-c0902cb9f932.png",
+    bgMobileUrl: "/assets/56b1b2ee-687f-4828-8038-c0902cb9f932.png",
     createdAt: new Date(Date.now() - 259200000).toISOString(),
     updatedAt: new Date().toISOString(),
     enabled: true
@@ -781,8 +808,8 @@ export const mockBanners: Banner[] = [
     buttonRedirectionUrl: "/campaigns/black-friday-2024",
     scheduleDate: new Date(Date.now() - 86400000).toISOString(),
     isPublished: true,
-    bgImageUrl: "/lovable-uploads/68bd6b68-c5e2-4cdc-81bb-941708e88ddb.png",
-    bgMobileUrl: "/lovable-uploads/68bd6b68-c5e2-4cdc-81bb-941708e88ddb.png",
+    bgImageUrl: "/assets/68bd6b68-c5e2-4cdc-81bb-941708e88ddb.png",
+    bgMobileUrl: "/assets/68bd6b68-c5e2-4cdc-81bb-941708e88ddb.png",
     createdAt: new Date(Date.now() - 432000000).toISOString(),
     updatedAt: new Date().toISOString(),
     enabled: true
@@ -797,8 +824,8 @@ export const mockBanners: Banner[] = [
     buttonRedirectionUrl: "/videos/documentary-club-history",
     scheduleDate: new Date(Date.now() - 259200000).toISOString(),
     isPublished: true,
-    bgImageUrl: "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
-    bgMobileUrl: "/lovable-uploads/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
+    bgImageUrl: "/assets/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
+    bgMobileUrl: "/assets/736ea3c4-4ba8-4dd3-84ef-adbda2ce6750.png",
     createdAt: new Date(Date.now() - 604800000).toISOString(),
     updatedAt: new Date().toISOString(),
     enabled: true
@@ -813,8 +840,8 @@ export const mockBanners: Banner[] = [
     buttonRedirectionUrl: "/videos/coach-interview-december",
     scheduleDate: new Date(Date.now() - 432000000).toISOString(),
     isPublished: true,
-    bgImageUrl: "/lovable-uploads/a945b2ac-8b16-4c57-a844-122cc1e8170c.png",
-    bgMobileUrl: "/lovable-uploads/a945b2ac-8b16-4c57-a844-122cc1e8170c.png",
+    bgImageUrl: "/assets/a945b2ac-8b16-4c57-a844-122cc1e8170c.png",
+    bgMobileUrl: "/assets/a945b2ac-8b16-4c57-a844-122cc1e8170c.png",
     createdAt: new Date(Date.now() - 518400000).toISOString(),
     updatedAt: new Date().toISOString(),
     enabled: true
@@ -828,8 +855,8 @@ export const mockBanners: Banner[] = [
     buttonRedirectionUrl: "/campaigns/ticket-jersey-combo",
     scheduleDate: new Date(Date.now() + 86400000).toISOString(),
     isPublished: false,
-    bgImageUrl: "/lovable-uploads/b178263a-95eb-4d88-ad87-aa9de585a258.png",
-    bgMobileUrl: "/lovable-uploads/b178263a-95eb-4d88-ad87-aa9de585a258.png",
+    bgImageUrl: "/assets/b178263a-95eb-4d88-ad87-aa9de585a258.png",
+    bgMobileUrl: "/assets/b178263a-95eb-4d88-ad87-aa9de585a258.png",
     createdAt: new Date(Date.now() - 86400000).toISOString(),
     updatedAt: new Date().toISOString(),
     enabled: false
@@ -844,8 +871,8 @@ export const mockBanners: Banner[] = [
     buttonRedirectionUrl: "/live/post-match-analysis",
     scheduleDate: new Date(Date.now() + 10800000).toISOString(),
     isPublished: false,
-    bgImageUrl: "/lovable-uploads/c77a6a4a-5568-4a9c-bdcc-34a53dca4782.png",
-    bgMobileUrl: "/lovable-uploads/c77a6a4a-5568-4a9c-bdcc-34a53dca4782.png",
+    bgImageUrl: "/assets/c77a6a4a-5568-4a9c-bdcc-34a53dca4782.png",
+    bgMobileUrl: "/assets/c77a6a4a-5568-4a9c-bdcc-34a53dca4782.png",
     createdAt: new Date(Date.now() - 43200000).toISOString(),
     updatedAt: new Date().toISOString(),
     enabled: false
@@ -860,8 +887,8 @@ export const mockBanners: Banner[] = [
     buttonRedirectionUrl: "/videos/top-10-goals-season",
     scheduleDate: new Date(Date.now() - 604800000).toISOString(),
     isPublished: true,
-    bgImageUrl: "/lovable-uploads/d5035e4b-b98c-4f58-a0b5-6c9da2398ab0.png",
-    bgMobileUrl: "/lovable-uploads/d5035e4b-b98c-4f58-a0b5-6c9da2398ab0.png",
+    bgImageUrl: "/assets/d5035e4b-b98c-4f58-a0b5-6c9da2398ab0.png",
+    bgMobileUrl: "/assets/d5035e4b-b98c-4f58-a0b5-6c9da2398ab0.png",
     createdAt: new Date(Date.now() - 1209600000).toISOString(),
     updatedAt: new Date().toISOString(),
     enabled: true

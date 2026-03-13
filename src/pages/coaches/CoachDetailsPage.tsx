@@ -1,10 +1,11 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Calendar, Globe, Briefcase, X } from "lucide-react"
+import { ArrowLeft, X, Info, ImageIcon } from "lucide-react"
 import { CoachForm } from "@/components/forms/CoachForm"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 interface Coach {
@@ -72,9 +73,9 @@ export default function CoachDetailsPage() {
     )
   }
 
-  const tabs: { id: TabType; label: string }[] = [
-    { id: "overview", label: "Overview" },
-    { id: "media", label: "Media" }
+  const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
+    { id: "overview", label: "Overview", icon: Info },
+    { id: "media", label: "Media", icon: ImageIcon }
   ]
 
   return (
@@ -91,9 +92,9 @@ export default function CoachDetailsPage() {
       </Button>
 
       {/* Header Card */}
-      <Card className="border-[#1f1f1f] bg-[#171717] rounded-xl overflow-hidden">
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
         {/* Top banner bar - 128px height */}
-        <div className="h-32 bg-gradient-to-r from-[#262626] to-[#171717]" />
+        <div className="h-32 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
 
         {/* Header Content */}
         <div className="px-7 pb-7 -mt-14">
@@ -116,14 +117,9 @@ export default function CoachDetailsPage() {
               </div>
 
               {/* Coach Info */}
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
-                  {coach.name}
-                </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
-                  {coach.enabled ? "Enabled" : "Disabled"}
-                </span>
-              </div>
+              <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">
+                {coach.name}
+              </h1>
               <p className="text-sm text-muted-foreground mt-1">
                 {coach.role || "Coach"}
               </p>
@@ -132,7 +128,7 @@ export default function CoachDetailsPage() {
             {/* Edit Button */}
             <Button
               onClick={() => setShowEditForm(true)}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-[10px] px-6 h-10 mt-16"
+              className="bg-primary hover:bg-primary/80 text-white rounded-[10px] px-6 h-10 mt-16"
             >
               Edit
             </Button>
@@ -148,15 +144,16 @@ export default function CoachDetailsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
                 activeTab === tab.id
                   ? "text-white"
                   : "text-muted-foreground hover:text-white/80"
               )}
             >
+              <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
               )}
             </button>
           ))}
@@ -166,69 +163,38 @@ export default function CoachDetailsPage() {
       {/* Tab Content */}
       {activeTab === "overview" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="px-12 pt-12 pb-16">
-            <div className="flex justify-between gap-[140px]">
-              {/* Left Column - Description & Details */}
-              <div className="flex-1 space-y-4">
-                {/* Description */}
-                <div className="space-y-0">
-                  <p className="text-sm text-[#999999] leading-5">Description</p>
-                  <p className="text-base text-white leading-6 max-w-[603px]">
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              {/* Left Column */}
+              <div className="flex-1 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Description</h3>
+                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
                     {coach.description || "No description available."}
                   </p>
                 </div>
-
-                {/* Full Name */}
-                <div className="space-y-0 pt-4">
-                  <p className="text-sm text-[#999999] leading-5">Full Name</p>
-                  <p className="text-base text-white leading-6">{coach.name}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Full Name</h3>
+                  <p className="text-sm text-white/80">{coach.name}</p>
                 </div>
-
-                {/* Role */}
                 {coach.role && (
-                  <div className="space-y-0">
-                    <p className="text-sm text-[#999999] leading-5">Role</p>
-                    <p className="text-base text-white leading-6">{coach.role}</p>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Role</h3>
+                    <p className="text-sm text-white/80">{coach.role}</p>
                   </div>
                 )}
               </div>
 
-              {/* Right Column - Info Cards */}
-              <div className="w-[189px] space-y-6">
-                {/* Nationality */}
-                <div className="flex items-center gap-[13px]">
-                  <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                    <Globe className="h-[18px] w-[18px] text-white/50" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <p className="text-sm text-white leading-[14px]">{coach.nationality}</p>
-                    <p className="text-xs text-white/50 leading-[18px]">Nationality</p>
-                  </div>
+              {/* Right Column */}
+              <div className="w-64 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Nationality</h3>
+                  <p className="text-sm text-white/80">{coach.nationality}</p>
                 </div>
-
-                {/* Birth Date */}
                 {coach.birthDate && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Calendar className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">Birth Date</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{formatDate(coach.birthDate)}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Role */}
-                {coach.role && (
-                  <div className="flex items-center gap-[10px]">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#090909] border border-[#262626] flex items-center justify-center flex-shrink-0">
-                      <Briefcase className="h-[18px] w-[18px] text-white/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-white leading-[14px]">Role</p>
-                      <p className="text-xs text-white/50 leading-[18px]">{coach.role}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Birth Date</h3>
+                    <p className="text-sm text-white/80">{formatDate(coach.birthDate)}</p>
                   </div>
                 )}
               </div>

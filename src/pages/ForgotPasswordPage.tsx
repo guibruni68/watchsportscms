@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
-import { KeyRound, ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -59,15 +59,20 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left Side - Welcome Section */}
-      <div className="hidden lg:flex relative bg-cover bg-center bg-no-repeat flex-col justify-between p-12 text-white" style={{ backgroundImage: "url('/lovable-uploads/Backgroundfnb.png')" }}>
-        <div className="absolute inset-0 bg-black/30 -z-10" />
-        <div className="flex items-center gap-3">
-          <img 
-            src="/lovable-uploads/178882be-43bc-492f-ab1c-036716604bc1.png" 
-            alt="Logo" 
-            className="h-12"
-          />
-        </div>
+      <div className="hidden lg:flex relative flex-col items-center justify-center p-12 text-white" style={{ background: "var(--gradient-primary)" }}>
+        {/* Dot texture overlay */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+        <img
+          src="/assets/mosca.png"
+          alt="Logo"
+          className="relative z-10 h-28 w-auto object-contain"
+        />
       </div>
 
       {/* Right Side - Reset Form */}
@@ -85,13 +90,9 @@ export default function ForgotPasswordPage() {
           <div className="space-y-6">
             <form onSubmit={handlePasswordReset} className="space-y-6">
               <div className="space-y-2 pb-4">
-                <h2 className="text-3xl font-bold flex items-center gap-3">
-                  <KeyRound className="h-7 w-7" />
+                <h2 className="text-2xl font-semibold">
                   Recover Password
                 </h2>
-                <p className="text-muted-foreground">
-                  Enter your email to receive recovery instructions
-                </p>
               </div>
 
               <div className="space-y-4">
@@ -127,7 +128,7 @@ export default function ForgotPasswordPage() {
               <button
                 onClick={handlePasswordReset}
                 disabled={loading || !email}
-                className="text-primary hover:underline font-medium"
+                className="text-foreground hover:underline font-medium"
               >
                 try again
               </button>

@@ -1,15 +1,13 @@
 import { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Edit, Calendar, Globe } from "lucide-react"
+import { ArrowLeft, Info, ImageIcon, X } from "lucide-react"
 import { AgentForm } from "@/components/forms/AgentForm"
 import { mockGenres } from "@/data/mockData"
-import { X } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface Agent {
   id: string
@@ -45,15 +43,14 @@ interface AgentDetailsPageProps {
 }
 
 export default function AgentDetailsPage({ agentType }: AgentDetailsPageProps) {
-  const { id } = useParams<{ id: string }>()
+  useParams<{ id: string }>()
   const navigate = useNavigate()
   const [agent] = useState<Agent>(mockAgent)
   const [showEditForm, setShowEditForm] = useState(false)
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab] = useState<"overview" | "media">("overview")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
 
   // Determine page context based on agentType prop
-  const pageTitle = agentType === "player" ? "Player" : agentType === "coach" ? "Coach" : "Agent"
   const pageTitlePlural = agentType === "player" ? "Players" : agentType === "coach" ? "Coaches" : "Agents"
   const basePath = agentType === "player" ? "/players" : agentType === "coach" ? "/coaches" : "/agents"
 
@@ -79,188 +76,162 @@ export default function AgentDetailsPage({ agentType }: AgentDetailsPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(basePath)}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to {pageTitlePlural}
-        </Button>
-      </div>
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate(basePath)}
+        className="text-muted-foreground hover:text-foreground gap-2 px-0"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to {pageTitlePlural}
+      </Button>
 
-      {/* Banner */}
-      {agent.imageSecondaryUrl && (
-        <div className="relative h-64 w-full rounded-lg overflow-hidden">
-          <img
-            src={agent.imageSecondaryUrl}
-            alt={agent.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-        </div>
-      )}
-
-      {/* Agent Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          {agent.imagePrimaryUrl ? (
-            <Avatar className="h-24 w-24 border-4 border-background">
-              <AvatarImage src={agent.imagePrimaryUrl} alt={agent.name} />
-              <AvatarFallback className="text-2xl">
-                {agent.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-              </AvatarFallback>
-            </Avatar>
-          ) : (
-            <Avatar className="h-24 w-24 border-4 border-background">
-              <AvatarFallback className="text-2xl">
-                {agent.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-              </AvatarFallback>
-            </Avatar>
-          )}
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl font-bold">{agent.name}</h1>
-              {!agentType && (
-                <Badge variant="outline" className="text-base px-3 py-1 capitalize">
-                  {agent.label}
-                </Badge>
-              )}
-              <Badge variant={agent.enabled ? "default" : "secondary"}>
-                {agent.enabled ? "Enabled" : "Disabled"}
-              </Badge>
+      {/* Header Card */}
+      <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
+        <div className="h-32 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
+        <div className="px-7 pb-7 -mt-14">
+          <div className="flex items-start justify-between">
+            <div className="flex flex-col">
+              <div className="w-[116px] h-[116px] rounded-full bg-white overflow-hidden flex items-center justify-center shadow-lg mb-4">
+                {agent.imagePrimaryUrl ? (
+                  <img src={agent.imagePrimaryUrl} alt={agent.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-2xl font-bold text-gray-400">
+                    {agent.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                  </span>
+                )}
+              </div>
+              <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">{agent.name}</h1>
+              <p className="text-sm text-muted-foreground mt-1 capitalize">{agent.label}</p>
             </div>
-            <div className="flex items-center gap-6 text-sm text-muted-foreground mb-2">
-            </div>
+            <Button
+              onClick={() => setShowEditForm(true)}
+              className="bg-primary hover:bg-primary/80 text-white rounded-[10px] px-6 h-10 mt-16"
+            >
+              Edit
+            </Button>
           </div>
         </div>
-        <Button onClick={() => setShowEditForm(true)}>
-          <Edit className="h-4 w-4 mr-2" />
-          Edit {pageTitle}
-        </Button>
-      </div>
+      </Card>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="pb-4">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-          </TabsList>
+      <div className="border-b border-[#1f1f1f]">
+        <div className="flex gap-0">
+          {([
+            { id: "overview" as const, label: "Overview", icon: Info },
+            { id: "media"    as const, label: "Media",    icon: ImageIcon },
+          ]).map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
+                activeTab === tab.id ? "text-white" : "text-muted-foreground hover:text-white/80"
+              )}
+            >
+              <tab.icon className="h-3.5 w-3.5" />
+              {tab.label}
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+              )}
+            </button>
+          ))}
         </div>
+      </div>
 
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+      {/* Overview Tab */}
+      {activeTab === "overview" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              <div className="flex-1 space-y-8">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Name</p>
-                  <p className="text-base">{agent.name}</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Full Name</h3>
+                  <p className="text-sm text-white/80">{agent.name}</p>
                 </div>
-                {!agentType && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Label</p>
-                    <Badge variant="outline" className="capitalize">{agent.label}</Badge>
-                  </div>
-                )}
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Nationality</p>
-                  <p className="text-base">{agent.nationality}</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Nationality</h3>
+                  <p className="text-sm text-white/80">{agent.nationality}</p>
                 </div>
                 {agent.genres && agent.genres.length > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Positions / Roles</p>
-                    <div className="flex flex-wrap gap-2 mt-1">
+                    <h3 className="text-base font-semibold text-white mb-4">Positions / Roles</h3>
+                    <div className="flex flex-wrap gap-2">
                       {agent.genres.map(genreId => {
                         const genre = mockGenres.find(g => g.id === genreId)
-                        return genre ? (
-                          <Badge key={genreId} variant="neutral">
-                            {genre.name}
-                          </Badge>
-                        ) : null
+                        return genre ? <Badge key={genreId} variant="neutral">{genre.name}</Badge> : null
                       })}
                     </div>
                   </div>
                 )}
                 {agent.originDate && (
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Origin Date</p>
-                    <p className="text-base">{new Date(agent.originDate).toLocaleDateString()}</p>
+                    <h3 className="text-base font-semibold text-white mb-4">Birth Date</h3>
+                    <p className="text-sm text-white/80">{new Date(agent.originDate).toLocaleDateString()}</p>
                   </div>
                 )}
+              </div>
+              <div className="w-64 space-y-8">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Status</p>
-                  <Badge variant={agent.enabled ? "default" : "secondary"} className="mt-1">
-                    {agent.enabled ? "Enabled" : "Disabled"}
-                  </Badge>
+                  <h3 className="text-base font-semibold text-white mb-4">Created At</h3>
+                  <p className="text-sm text-white/80">{new Date(agent.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Created At</p>
-                  <p className="text-base">{new Date(agent.createdAt).toLocaleString()}</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Updated At</h3>
+                  <p className="text-sm text-white/80">{new Date(agent.updatedAt).toLocaleDateString()}</p>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Updated At</p>
-                  <p className="text-base">{new Date(agent.updatedAt).toLocaleString()}</p>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Media Assets</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {agent.imagePrimaryUrl && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-2">Primary Image</p>
-                    <img 
-                      src={agent.imagePrimaryUrl} 
-                      alt="Primary" 
-                      className="h-32 w-32 object-cover border rounded cursor-pointer hover:opacity-75 transition-opacity" 
-                      onClick={() => setLightboxImage(agent.imagePrimaryUrl!)}
-                    />
+      {/* Media Tab */}
+      {activeTab === "media" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {agent.imagePrimaryUrl && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-3">Primary Image</p>
+                  <div className="aspect-square rounded-xl overflow-hidden bg-muted cursor-pointer"
+                    onClick={() => setLightboxImage(agent.imagePrimaryUrl!)}>
+                    <img src={agent.imagePrimaryUrl} alt="Primary" className="w-full h-full object-cover hover:scale-105 transition-transform" />
                   </div>
-                )}
-                {agent.imageSecondaryUrl && (
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-2">Secondary Image (Banner)</p>
-                    <img 
-                      src={agent.imageSecondaryUrl} 
-                      alt="Banner" 
-                      className="h-32 w-full object-cover border rounded cursor-pointer hover:opacity-75 transition-opacity" 
-                      onClick={() => setLightboxImage(agent.imageSecondaryUrl!)}
-                    />
+                </div>
+              )}
+              {agent.imageSecondaryUrl && (
+                <div className="md:col-span-2">
+                  <p className="text-sm text-muted-foreground mb-3">Secondary Image (Banner)</p>
+                  <div className="aspect-video rounded-xl overflow-hidden bg-muted cursor-pointer"
+                    onClick={() => setLightboxImage(agent.imageSecondaryUrl!)}>
+                    <img src={agent.imageSecondaryUrl} alt="Banner" className="w-full h-full object-cover hover:scale-105 transition-transform" />
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+                </div>
+              )}
+              {!agent.imagePrimaryUrl && !agent.imageSecondaryUrl && (
+                <div className="col-span-3 py-12 text-center text-muted-foreground">
+                  <ImageIcon className="h-12 w-12 mx-auto mb-3 opacity-40" />
+                  <p className="text-sm">No media assets</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Image Lightbox */}
+      {/* Lightbox */}
       <Dialog open={!!lightboxImage} onOpenChange={() => setLightboxImage(null)}>
         <DialogContent className="max-w-4xl p-0 bg-black/95">
           <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
+            <Button variant="ghost" size="icon"
               className="absolute top-2 right-2 z-10 text-white hover:bg-white/20"
-              onClick={() => setLightboxImage(null)}
-            >
+              onClick={() => setLightboxImage(null)}>
               <X className="h-6 w-6" />
             </Button>
             {lightboxImage && (
-              <img
-                src={lightboxImage}
-                alt="Full size preview"
-                className="w-full h-auto max-h-[90vh] object-contain"
-              />
+              <img src={lightboxImage} alt="Full size" className="w-full h-auto max-h-[90vh] object-contain" />
             )}
           </div>
         </DialogContent>

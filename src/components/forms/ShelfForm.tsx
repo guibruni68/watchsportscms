@@ -13,8 +13,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, CalendarIcon, GripVertical, X } from "lucide-react";
+import { ArrowLeft, CalendarIcon, GripVertical, X, Info, Settings2, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ShelfType, ShelfLayout, ShelfDomain, ShelfAlgorithm, FilterRule, FilterDomain } from "@/types/shelf";
@@ -36,6 +38,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { TutorialButton } from "@/components/ui/tutorial-button";
 
 const shelfSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -158,6 +161,9 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
     }
   });
 
+  const { formState: { isDirty } } = form;
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty);
+
   const watchType = form.watch("type");
   const watchDomain = form.watch("domain");
 
@@ -251,7 +257,7 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => (onClose ? onClose() : navigate("/shelves"))}
+          onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/shelves"))}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -262,9 +268,9 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="configuration">Configuration</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="configuration" className="flex items-center gap-1.5"><Settings2 className="h-3.5 w-3.5" />Configuration</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
@@ -516,9 +522,7 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
                                 )}
                               </div>
                             </FormControl>
-                            <FormDescription>
-                              Manually select items from the {watchDomain.toLowerCase()} domain and drag to reorder
-                            </FormDescription>
+
                             <FormMessage />
                           </FormItem>
                         );
@@ -800,7 +804,7 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
             <Button
               type="button"
               variant="outline"
-              onClick={() => (onClose ? onClose() : navigate("/shelves"))}
+              onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/shelves"))}
               className="flex-1"
             >
               Cancel
@@ -811,6 +815,8 @@ export function ShelfForm({ initialData, isEdit = false, onClose }: ShelfFormPro
           </div>
         </form>
       </Form>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
+      <TutorialButton />
     </div>
   );
 }

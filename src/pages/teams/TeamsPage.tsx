@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate, Link } from "react-router-dom"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { getEnabledBadgeVariant, getEnabledLabel } from "@/lib/utils"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Users, Plus, Loader2 } from "lucide-react"
 import { ListPagination } from "@/components/ui/list-controls"
@@ -10,6 +11,7 @@ import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { TeamForm } from "@/components/forms/TeamForm"
 import { useToast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Team {
   id: string
@@ -224,6 +226,7 @@ export default function TeamsPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingTeam, setEditingTeam] = useState<Team | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   const { toast } = useToast()
 
@@ -290,12 +293,16 @@ export default function TeamsPage() {
   }
 
   const handleDelete = (id: string) => {
-    setTeams(teams.filter(team => team.id !== id))
-    toast({
-      title: "Team deleted",
-      description: "The team was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
   }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setTeams(prev => prev.filter(team => team.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
+  }
+
 
   if (showForm) {
     return (
@@ -403,9 +410,9 @@ export default function TeamsPage() {
                     <Badge variant="outline">{team.acronym}</Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {team.enabled ? "Enabled" : "Disabled"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown
@@ -428,6 +435,12 @@ export default function TeamsPage() {
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={() => {}}
         totalItems={filteredTeams.length}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

@@ -11,6 +11,7 @@ import { SearchFilters } from "@/components/ui/search-filters";
 import { toast } from "@/hooks/use-toast";
 import { mockBanners, Banner } from "@/data/mockData";
 import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 
 export default function BannersPage() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function BannersPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
 
   // Check for new param on mount
   useEffect(() => {
@@ -66,11 +68,14 @@ export default function BannersPage() {
   };
 
   const handleDelete = (id: string) => {
-    setBanners(banners.filter(item => item.id !== id));
-    toast({
-      title: "Banner deleted",
-      description: "The banner was removed successfully.",
-    });
+    setDeleteDialog({ open: true, id });
+  };
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return;
+    setBanners(prev => prev.filter(banner => banner.id !== deleteDialog.id));
+    setDeleteDialog({ open: false, id: null });
+    toast({ title: "Deleted", description: "Item deleted successfully." });
   };
 
   const handleNewBanner = () => {
@@ -145,9 +150,9 @@ export default function BannersPage() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                      <Badge variant="neutral">
                         {status}
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <ActionDropdown
@@ -206,6 +211,12 @@ export default function BannersPage() {
           </div>
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
+      />
     </div>
   );
 }

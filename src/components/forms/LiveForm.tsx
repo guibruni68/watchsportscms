@@ -1,3 +1,4 @@
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -13,25 +14,60 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres } from "@/data/mockData";
-import { ArrowLeft, CalendarIcon, Upload, X } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Upload, X, Info, ImageIcon, Radio, Users, Globe, BarChart3, Copy, Check, Link2 } from "lucide-react";
+import { TutorialButton } from "@/components/ui/tutorial-button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { mockPlayers, mockTeams } from "@/data/mockData";
+import { getAgentOptions } from "@/data/mockData";
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select";
 
+
+interface ReadOnlyFieldProps {
+  label: string
+  value?: string
+  icon?: React.ReactNode
+  placeholder: string
+  masked?: boolean
+  canCopy: boolean
+  copiedField: string | null
+  fieldKey: string
+  onCopy: (value: string, field: string) => void
+}
+
+function ReadOnlyField({ label, value, icon, placeholder, masked, canCopy, copiedField, fieldKey, onCopy }: ReadOnlyFieldProps) {
+  return (
+    <div className="space-y-2">
+      <p className="text-sm font-medium">{label}</p>
+      <div className="flex items-center gap-2 h-10 px-3 rounded-md border border-input bg-muted/30">
+        {icon}
+        <span className="text-sm flex-1 truncate">
+          {value
+            ? (masked ? "•".repeat(value.length) : value)
+            : <span className="text-muted-foreground italic">{placeholder}</span>
+          }
+        </span>
+        {canCopy && value && (
+          <button type="button" onClick={() => onCopy(value, fieldKey)} className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors">
+            {copiedField === fieldKey ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
 
 const liveSchema = z.object({
   titulo: z.string().min(1, "Title is required"),
   descricao: z.string().min(1, "Description is required"),
   label: z.enum(["VOD", "LIVE"]),
-  anoLancamento: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 10, "Year cannot be too far in the future").optional(),
   scheduleDate: z.date().optional(),
   badge: z.enum(["NEW", "NEW EPISODES", "SOON"]).optional(),
   cardImageUrl: z.string().optional(),
@@ -40,12 +76,10 @@ const liveSchema = z.object({
   ageRating: z.string().optional(),
   enabled: z.boolean(),
 
-  // Live scheduling fields
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   liveToVod: z.boolean(),
 
-  // Streaming configuration
   rtmpServerUrl: z.string().optional(),
   streamKey: z.string().optional(),
   
@@ -79,6 +113,8 @@ interface LiveFormProps {
       name: string;
       type: "agent" | "group";
     }>;
+    rtmpServerUrl?: string;
+    streamKey?: string;
   };
   isEdit?: boolean;
   onClose?: () => void;
@@ -93,10 +129,14 @@ export function LiveForm({
     toast
   } = useToast();
   const [imageUploadMode, setImageUploadMode] = useState<"file" | "url">("file");
-  const [showPublishDialog, setShowPublishDialog] = useState(false);
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
+  const handleCopy = (value: string, field: string) => {
+    navigator.clipboard.writeText(value)
+    setCopiedField(field)
+    setTimeout(() => setCopiedField(null), 2000)
+  }
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
   // Parse initial datetime if provided
   const initialDateTime = initialData?.dataHora ? new Date(initialData.dataHora) : new Date();
   
@@ -106,7 +146,6 @@ export function LiveForm({
       titulo: initialData?.nomeEvento || "",
       descricao: initialData?.descricao || "",
       label: "LIVE",
-      anoLancamento: new Date().getFullYear(),
       scheduleDate: initialDateTime,
       badge: undefined,
       cardImageUrl: initialData?.imagemCapa || "",
@@ -115,14 +154,11 @@ export function LiveForm({
       ageRating: "",
       enabled: true,
       
-      // Live scheduling fields
       startDate: undefined,
       endDate: undefined,
-      liveToVod: false,
-
-      // Streaming configuration
-      rtmpServerUrl: "",
-      streamKey: "",
+      liveToVod: true,
+      rtmpServerUrl: initialData?.rtmpServerUrl || "",
+      streamKey: initialData?.streamKey || "",
 
       // Legacy fields
       nomeEvento: initialData?.nomeEvento || "",
@@ -138,18 +174,7 @@ export function LiveForm({
       isDirty
     }
   } = form;
-  const handleNavigation = (navigateFn: () => void) => {
-    if (isDirty) {
-      setPendingNavigation(() => navigateFn);
-      setShowExitConfirmation(true);
-    } else {
-      navigateFn();
-    }
-  };
-  const handleConfirmExit = () => {
-    setShowExitConfirmation(false);
-    pendingNavigation?.();
-  };
+  const { isBlocked, proceed, reset, guardNavigation } = useNavigationGuard(isDirty);
   const onSubmit = (data: LiveFormData) => {
     console.log("Saving live:", data);
     toast({
@@ -175,7 +200,7 @@ export function LiveForm({
   ];
   return <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/lives"))} className="text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="icon" onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/lives"))} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
@@ -184,11 +209,12 @@ export function LiveForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
-              <TabsTrigger value="stream">Stream</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
-              {isEdit && <TabsTrigger value="stats">Stats</TabsTrigger>}
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
+              <TabsTrigger value="stream" className="flex items-center gap-1.5"><Radio className="h-3.5 w-3.5" />Stream</TabsTrigger>
+              <TabsTrigger value="agents" className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />Agents</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
+              {isEdit && <TabsTrigger value="stats" className="flex items-center gap-1.5"><BarChart3 className="h-3.5 w-3.5" />Stats</TabsTrigger>}
             </TabsList>
 
             {/* Tab 1: Information */}
@@ -237,21 +263,6 @@ export function LiveForm({
                         <FormMessage />
                       </FormItem>} />
 
-                  <FormField control={form.control} name="anoLancamento" render={({
-                  field
-                }) => <FormItem>
-                          <FormLabel>Release Year</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="Ex: 2025" 
-                              {...field} 
-                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                              value={field.value || ""}
-                            />
-                          </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
 
                   <FormField control={form.control} name="generos" render={({
                 field
@@ -294,9 +305,6 @@ export function LiveForm({
                               description="JPEG, PNG, and WEBP formats, up to 50MB"
                             />
                     </FormControl>
-                    <p className="text-sm text-muted-foreground">
-                      Image displayed on content cards and thumbnails (3:4 aspect ratio recommended)
-                    </p>
                     <FormMessage />
                   </FormItem>} />
 
@@ -312,9 +320,6 @@ export function LiveForm({
                               description="JPEG, PNG, and WEBP formats, up to 50MB"
                             />
                           </FormControl>
-                          <p className="text-sm text-muted-foreground">
-                            Image displayed on detail pages and featured sections (16:9 aspect ratio recommended)
-                          </p>
                       <FormMessage />
                     </FormItem>} />
 
@@ -338,25 +343,115 @@ export function LiveForm({
                   <CardTitle>Streaming Configuration</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <FormField control={form.control} name="rtmpServerUrl" render={({
-                    field
-                  }) => <FormItem>
-                        <FormLabel>RTMP Server URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="rtmp://live.example.com/app" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField control={form.control} name="startDate" render={({
+                      field
+                    }) => <FormItem className="flex flex-col">
+                            <FormLabel>Start Date & Time</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                    {field.value ? format(field.value, "dd/MM/yyyy HH:mm", { locale: ptBR }) : <span>Select start date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar mode="single" selected={field.value} onSelect={(date) => {
+                                  if (date) {
+                                    const currentTime = field.value || new Date();
+                                    date.setHours(currentTime.getHours(), currentTime.getMinutes());
+                                  }
+                                  field.onChange(date);
+                                }} initialFocus className={cn("p-3 pointer-events-auto")} />
+                                <div className="border-t p-3">
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      type="time"
+                                      value={field.value ? format(field.value, "HH:mm") : ""}
+                                      onChange={(e) => {
+                                        const [hours, minutes] = e.target.value.split(':').map(Number);
+                                        const newDate = field.value ? new Date(field.value) : new Date();
+                                        newDate.setHours(hours, minutes);
+                                        field.onChange(newDate);
+                                      }}
+                                      className="flex-1"
+                                    />
+                                  </div>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>} />
 
-                  <FormField control={form.control} name="streamKey" render={({
-                    field
-                  }) => <FormItem>
-                        <FormLabel>Stream Key</FormLabel>
-                        <FormControl>
-                          <Input placeholder="your-stream-key-here" type="password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>} />
+                    <FormField control={form.control} name="endDate" render={({
+                      field
+                    }) => <FormItem className="flex flex-col">
+                            <FormLabel>End Date & Time</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                    {field.value ? format(field.value, "dd/MM/yyyy HH:mm", { locale: ptBR }) : <span>Select end date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar mode="single" selected={field.value} onSelect={(date) => {
+                                  if (date) {
+                                    const currentTime = field.value || new Date();
+                                    date.setHours(currentTime.getHours(), currentTime.getMinutes());
+                                  }
+                                  field.onChange(date);
+                                }} initialFocus className={cn("p-3 pointer-events-auto")} />
+                                <div className="border-t p-3">
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      type="time"
+                                      value={field.value ? format(field.value, "HH:mm") : ""}
+                                      onChange={(e) => {
+                                        const [hours, minutes] = e.target.value.split(':').map(Number);
+                                        const newDate = field.value ? new Date(field.value) : new Date();
+                                        newDate.setHours(hours, minutes);
+                                        field.onChange(newDate);
+                                      }}
+                                      className="flex-1"
+                                    />
+                                  </div>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>} />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <ReadOnlyField
+                      label="RTMP Server URL"
+                      value={form.watch("rtmpServerUrl")}
+                      icon={<Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
+                      placeholder={isEdit ? "Not generated yet" : "Generated after creation"}
+                      canCopy={isEdit}
+                      copiedField={copiedField}
+                      fieldKey="rtmpServerUrl"
+                      onCopy={handleCopy}
+                    />
+                    <ReadOnlyField
+                      label="Stream Key"
+                      value={form.watch("streamKey")}
+                      placeholder={isEdit ? "Not generated yet" : "Generated after creation"}
+                      masked
+                      canCopy={isEdit}
+                      copiedField={copiedField}
+                      fieldKey="streamKey"
+                      onCopy={handleCopy}
+                    />
+                  </div>
+                  {!isEdit && (
+                    <p className="text-xs text-muted-foreground -mt-2">RTMP Server URL and Stream Key are generated automatically after the live is created</p>
+                  )}
 
                   <FormField control={form.control} name="liveToVod" render={({
                     field
@@ -378,101 +473,45 @@ export function LiveForm({
               </Card>
             </TabsContent>
 
-            {/* Tab 4: Publishing */}
+            {/* Tab 4: Agents */}
+            <TabsContent value="agents">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Related Agents</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="agentesRelacionados"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Agents</FormLabel>
+                        <FormControl>
+                          <AgentMultiSelect
+                            agents={getAgentOptions()}
+                            value={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Search and select agents..."
+                          />
+                        </FormControl>
+                        <p className="text-sm text-muted-foreground">
+                          Add agents (players, coaches, teams) related to this live event
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Tab 5: Publishing */}
             <TabsContent value="publishing">
               <Card>
                 <CardHeader>
                   <CardTitle>Publishing</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* Live Scheduling Section */}
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-medium text-foreground">Live Scheduling</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField control={form.control} name="startDate" render={({
-                        field
-                      }) => <FormItem className="flex flex-col">
-                              <FormLabel>Start Date & Time</FormLabel>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <FormControl>
-                                    <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                      {field.value ? format(field.value, "dd/MM/yyyy HH:mm", { locale: ptBR }) : <span>Select start date</span>}
-                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                    </Button>
-                                  </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar mode="single" selected={field.value} onSelect={(date) => {
-                                    if (date) {
-                                      const currentTime = field.value || new Date();
-                                      date.setHours(currentTime.getHours(), currentTime.getMinutes());
-                                    }
-                                    field.onChange(date);
-                                  }} initialFocus className={cn("p-3 pointer-events-auto")} />
-                                  <div className="border-t p-3">
-                                    <div className="flex items-center gap-2">
-                                      <Input
-                                        type="time"
-                                        value={field.value ? format(field.value, "HH:mm") : ""}
-                                        onChange={(e) => {
-                                          const [hours, minutes] = e.target.value.split(':').map(Number);
-                                          const newDate = field.value ? new Date(field.value) : new Date();
-                                          newDate.setHours(hours, minutes);
-                                          field.onChange(newDate);
-                                        }}
-                                        className="flex-1"
-                                      />
-                                    </div>
-                                  </div>
-                                </PopoverContent>
-                              </Popover>
-                              <FormMessage />
-                            </FormItem>} />
-
-                      <FormField control={form.control} name="endDate" render={({
-                        field
-                      }) => <FormItem className="flex flex-col">
-                              <FormLabel>End Date & Time</FormLabel>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <FormControl>
-                                    <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                      {field.value ? format(field.value, "dd/MM/yyyy HH:mm", { locale: ptBR }) : <span>Select end date</span>}
-                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                    </Button>
-                                  </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar mode="single" selected={field.value} onSelect={(date) => {
-                                    if (date) {
-                                      const currentTime = field.value || new Date();
-                                      date.setHours(currentTime.getHours(), currentTime.getMinutes());
-                                    }
-                                    field.onChange(date);
-                                  }} initialFocus className={cn("p-3 pointer-events-auto")} />
-                                  <div className="border-t p-3">
-                                    <div className="flex items-center gap-2">
-                                      <Input
-                                        type="time"
-                                        value={field.value ? format(field.value, "HH:mm") : ""}
-                                        onChange={(e) => {
-                                          const [hours, minutes] = e.target.value.split(':').map(Number);
-                                          const newDate = field.value ? new Date(field.value) : new Date();
-                                          newDate.setHours(hours, minutes);
-                                          field.onChange(newDate);
-                                        }}
-                                        className="flex-1"
-                                      />
-                                    </div>
-                                  </div>
-                                </PopoverContent>
-                              </Popover>
-                              <FormMessage />
-                            </FormItem>} />
-                    </div>
-                  </div>
-
                   <FormField control={form.control} name="badge" render={({
                       field
                     }) => <FormItem>
@@ -579,7 +618,7 @@ export function LiveForm({
           </Tabs>
 
           <div className="flex gap-4">
-            <Button type="button" variant="outline" onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/lives"))} className="flex-1">
+            <Button type="button" variant="outline" onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/lives"))} className="flex-1">
               Cancel
             </Button>
             <Button type="submit" className="flex-1">
@@ -589,24 +628,7 @@ export function LiveForm({
         </form>
       </Form>
 
-      {/* Unsaved Changes Confirmation Dialog */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
-              Continue Editing
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmExit}>
-              Discard Changes
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={reset} />
+      <TutorialButton />
     </div>;
 }

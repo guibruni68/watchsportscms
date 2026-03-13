@@ -12,6 +12,7 @@ import { EventForm } from "@/components/forms/EventForm"
 import { toast } from "@/hooks/use-toast"
 import { mockEvents, Event } from "@/data/mockData"
 import { getContentStatus, getStatusBadgeVariant } from "@/lib/utils"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 import { format } from "date-fns"
 
 export default function SchedulePage() {
@@ -26,6 +27,7 @@ export default function SchedulePage() {
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [viewMode, setViewMode] = useState<"calendar" | "list">("calendar")
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   // Check for new param on mount
   useEffect(() => {
@@ -87,11 +89,14 @@ export default function SchedulePage() {
   }
 
   const handleDelete = (id: string) => {
-    setEvents(events.filter(item => item.id !== id))
-    toast({
-      title: "Event deleted",
-      description: "The event was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setEvents(prev => prev.filter(event => event.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
   const handleCloseForm = () => {
@@ -392,6 +397,12 @@ export default function SchedulePage() {
           </div>
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
+      />
     </div>
   )
 }

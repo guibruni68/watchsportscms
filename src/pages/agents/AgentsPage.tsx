@@ -12,6 +12,7 @@ import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { AgentForm } from "@/components/forms/AgentForm"
 import { useToast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Agent {
   id: string
@@ -119,6 +120,7 @@ export default function AgentsPage({ agentType }: AgentsPageProps) {
   const [showForm, setShowForm] = useState(false)
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null)
   const [newAgentLabel, setNewAgentLabel] = useState<"player" | "coach" | "writer" | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
   
   const { toast } = useToast()
 
@@ -181,11 +183,14 @@ export default function AgentsPage({ agentType }: AgentsPageProps) {
   }
 
   const handleDelete = (id: string) => {
-    setAgents(agents.filter(agent => agent.id !== id))
-    toast({
-      title: "Agent deleted",
-      description: "The agent was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
+  }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setAgents(prev => prev.filter(agent => agent.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
   }
 
   if (showForm) {
@@ -320,9 +325,9 @@ export default function AgentsPage({ agentType }: AgentsPageProps) {
                     <span className="capitalize">{agent.label}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {agent.enabled ? "Enabled" : "Disabled"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown
@@ -345,6 +350,12 @@ export default function AgentsPage({ agentType }: AgentsPageProps) {
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={() => {}}
         totalItems={filteredAgents.length}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

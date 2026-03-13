@@ -18,7 +18,9 @@ import { toast } from "@/hooks/use-toast";
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select";
 import { FileUpload } from "@/components/ui/file-upload";
 import { mockGenres } from "@/data/mockData";
-import { ArrowLeft, Plus, X, Upload, CalendarIcon, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, X, Upload, CalendarIcon, Trash2, Info, Globe, CalendarDays } from "lucide-react";
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { Badge } from "@/components/ui/badge";
 import { ContentMultiSelect, ContentItem } from "@/components/ui/content-multi-select";
 import { cn } from "@/lib/utils";
@@ -38,6 +40,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { TutorialButton } from "@/components/ui/tutorial-button";
 
 interface SeasonContent {
   id: string;
@@ -79,7 +82,6 @@ const collectionSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   label: z.enum(["COLLECTION"]).optional(),
-  releaseYear: z.number().min(1900, "Invalid year").max(new Date().getFullYear() + 10, "Year cannot be too far in the future").optional(),
   scheduleDate: z.date().optional(),
   badge: z.enum(["NEW", "NEW EPISODES", "SOON"]).optional(),
   cardImageUrl: z.string().optional(),
@@ -142,7 +144,6 @@ export default function CollectionForm({
       title: "",
       description: "",
       label: "COLLECTION",
-      releaseYear: new Date().getFullYear(),
       scheduleDate: undefined,
       badge: undefined,
       cardImageUrl: "",
@@ -159,6 +160,9 @@ export default function CollectionForm({
       ...initialData
     }
   });
+
+  const { formState: { isDirty } } = form;
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty);
 
   const seasons = form.watch("seasons") || [];
 
@@ -231,18 +235,20 @@ export default function CollectionForm({
   };
 
   const handleCancel = () => {
-    if (onSuccess) {
-      onSuccess();
-    } else {
-      navigate(-1);
-    }
+    guardNavigation(() => {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate(-1);
+      }
+    });
   };
 
   return (
     <div className="space-y-6">
       {!isInline && (
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="icon" onClick={() => guardNavigation(() => navigate(-1))}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
@@ -252,9 +258,9 @@ export default function CollectionForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
-              <TabsTrigger value="seasons">Seasons</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="seasons" className="flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" />Seasons</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
@@ -371,16 +377,14 @@ export default function CollectionForm({
                     />
                   </div>
 
-                  {/* Age Rating and Release Year */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
+                  <FormField
                       control={form.control}
                       name="ageRating"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Age Rating</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input
                               placeholder="G, PG, PG-13, R, etc."
                               {...field}
                             />
@@ -389,27 +393,6 @@ export default function CollectionForm({
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                      control={form.control}
-                      name="releaseYear"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Release Year</FormLabel>
-                      <FormControl>
-                        <Input 
-                              type="number"
-                              placeholder="Ex: 2025"
-                              {...field}
-                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                              value={field.value || ""}
-                            />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                      )}
-                    />
-                  </div>
 
                   {/* Genres */}
                   <FormField
@@ -752,6 +735,8 @@ export default function CollectionForm({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
+      <TutorialButton />
     </div>
   );
 }

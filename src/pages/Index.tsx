@@ -56,7 +56,7 @@ const Index = () => {
           <Link to="/groups">
             <Card className="bg-gradient-card border-border/50 transition-all duration-300 cursor-pointer">
               <CardContent className="p-6 text-center">
-                <Users className="h-12 w-12 text-primary mx-auto mb-4" />
+                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Groups</h3>
                 <p className="text-muted-foreground text-sm">Gerencie seus times</p>
               </CardContent>
@@ -86,7 +86,7 @@ const Index = () => {
           <Link to="/championships">
             <Card className="bg-gradient-card border-border/50 transition-all duration-300 cursor-pointer">
               <CardContent className="p-6 text-center">
-                <Trophy className="h-12 w-12 text-primary mx-auto mb-4" />
+                <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Campeonatos</h3>
                 <p className="text-muted-foreground text-sm">Gestão de torneios e competições</p>
               </CardContent>

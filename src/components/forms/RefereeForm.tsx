@@ -10,11 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { FileUpload } from "@/components/ui/file-upload"
-import { ArrowLeft, X } from "lucide-react"
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog"
+import { ArrowLeft, X, Info, ImageIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import { TutorialButton } from "@/components/ui/tutorial-button"
+import { useNavigationGuard } from "@/hooks/useNavigationGuard"
 
 const sportTypes = [
   { value: "football", label: "Football" },
@@ -48,8 +50,6 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
   const navigate = useNavigate()
   const { toast } = useToast()
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false)
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
 
   const form = useForm<RefereeFormData>({
     resolver: zodResolver(refereeSchema),
@@ -64,20 +64,7 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
   })
 
   const { formState: { isDirty } } = form
-
-  const handleNavigation = (navigateFn: () => void) => {
-    if (isDirty) {
-      setPendingNavigation(() => navigateFn)
-      setShowExitConfirmation(true)
-    } else {
-      navigateFn()
-    }
-  }
-
-  const handleConfirmExit = () => {
-    setShowExitConfirmation(false)
-    pendingNavigation?.()
-  }
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty)
 
   const onSubmit = (data: RefereeFormData) => {
     console.log("Saving referee:", data)
@@ -100,7 +87,7 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/referees"))}
+          onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/referees"))}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -112,8 +99,8 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
@@ -226,9 +213,6 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Square image for profile display (1:1 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -249,9 +233,6 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
                             description="JPEG, PNG, and WEBP formats, up to 50MB"
                           />
                         </FormControl>
-                        <p className="text-sm text-muted-foreground">
-                          Banner image for detail pages (16:9 aspect ratio recommended)
-                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -266,7 +247,7 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/referees"))}
+              onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/referees"))}
               className="flex-1"
             >
               Cancel
@@ -301,25 +282,8 @@ export function RefereeForm({ initialData, isEdit = false, onClose }: RefereeFor
         </DialogContent>
       </Dialog>
 
-      {/* Unsaved Changes Confirmation Dialog */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
-              Continue Editing
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmExit}>
-              Discard Changes
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
+      <TutorialButton />
     </div>
   )
 }

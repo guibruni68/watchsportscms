@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { ArrowLeft, Clock, Play, Tag, X, Link2 } from "lucide-react"
+import { ArrowLeft, Play, Tag, X, Link2, Info, ImageIcon, Globe, Users } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 interface Video {
@@ -12,7 +13,6 @@ interface Video {
   title: string
   description: string
   label: "VOD" | "LIVE"
-  releaseYear?: number
   scheduleDate: string
   isPublished: boolean
   badge?: "NEW" | "NEW EPISODES" | "SOON"
@@ -38,7 +38,6 @@ const mockVideos: Video[] = [
     title: "Buzzer Beater: Vitória épica no último segundo",
     description: "Os melhores momentos da vitória dramática com cesta no estouro do cronômetro. Uma partida emocionante que ficará marcada na história do time.",
     label: "VOD",
-    releaseYear: 2024,
     scheduleDate: "2024-01-15T20:30:00",
     isPublished: true,
     badge: "NEW",
@@ -60,7 +59,6 @@ const mockVideos: Video[] = [
     title: "Triple-Double histórico do armador",
     description: "Reveja a performance incrível com pontos, assistências e rebotes. O armador entregou uma atuação memorável.",
     label: "VOD",
-    releaseYear: 2024,
     scheduleDate: "2025-12-15T14:00:00",
     isPublished: false,
     badge: "SOON",
@@ -79,58 +77,42 @@ const mockVideos: Video[] = [
   },
 ]
 
-type TabType = "overview" | "details" | "media"
+type TabType = "information" | "media" | "agents" | "publishing"
 
 export default function VideoDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [video, setVideo] = useState<Video | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<TabType>("overview")
+  const [activeTab, setActiveTab] = useState<TabType>("information")
   const [lightboxImage, setLightboxImage] = useState<string | null>(null)
 
-  // Format datetime
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
     })
   }
 
   useEffect(() => {
     const fetchData = async () => {
       if (!id) return
-
       try {
         const videoData = mockVideos.find(v => v.id === id)
-
-        if (!videoData) {
-          throw new Error("Video not found")
-        }
-
+        if (!videoData) throw new Error("Video not found")
         setVideo(videoData)
       } catch (error) {
-        toast({
-          title: "Error",
-          description: "Error loading video data.",
-          variant: "destructive",
-        })
+        toast({ title: "Error", description: "Error loading video data.", variant: "destructive" })
         navigate('/videos')
       } finally {
         setLoading(false)
       }
     }
-
     fetchData()
   }, [id, navigate])
 
-  const handleEdit = () => {
-    navigate(`/videos/edit/${id}`)
-  }
+  const handleEdit = () => navigate(`/videos/edit/${id}`)
 
   if (loading) {
     return (
@@ -140,24 +122,19 @@ export default function VideoDetailsPage() {
     )
   }
 
-  if (!video) {
-    return null
-  }
+  if (!video) return null
 
-  const tabs: { id: TabType; label: string }[] = [
-    { id: "overview", label: "Overview" },
-    { id: "details", label: "Details" },
-    { id: "media", label: "Media" }
+  const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
+    { id: "information", label: "Information", icon: Info },
+    { id: "media",       label: "Media",       icon: ImageIcon },
+    { id: "agents",      label: "Agents",      icon: Users },
+    { id: "publishing",  label: "Publishing",  icon: Globe },
   ]
 
-  const getStatusLabel = () => {
-    if (!video.enabled) return "Disabled"
-    if (!video.isPublished) return "Draft"
-    const now = new Date()
-    const scheduleDate = new Date(video.scheduleDate)
-    if (scheduleDate > now) return "Scheduled"
-    return "Published"
-  }
+  const statusLabel = !video.enabled ? "Disabled"
+    : !video.isPublished ? "Draft"
+    : new Date(video.scheduleDate) > new Date() ? "Scheduled"
+    : "Published"
 
   return (
     <div className="space-y-6">
@@ -174,24 +151,14 @@ export default function VideoDetailsPage() {
 
       {/* Header Card */}
       <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl overflow-hidden">
-        {/* Top banner bar */}
-        <div className="h-28 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d]" />
-
-        {/* Header Content */}
+        <div className="h-28 bg-cover bg-center" style={{ backgroundImage: "url(/assets/BackgroundAFA.png)" }} />
         <div className="px-7 pb-7 -mt-14">
           <div className="flex items-start justify-between">
-            {/* Left Section: Thumbnail + Info */}
             <div className="flex flex-col">
-              {/* Video Thumbnail */}
               <div className="w-[200px] h-[120px] rounded-2xl bg-[#1a1a1a] overflow-hidden flex items-center justify-center shadow-lg mb-4 relative">
                 {video.cardImageUrl ? (
                   <>
-                    <img
-                      src={video.cardImageUrl}
-                      alt={video.title}
-                      className="w-full h-full object-cover"
-                    />
-                    {/* Play button overlay */}
+                    <img src={video.cardImageUrl} alt={video.title} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center">
                         <Play className="h-5 w-5 text-white fill-white" />
@@ -202,30 +169,11 @@ export default function VideoDetailsPage() {
                   <Play className="h-8 w-8 text-muted-foreground/50" />
                 )}
               </div>
-
-              {/* Video Info */}
-              <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold text-white">
-                  {video.title}
-                </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
-                  {getStatusLabel()}
-                </span>
-                {video.badge && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-[#153A8A]/20 text-[#4a90d9] border border-[#153A8A]/30">
-                    {video.badge}
-                  </span>
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                {video.releaseYear || "Video"}
-              </p>
+              <h1 className="text-2xl font-bold text-white tracking-[-0.6px]">{video.title}</h1>
             </div>
-
-            {/* Edit Button */}
             <Button
               onClick={handleEdit}
-              className="bg-[#153A8A] hover:bg-[#1a4aa8] text-white rounded-lg px-6 h-10 mt-20"
+              className="bg-primary hover:bg-primary/80 text-white rounded-[10px] px-6 h-10 mt-20"
             >
               Edit
             </Button>
@@ -233,7 +181,7 @@ export default function VideoDetailsPage() {
         </div>
       </Card>
 
-      {/* Tabs - outside the card */}
+      {/* Tabs */}
       <div className="border-b border-[#1f1f1f]">
         <div className="flex gap-0">
           {tabs.map((tab) => (
@@ -241,63 +189,48 @@ export default function VideoDetailsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative",
-                activeTab === tab.id
-                  ? "text-white"
-                  : "text-muted-foreground hover:text-white/80"
+                "px-6 py-3 text-xs font-normal uppercase tracking-wider transition-colors relative flex items-center gap-1.5",
+                activeTab === tab.id ? "text-white" : "text-muted-foreground hover:text-white/80"
               )}
             >
+              <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#153A8A]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
               )}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Tab Content */}
-      {activeTab === "overview" && (
+      {/* INFORMATION TAB */}
+      {activeTab === "information" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
           <CardContent className="p-7">
             <div className="flex gap-12">
-              {/* Left Column - Description & Tags */}
               <div className="flex-1 space-y-8">
-                {/* Description */}
                 <div>
                   <h3 className="text-base font-semibold text-white mb-4">Description</h3>
-                  <p className="text-sm text-white/80 leading-relaxed max-w-xl">
+                  <p className="text-sm text-white/80 leading-relaxed">
                     {video.description || "No description available."}
                   </p>
                 </div>
-
-                {/* Genres */}
                 {video.genre && video.genre.length > 0 && (
                   <div>
                     <h3 className="text-base font-semibold text-white mb-4">Genres</h3>
                     <div className="flex flex-wrap gap-2">
                       {video.genre.map((genre, index) => (
-                        <div
-                          key={index}
-                          className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#090909] border border-[#262626]"
-                        >
-                          <span className="text-xs font-medium text-white/50">{genre}</span>
-                        </div>
+                        <Badge key={index} variant="neutral">{genre}</Badge>
                       ))}
                     </div>
                   </div>
                 )}
-
-                {/* Tags */}
                 {video.tags && video.tags.length > 0 && (
                   <div>
                     <h3 className="text-base font-semibold text-white mb-4">Tags</h3>
                     <div className="flex flex-wrap gap-2">
                       {video.tags.map((tag, index) => (
-                        <div
-                          key={index}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#1a1a1a] border border-[#262626]"
-                        >
+                        <div key={index} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#1a1a1a] border border-[#262626]">
                           <Tag className="h-3 w-3 text-muted-foreground" />
                           <span className="text-xs text-white/60">{tag}</span>
                         </div>
@@ -306,134 +239,126 @@ export default function VideoDetailsPage() {
                   </div>
                 )}
               </div>
-
-              {/* Right Column - Info Cards */}
-              <div className="w-64 space-y-6">
-                {/* Duration */}
+              <div className="w-64 space-y-8">
                 {video.duration && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
-                      <Clock className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Duration</p>
-                      <p className="text-xs text-muted-foreground">{video.duration}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Duration</h3>
+                    <p className="text-sm text-white/80">{video.duration}</p>
                   </div>
                 )}
-
-                {/* Age Rating */}
                 {video.ageRating && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-bold text-muted-foreground">{video.ageRating}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Age Rating</p>
-                      <p className="text-xs text-muted-foreground">{video.ageRating}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Age Rating</h3>
+                    <p className="text-sm text-white/80">{video.ageRating}</p>
                   </div>
                 )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {activeTab === "details" && (
-        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
-          <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold text-white">Technical Details</h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Stream URL */}
-              {video.streamUrl && (
-                <div className="col-span-2">
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Stream URL</p>
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
-                    <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    <code className="text-xs text-white/60 break-all">{video.streamUrl}</code>
-                  </div>
-                </div>
-              )}
-
-              {/* Release Year */}
-              {video.releaseYear && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Release Year</p>
-                  <p className="text-sm text-white">{video.releaseYear}</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Created At</h3>
+                  <p className="text-sm text-white/80">{formatDateTime(video.createdAt)}</p>
                 </div>
-              )}
-
-              {/* Label */}
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Label</p>
-                <p className="text-sm text-white">{video.label}</p>
-              </div>
-
-              {/* Created At */}
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Created At</p>
-                <p className="text-sm text-white">{formatDateTime(video.createdAt)}</p>
-              </div>
-
-              {/* Updated At */}
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">Updated At</p>
-                <p className="text-sm text-white">{formatDateTime(video.updatedAt)}</p>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Updated At</h3>
+                  <p className="text-sm text-white/80">{formatDateTime(video.updatedAt)}</p>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
       )}
 
+      {/* MEDIA TAB */}
       {activeTab === "media" && (
         <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
           <CardContent className="p-7 space-y-6">
-            <h3 className="text-lg font-semibold text-white">Media Assets</h3>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Card Image */}
               {video.cardImageUrl && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-3">Card Image</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Card Image</h3>
                   <div
                     className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => setLightboxImage(video.cardImageUrl!)}
                   >
-                    <img
-                      src={video.cardImageUrl}
-                      alt="Card"
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={video.cardImageUrl} alt="Card" className="w-full h-full object-cover" />
                   </div>
                 </div>
               )}
-
-              {/* Banner Image */}
               {video.bannerImageUrl && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-3">Banner Image</p>
+                  <h3 className="text-base font-semibold text-white mb-4">Banner Image</h3>
                   <div
                     className="aspect-video rounded-xl border border-[#1f1f1f] bg-[#090909] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => setLightboxImage(video.bannerImageUrl!)}
                   >
-                    <img
-                      src={video.bannerImageUrl}
-                      alt="Banner"
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={video.bannerImageUrl} alt="Banner" className="w-full h-full object-cover" />
                   </div>
                 </div>
               )}
             </div>
-
             {!video.cardImageUrl && !video.bannerImageUrl && (
               <div className="text-center py-12">
                 <Play className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No media assets uploaded yet.</p>
+                <p className="text-sm text-muted-foreground">No media assets uploaded yet.</p>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* AGENTS TAB */}
+      {activeTab === "agents" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7">
+            <div className="text-center py-12">
+              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-sm text-muted-foreground">No agents associated with this video.</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* PUBLISHING TAB */}
+      {activeTab === "publishing" && (
+        <Card className="border-[#1f1f1f] bg-[#0d0d0d] rounded-xl">
+          <CardContent className="p-7">
+            <div className="flex gap-12">
+              <div className="flex-1 space-y-8">
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Status</h3>
+                  <Badge variant="neutral">{statusLabel}</Badge>
+                </div>
+                {video.badge && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Badge</h3>
+                    <p className="text-sm text-white/80">{video.badge}</p>
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Label</h3>
+                  <p className="text-sm text-white/80">{video.label}</p>
+                </div>
+                {video.streamUrl && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Stream URL</h3>
+                    <div className="flex items-center gap-2 p-3 rounded-lg bg-[#090909] border border-[#262626]">
+                      <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      <code className="text-xs text-white/60 break-all">{video.streamUrl}</code>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="w-64 space-y-8">
+                {video.scheduleDate && (
+                  <div>
+                    <h3 className="text-base font-semibold text-white mb-4">Schedule Date</h3>
+                    <p className="text-sm text-white/80">{formatDateTime(video.scheduleDate)}</p>
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-4">Enabled</h3>
+                  <p className="text-sm text-white/80">{video.enabled ? "Yes" : "No"}</p>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -451,11 +376,7 @@ export default function VideoDetailsPage() {
               <X className="h-6 w-6" />
             </Button>
             {lightboxImage && (
-              <img
-                src={lightboxImage}
-                alt="Full size preview"
-                className="w-full h-auto max-h-[90vh] object-contain"
-              />
+              <img src={lightboxImage} alt="Full size preview" className="w-full h-auto max-h-[90vh] object-contain" />
             )}
           </div>
         </DialogContent>

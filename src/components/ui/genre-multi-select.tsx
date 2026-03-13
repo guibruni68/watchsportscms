@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Check, ChevronsUpDown, X, Plus } from "lucide-react"
+import { ChevronsUpDown, X, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -185,14 +185,22 @@ export function GenreMultiSelect({
                     key={genre.id}
                     value={genre.id}
                     onSelect={() => handleSelect(genre.id)}
+                    className={cn(
+                      "cursor-pointer",
+                      selectedGenres.includes(genre.id) && "bg-primary/10"
+                    )}
                   >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedGenres.includes(genre.id) ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {genre.name}
+                    <div className="flex items-center gap-3 w-full">
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all shrink-0",
+                          selectedGenres.includes(genre.id)
+                            ? "border-primary bg-primary"
+                            : "border-muted-foreground/50"
+                        )}
+                      />
+                      <span>{genre.name}</span>
+                    </div>
                   </CommandItem>
                 ))}
               </CommandGroup>

@@ -98,7 +98,7 @@ export function AICarouselModal({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <Sparkles className="h-5 w-5 text-muted-foreground" />
             Ask AI - Gerar Configuração de Carrossel
           </DialogTitle>
           <DialogDescription>

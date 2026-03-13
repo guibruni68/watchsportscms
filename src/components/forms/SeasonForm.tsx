@@ -11,15 +11,18 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog"
 import { TeamMultiSelect, TeamOption } from "@/components/ui/team-multi-select"
-import { ArrowLeft, CalendarIcon, Save } from "lucide-react"
+import { useNavigationGuard } from "@/hooks/useNavigationGuard"
+import { ArrowLeft, CalendarIcon, Save, Info, Users } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const seasonSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  competitionId: z.string().optional(),
   startDate: z.date({ required_error: "Start date is required" }),
   endDate: z.date({ required_error: "End date is required" }),
   status: z.enum(["upcoming", "active", "completed"]),
@@ -28,13 +31,21 @@ const seasonSchema = z.object({
 type SeasonFormData = z.infer<typeof seasonSchema>
 
 interface SeasonFormProps {
-  competitionId: string
-  competitionName: string
+  competitionId?: string
+  competitionName?: string
   initialData?: Partial<SeasonFormData>
   initialTeams?: TeamOption[]
   isEdit?: boolean
   onClose?: () => void
 }
+
+// Mock available competitions
+const mockCompetitions = [
+  { id: "1", name: "Liga Nacional de Basquete", acronym: "LNB" },
+  { id: "2", name: "Copa do Brasil de Basquete", acronym: "CBB" },
+  { id: "3", name: "Champions League", acronym: "UCL" },
+  { id: "4", name: "Campeonato Brasileiro", acronym: "CBLOL" },
+]
 
 // Mock available teams
 const mockAvailableTeams: TeamOption[] = [
@@ -81,16 +92,22 @@ const mockAvailableTeams: TeamOption[] = [
 export function SeasonForm({ competitionId, competitionName, initialData, initialTeams = [], isEdit = false, onClose }: SeasonFormProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false)
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
 
   // Team selection state
   const [selectedTeams, setSelectedTeams] = useState<TeamOption[]>(initialTeams)
+
+  // Determine the back navigation path
+  const getBackPath = () => {
+    if (onClose) return null // Will use onClose callback
+    if (competitionId) return `/competitions/${competitionId}`
+    return "/seasons"
+  }
 
   const form = useForm<SeasonFormData>({
     resolver: zodResolver(seasonSchema),
     defaultValues: {
       name: initialData?.name || "",
+      competitionId: initialData?.competitionId || competitionId || "",
       startDate: initialData?.startDate,
       endDate: initialData?.endDate,
       status: initialData?.status || "upcoming",
@@ -105,19 +122,7 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
   const teamsModified = initialTeamIds !== currentTeamIds
   const hasChanges = isDirty || teamsModified
 
-  const handleNavigation = (navigateFn: () => void) => {
-    if (hasChanges) {
-      setPendingNavigation(() => navigateFn)
-      setShowExitConfirmation(true)
-    } else {
-      navigateFn()
-    }
-  }
-
-  const handleConfirmExit = () => {
-    setShowExitConfirmation(false)
-    pendingNavigation?.()
-  }
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty || teamsModified)
 
   const onSubmit = (data: SeasonFormData) => {
     console.log("Saving season:", data)
@@ -131,7 +136,8 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
     if (onClose) {
       onClose()
     } else {
-      navigate(`/competitions/${competitionId}`)
+      const backPath = getBackPath()
+      if (backPath) navigate(backPath)
     }
   }
 
@@ -141,14 +147,21 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleNavigation(() => onClose ? onClose() : navigate(`/competitions/${competitionId}`))}
+          onClick={() => guardNavigation(() => {
+            if (onClose) {
+              onClose()
+            } else {
+              const backPath = getBackPath()
+              if (backPath) navigate(backPath)
+            }
+          })}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
           <h1 className="text-2xl font-bold">{isEdit ? "Edit Season" : "New Season"}</h1>
-          <p className="text-sm text-muted-foreground">{competitionName}</p>
+          {competitionName && <p className="text-sm text-muted-foreground">{competitionName}</p>}
         </div>
       </div>
 
@@ -156,8 +169,8 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="teams">Teams</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="teams" className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />Teams</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
@@ -167,6 +180,38 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
                   <CardTitle>Season Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="competitionId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Competition</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={!!competitionId}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a competition (optional)" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {mockCompetitions.map(comp => (
+                              <SelectItem key={comp.id} value={comp.id}>
+                                {comp.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-sm text-muted-foreground">
+                          Associate this season with a competition
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="name"
@@ -315,7 +360,14 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleNavigation(() => onClose ? onClose() : navigate(`/competitions/${competitionId}`))}
+              onClick={() => guardNavigation(() => {
+                if (onClose) {
+                  onClose()
+                } else {
+                  const backPath = getBackPath()
+                  if (backPath) navigate(backPath)
+                }
+              })}
               className="flex-1"
             >
               Cancel
@@ -328,25 +380,8 @@ export function SeasonForm({ competitionId, competitionName, initialData, initia
         </form>
       </Form>
 
-      {/* Unsaved Changes Confirmation Dialog */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
-              Continue Editing
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmExit}>
-              Discard Changes
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
+      <TutorialButton />
     </div>
   )
 }

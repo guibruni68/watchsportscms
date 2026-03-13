@@ -6,19 +6,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Play } from "lucide-react";
 import { ActionDropdown } from "@/components/ui/action-dropdown";
 import { SearchFilters } from "@/components/ui/search-filters";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { mockCatalogues } from "@/data/mockCatalogues";
 import { getContentStatus } from "@/lib/utils";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 
 interface Collection {
   id: string;
@@ -38,8 +30,7 @@ export default function CollectionsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [collectionToDelete, setCollectionToDelete] = useState<Collection | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -93,32 +84,22 @@ export default function CollectionsPage() {
   };
 
   const handleDeleteClick = (collection: Collection) => {
-    setCollectionToDelete(collection);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDelete = async () => {
-    if (!collectionToDelete) return;
-
-    if (collectionToDelete.content_count && collectionToDelete.content_count > 0) {
+    if (collection.content_count && collection.content_count > 0) {
       toast({
         title: "Error",
-        description: `Cannot delete collection "${collectionToDelete.titulo}" because it has ${collectionToDelete.content_count} linked content(s).`,
+        description: `Cannot delete collection "${collection.titulo}" because it has ${collection.content_count} linked content(s).`,
         variant: "destructive",
       });
-      setDeleteDialogOpen(false);
-      setCollectionToDelete(null);
       return;
     }
+    setDeleteDialog({ open: true, id: collection.id });
+  };
 
-    toast({
-      title: "Success",
-      description: "Collection deleted successfully! (Sample data)",
-    });
-
-    fetchCollections();
-    setDeleteDialogOpen(false);
-    setCollectionToDelete(null);
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return;
+    setCollections(prev => prev.filter(c => c.id !== deleteDialog.id));
+    setDeleteDialog({ open: false, id: null });
+    toast({ title: "Deleted", description: "Item deleted successfully." });
   };
 
   const handleNewCollection = () => {
@@ -216,9 +197,9 @@ export default function CollectionsPage() {
                     <div className="text-sm">{new Date(collection.published_at).toLocaleDateString("en-US")}</div>
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {getContentStatus(collection.status, collection.published_at)}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <ActionDropdown
@@ -268,42 +249,11 @@ export default function CollectionsPage() {
         </div>
       )}
 
-      {/* Delete confirmation dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-            <AlertDialogDescription>
-              {collectionToDelete?.content_count && collectionToDelete.content_count > 0 ? (
-                <>
-                  Cannot delete collection "{collectionToDelete.titulo}" because it has{" "}
-                  <strong>{collectionToDelete.content_count} linked content(s)</strong>.
-                  <br />
-                  <br />
-                  Remove the linked contents before deleting the collection.
-                </>
-              ) : (
-                <>
-                  Are you sure you want to delete collection "{collectionToDelete?.titulo}"?
-                  <br />
-                  This action cannot be undone.
-                </>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            {(!collectionToDelete?.content_count || collectionToDelete.content_count === 0) && (
-              <AlertDialogAction
-                onClick={handleDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Delete
-              </AlertDialogAction>
-            )}
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
+      />
     </div>
   );
 }

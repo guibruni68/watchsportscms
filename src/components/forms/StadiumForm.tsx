@@ -9,10 +9,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Save } from "lucide-react"
+import { ArrowLeft, Save, Info, ImageIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { FileUpload } from "@/components/ui/file-upload"
 import { Input } from "@/components/ui/input"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const stadiumSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -112,8 +113,8 @@ export function StadiumForm({ initialData, isEdit = false, onClose }: StadiumFor
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="space-y-6">
             <TabsList>
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
             </TabsList>
 
             <TabsContent value="information" className="space-y-6">
@@ -280,6 +281,7 @@ export function StadiumForm({ initialData, isEdit = false, onClose }: StadiumFor
           </div>
         </form>
       </Form>
+      <TutorialButton />
     </div>
   )
 }

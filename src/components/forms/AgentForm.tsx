@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { format } from "date-fns"
-import { Calendar as CalendarIcon, X } from "lucide-react"
+import { Calendar as CalendarIcon, X, Info, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -19,6 +19,7 @@ import { GenreMultiSelect } from "@/components/ui/genre-multi-select"
 import { FileUpload } from "@/components/ui/file-upload"
 import { mockGenres } from "@/data/mockData"
 import { cn } from "@/lib/utils"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const agentSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -99,8 +100,8 @@ export function AgentForm({ initialData, isEdit = false, defaultLabel, onClose }
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Tabs defaultValue="information" className="w-full">
           <TabsList className="mb-6">
-            <TabsTrigger value="information">Information</TabsTrigger>
-            <TabsTrigger value="media">Media</TabsTrigger>
+            <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+            <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
           </TabsList>
 
           {/* Tab 1: Information */}
@@ -250,9 +251,6 @@ export function AgentForm({ initialData, isEdit = false, defaultLabel, onClose }
                   {errors.imagePrimaryUrl && (
                     <p className="text-sm text-destructive">{errors.imagePrimaryUrl.message}</p>
                   )}
-                  <p className="text-sm text-muted-foreground">
-                    Square image for profile display (1:1 aspect ratio recommended)
-                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -266,9 +264,6 @@ export function AgentForm({ initialData, isEdit = false, defaultLabel, onClose }
                   {errors.imageSecondaryUrl && (
                     <p className="text-sm text-destructive">{errors.imageSecondaryUrl.message}</p>
                   )}
-                  <p className="text-sm text-muted-foreground">
-                    Banner image for detail pages (16:9 aspect ratio recommended)
-                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -308,6 +303,7 @@ export function AgentForm({ initialData, isEdit = false, defaultLabel, onClose }
           </div>
         </DialogContent>
       </Dialog>
+      <TutorialButton />
     </div>
   )
 }

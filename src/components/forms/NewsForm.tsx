@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { format } from "date-fns"
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
@@ -12,15 +11,17 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog"
 import { GenreMultiSelect } from "@/components/ui/genre-multi-select"
 import { AgentMultiSelect } from "@/components/ui/agent-multi-select"
 import { FileUpload } from "@/components/ui/file-upload"
-import { ArrowLeft, CalendarIcon, X } from "lucide-react"
+import { ArrowLeft, CalendarIcon, X, Info, ImageIcon, Users, Globe } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import { useNavigationGuard } from "@/hooks/useNavigationGuard"
 import { cn } from "@/lib/utils"
-import { mockGenres, mockPlayers, mockTeams } from "@/data/mockData"
+import { mockGenres, getAgentOptions } from "@/data/mockData"
+import { TutorialButton } from "@/components/ui/tutorial-button"
 
 const newsSchema = z.object({
   title: z.string().min(1, "Internal title is required"),
@@ -52,8 +53,6 @@ interface NewsFormProps {
 export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false)
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
 
   const form = useForm<NewsFormData>({
     resolver: zodResolver(newsSchema),
@@ -77,19 +76,7 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
     formState: { isDirty }
   } = form
 
-  const handleNavigation = (navigateFn: () => void) => {
-    if (isDirty) {
-      setPendingNavigation(() => navigateFn)
-      setShowExitConfirmation(true)
-    } else {
-      navigateFn()
-    }
-  }
-
-  const handleConfirmExit = () => {
-    setShowExitConfirmation(false)
-    pendingNavigation?.()
-  }
+  const { isBlocked, proceed, reset: resetGuard, guardNavigation } = useNavigationGuard(isDirty)
 
   const onSubmit = (data: NewsFormData) => {
     // Add published as true internally
@@ -116,7 +103,7 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/news"))}
+          onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/news"))}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -127,10 +114,10 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="information" className="w-full">
             <TabsList className="mb-6">
-              <TabsTrigger value="information">Information</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
-              <TabsTrigger value="classification">Classification</TabsTrigger>
-              <TabsTrigger value="publishing">Publishing</TabsTrigger>
+              <TabsTrigger value="information" className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />Information</TabsTrigger>
+              <TabsTrigger value="media" className="flex items-center gap-1.5"><ImageIcon className="h-3.5 w-3.5" />Media</TabsTrigger>
+              <TabsTrigger value="agents" className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />Agents</TabsTrigger>
+              <TabsTrigger value="publishing" className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" />Publishing</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Information */}
@@ -201,12 +188,35 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
                       <FormItem>
                         <FormLabel>Last Content Block *</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Closing paragraph of the news article..." 
+                          <Textarea
+                            placeholder="Closing paragraph of the news article..."
                             className="min-h-32"
-                            {...field} 
+                            {...field}
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="genres"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>News Types</FormLabel>
+                        <FormControl>
+                          <GenreMultiSelect
+                            selectedGenres={field.value || []}
+                            onGenresChange={field.onChange}
+                            genreType="news"
+                            availableGenres={newsGenres}
+                            placeholder="Select news types..."
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Categorize the type of news (Breaking News, Transfers, etc.)
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -269,49 +279,25 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
               </Card>
             </TabsContent>
 
-            {/* Tab 3: Classification */}
-            <TabsContent value="classification">
+            {/* Tab 3: Agents */}
+            <TabsContent value="agents">
               <Card>
                 <CardHeader>
-                  <CardTitle>Classification</CardTitle>
+                  <CardTitle>Related Agents</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="genres"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>News Types</FormLabel>
-                        <FormControl>
-                          <GenreMultiSelect
-                            selectedGenres={field.value || []}
-                            onGenresChange={field.onChange}
-                            genreType="news"
-                            availableGenres={newsGenres}
-                            placeholder="Select news types..."
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Categorize the type of news (Breaking News, Transfers, etc.)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <FormField
                     control={form.control}
                     name="agentesRelacionados"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Related Agents/Groups</FormLabel>
+                        <FormLabel>Agents</FormLabel>
                         <FormControl>
                           <AgentMultiSelect
-                            players={mockPlayers}
-                            teams={mockTeams}
+                            agents={getAgentOptions()}
                             value={field.value || []}
                             onChange={field.onChange}
-                            placeholder="Link agents or groups..."
+                            placeholder="Search and select agents..."
                           />
                         </FormControl>
                         <FormDescription>
@@ -481,7 +467,7 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => handleNavigation(() => onClose ? onClose() : navigate("/news"))}
+              onClick={() => guardNavigation(() => onClose ? onClose() : navigate("/news"))}
               className="flex-1"
             >
               Cancel
@@ -493,25 +479,8 @@ export function NewsForm({ initialData, isEdit = false, onClose }: NewsFormProps
         </form>
       </Form>
 
-      {/* Unsaved Changes Confirmation Dialog */}
-      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowExitConfirmation(false)}>
-              Continue Editing
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmExit}>
-              Discard Changes
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog open={isBlocked} onConfirm={proceed} onCancel={resetGuard} />
+      <TutorialButton />
     </div>
   )
 }

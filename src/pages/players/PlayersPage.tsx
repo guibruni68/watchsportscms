@@ -9,7 +9,10 @@ import { ListPagination } from "@/components/ui/list-controls"
 import { ActionDropdown } from "@/components/ui/action-dropdown"
 import { SearchFilters } from "@/components/ui/search-filters"
 import { PlayerForm } from "@/components/forms/PlayerForm"
+import { Badge } from "@/components/ui/badge"
+import { getEnabledBadgeVariant, getEnabledLabel } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog"
 
 interface Player {
   id: string
@@ -91,6 +94,7 @@ export default function PlayersPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string | null }>({ open: false, id: null })
 
   const { toast } = useToast()
 
@@ -152,12 +156,16 @@ export default function PlayersPage() {
   }
 
   const handleDelete = (id: string) => {
-    setPlayers(players.filter(player => player.id !== id))
-    toast({
-      title: "Player deleted",
-      description: "The player was removed successfully.",
-    })
+    setDeleteDialog({ open: true, id })
   }
+
+  const confirmDelete = () => {
+    if (!deleteDialog.id) return
+    setPlayers(prev => prev.filter(player => player.id !== deleteDialog.id))
+    setDeleteDialog({ open: false, id: null })
+    toast({ title: "Deleted", description: "Item deleted successfully." })
+  }
+
 
   if (showForm) {
     return (
@@ -263,9 +271,9 @@ export default function PlayersPage() {
                   <TableCell>{player.position || "-"}</TableCell>
                   <TableCell>{player.nationality}</TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[9px] text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <Badge variant="neutral">
                       {player.enabled ? "Enabled" : "Disabled"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <ActionDropdown
@@ -288,6 +296,12 @@ export default function PlayersPage() {
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={() => {}}
         totalItems={filteredPlayers.length}
+      />
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialog({ open: false, id: null })}
       />
     </div>
   )

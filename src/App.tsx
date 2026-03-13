@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/dashboard/Index";
@@ -12,12 +12,14 @@ import EditVideoPage from "./pages/videos/EditVideoPage";
 import LivesPage from "./pages/lives/LivesPage";
 import LiveDetailsPage from "./pages/lives/LiveDetailsPage";
 import EditLivePage from "./pages/lives/EditLivePage";
+import MatchControlPage from "./pages/lives/MatchControlPage";
 import AgentsPage from "./pages/agents/AgentsPage";
 import TeamsPage from "./pages/teams/TeamsPage";
 import TeamDetailsPage from "./pages/teams/TeamDetailsPage";
 import CompetitionsPage from "./pages/competitions/CompetitionsPage";
 import CompetitionDetailsPage from "./pages/competitions/CompetitionDetailsPage";
 import SeasonDetailsPage from "./pages/competitions/SeasonDetailsPage";
+import SeasonsPage from "./pages/seasons/SeasonsPage";
 import AgentDetailsPage from "./pages/agents/AgentDetailsPage";
 import PlayersPage from "./pages/players/PlayersPage";
 import PlayerDetailsPage from "./pages/players/PlayerDetailsPage";
@@ -39,9 +41,7 @@ import BannersPage from "./pages/banners/BannersPage";
 import BannerDetailsPage from "./pages/banners/BannerDetailsPage";
 import NewBannerPage from "./pages/banners/NewBannerPage";
 import EditBannerPage from "./pages/banners/EditBannerPage";
-import CustomizationPage from "./pages/customization/CustomizationPage";
 import AdsPage from "./pages/ads/AdsPage";
-import AnalyticsPage from "./pages/analytics/AnalyticsPage";
 import CollectionsPage from "./pages/collections/CollectionsPage";
 import CollectionForm from "./components/forms/CollectionForm";
 import EditCollectionPage from "./pages/collections/EditCollectionPage";
@@ -49,6 +49,57 @@ import CollectionDetailsPage from "./pages/collections/CollectionDetailsPage";
 import AuthPage from "./pages/AuthPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import NotFound from "./pages/NotFound";
+import HelpPage from "./pages/help/HelpPage";
+
+const router = createBrowserRouter([
+  { path: "/auth", element: <AuthPage /> },
+  { path: "/forgot-password", element: <ForgotPasswordPage /> },
+  { path: "/", element: <ProtectedRoute><Index /></ProtectedRoute> },
+  { path: "/videos", element: <ProtectedRoute><VideosPage /></ProtectedRoute> },
+  { path: "/videos/:id", element: <ProtectedRoute><VideoDetailsPage /></ProtectedRoute> },
+  { path: "/videos/edit/:id", element: <ProtectedRoute><EditVideoPage /></ProtectedRoute> },
+  { path: "/lives", element: <ProtectedRoute><LivesPage /></ProtectedRoute> },
+  { path: "/lives/:id", element: <ProtectedRoute><LiveDetailsPage /></ProtectedRoute> },
+  { path: "/lives/edit/:id", element: <ProtectedRoute><EditLivePage /></ProtectedRoute> },
+  { path: "/lives/:id/match-control", element: <ProtectedRoute><MatchControlPage /></ProtectedRoute> },
+  { path: "/seasons/:seasonId/games/:gameId/match-control", element: <ProtectedRoute><MatchControlPage /></ProtectedRoute> },
+  { path: "/players", element: <ProtectedRoute><PlayersPage /></ProtectedRoute> },
+  { path: "/players/:id", element: <ProtectedRoute><PlayerDetailsPage /></ProtectedRoute> },
+  { path: "/coaches", element: <ProtectedRoute><CoachesPage /></ProtectedRoute> },
+  { path: "/coaches/:id", element: <ProtectedRoute><CoachDetailsPage /></ProtectedRoute> },
+  { path: "/referees", element: <ProtectedRoute><RefereesPage /></ProtectedRoute> },
+  { path: "/stadiums", element: <ProtectedRoute><StadiumsPage /></ProtectedRoute> },
+  { path: "/agents", element: <ProtectedRoute><AgentsPage /></ProtectedRoute> },
+  { path: "/agents/:id", element: <ProtectedRoute><AgentDetailsPage /></ProtectedRoute> },
+  { path: "/teams", element: <ProtectedRoute><TeamsPage /></ProtectedRoute> },
+  { path: "/teams/:id", element: <ProtectedRoute><TeamDetailsPage /></ProtectedRoute> },
+  { path: "/competitions", element: <ProtectedRoute><CompetitionsPage /></ProtectedRoute> },
+  { path: "/competitions/:id", element: <ProtectedRoute><CompetitionDetailsPage /></ProtectedRoute> },
+  { path: "/competitions/:competitionId/seasons/:seasonId", element: <ProtectedRoute><SeasonDetailsPage /></ProtectedRoute> },
+  { path: "/seasons", element: <ProtectedRoute><SeasonsPage /></ProtectedRoute> },
+  { path: "/seasons/:id", element: <ProtectedRoute><SeasonDetailsPage /></ProtectedRoute> },
+  { path: "/championships/:id", element: <ProtectedRoute><ChampionshipDetailsPage /></ProtectedRoute> },
+  { path: "/schedule", element: <ProtectedRoute><SchedulePage /></ProtectedRoute> },
+  { path: "/schedule/:id", element: <ProtectedRoute><EventDetailPage /></ProtectedRoute> },
+  { path: "/news", element: <ProtectedRoute><NewsPage /></ProtectedRoute> },
+  { path: "/news/:id", element: <ProtectedRoute><NewsDetailPage /></ProtectedRoute> },
+  { path: "/shelves", element: <ProtectedRoute><ShelvesPage /></ProtectedRoute> },
+  { path: "/shelves/new", element: <ProtectedRoute><NewShelfPage /></ProtectedRoute> },
+  { path: "/shelves/:id/edit", element: <ProtectedRoute><EditShelfPage /></ProtectedRoute> },
+  { path: "/pages", element: <ProtectedRoute><PagesPage /></ProtectedRoute> },
+  { path: "/pages/:id/edit", element: <ProtectedRoute><EditPagePage /></ProtectedRoute> },
+  { path: "/banners", element: <ProtectedRoute><BannersPage /></ProtectedRoute> },
+  { path: "/banners/novo", element: <ProtectedRoute><NewBannerPage /></ProtectedRoute> },
+  { path: "/banners/:id", element: <ProtectedRoute><BannerDetailsPage /></ProtectedRoute> },
+  { path: "/banners/:id/editar", element: <ProtectedRoute><EditBannerPage /></ProtectedRoute> },
+  { path: "/ads", element: <ProtectedRoute><AdsPage /></ProtectedRoute> },
+  { path: "/collections", element: <ProtectedRoute><CollectionsPage /></ProtectedRoute> },
+  { path: "/collections/novo", element: <ProtectedRoute><CollectionForm /></ProtectedRoute> },
+  { path: "/collections/:id", element: <ProtectedRoute><CollectionDetailsPage /></ProtectedRoute> },
+  { path: "/collections/edit/:id", element: <ProtectedRoute><EditCollectionPage /></ProtectedRoute> },
+  { path: "/help", element: <ProtectedRoute><HelpPage /></ProtectedRoute> },
+  { path: "*", element: <NotFound /> },
+]);
 
 const queryClient = new QueryClient();
 
@@ -58,223 +109,7 @@ const App = () => (
       <div className="dark">
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes for authentication */}
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            
-            {/* Protected routes */}
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
-            <Route path="/videos" element={
-              <ProtectedRoute>
-                <VideosPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/videos/:id" element={
-              <ProtectedRoute>
-                <VideoDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/videos/edit/:id" element={
-              <ProtectedRoute>
-                <EditVideoPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/lives" element={
-              <ProtectedRoute>
-                <LivesPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/lives/:id" element={
-              <ProtectedRoute>
-                <LiveDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/lives/edit/:id" element={
-              <ProtectedRoute>
-                <EditLivePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/players" element={
-              <ProtectedRoute>
-                <PlayersPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/players/:id" element={
-              <ProtectedRoute>
-                <PlayerDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/coaches" element={
-              <ProtectedRoute>
-                <CoachesPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/coaches/:id" element={
-              <ProtectedRoute>
-                <CoachDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/referees" element={
-              <ProtectedRoute>
-                <RefereesPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/stadiums" element={
-              <ProtectedRoute>
-                <StadiumsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/agents" element={
-              <ProtectedRoute>
-                <AgentsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/agents/:id" element={
-              <ProtectedRoute>
-                <AgentDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/teams" element={
-              <ProtectedRoute>
-                <TeamsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/teams/:id" element={
-              <ProtectedRoute>
-                <TeamDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/competitions" element={
-              <ProtectedRoute>
-                <CompetitionsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/competitions/:id" element={
-              <ProtectedRoute>
-                <CompetitionDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/competitions/:competitionId/seasons/:seasonId" element={
-              <ProtectedRoute>
-                <SeasonDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/championships/:id" element={
-              <ProtectedRoute>
-                <ChampionshipDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/schedule" element={
-              <ProtectedRoute>
-                <SchedulePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/schedule/:id" element={
-              <ProtectedRoute>
-                <EventDetailPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/news" element={
-              <ProtectedRoute>
-                <NewsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/news/:id" element={
-              <ProtectedRoute>
-                <NewsDetailPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/shelves" element={
-              <ProtectedRoute>
-                <ShelvesPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/shelves/new" element={
-              <ProtectedRoute>
-                <NewShelfPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/shelves/:id/edit" element={
-              <ProtectedRoute>
-                <EditShelfPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/pages" element={
-              <ProtectedRoute>
-                <PagesPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/pages/:id/edit" element={
-              <ProtectedRoute>
-                <EditPagePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/banners" element={
-              <ProtectedRoute>
-                <BannersPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/banners/novo" element={
-              <ProtectedRoute>
-                <NewBannerPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/banners/:id" element={
-              <ProtectedRoute>
-                <BannerDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/banners/:id/editar" element={
-              <ProtectedRoute>
-                <EditBannerPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/customization" element={
-              <ProtectedRoute>
-                <CustomizationPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/ads" element={
-              <ProtectedRoute>
-                <AdsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/analytics" element={
-              <ProtectedRoute>
-                <AnalyticsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/collections" element={
-              <ProtectedRoute>
-                <CollectionsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/collections/novo" element={
-              <ProtectedRoute>
-                <CollectionForm />
-              </ProtectedRoute>
-            } />
-            <Route path="/collections/:id" element={
-              <ProtectedRoute>
-                <CollectionDetailsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/collections/edit/:id" element={
-              <ProtectedRoute>
-                <EditCollectionPage />
-              </ProtectedRoute>
-            } />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <RouterProvider router={router} />
       </div>
     </TooltipProvider>
   </QueryClientProvider>
